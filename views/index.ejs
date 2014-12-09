@@ -1,11 +1,59 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<head>
+    <title>Web3D</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/common.css">
+</head>
+
+<body>
+    <header>
+    <h1>Magic3D</h1>
+    </header>
+    <div class="centerleft">
+	<div class="centerright">
+	    <div class="centerfloat">
+		<button type="button" class="commonbutton">Import</button>
+		</br></br>
+		<button type="button" class="commonbutton">Save</button>
+		</br></br>
+		<button type="button" class="commonbutton">Process</button>
+	    </div>
+	    <div id="canvContainer" class="centerfloat">
+		<!--canvas id="3dcanv" style="border: 5px solid" width="800" height="600">no support</canvas-->
+	    </div>
+	</div>
+    </div>
+    
+    <script src="/javascripts/three.min.js"></script>
+    <script>
+	var scene = new THREE.Scene();
+	var windowWidth = 800;
+	var windowHeight = 600;
+	var camera = new THREE.PerspectiveCamera( 75, windowWidth / windowHeight, 0.1, 1000 );
+	var renderer = new THREE.WebGLRenderer();
+	renderer.setSize( windowWidth, windowHeight);
+	var canvContainer = document.getElementById("canvContainer");
+	canvContainer.appendChild(renderer.domElement);
+
+	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+	var material = new THREE.MeshBasicMaterial( { color: 0xd38571 } );
+	var cube = new THREE.Mesh( geometry, material );
+	scene.add( cube );
+
+	camera.position.z = 5;
+
+	var render = function () {
+	    requestAnimationFrame( render );
+
+	    cube.rotation.x += 0.005;
+	    cube.rotation.y += 0.005;
+
+	    renderer.render(scene, camera);
+	};
+
+	render();
+    </script>
+    
+</body>
 </html>
+

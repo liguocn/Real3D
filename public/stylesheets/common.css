@@ -1,0 +1,53 @@
+header
+{
+    display: block;
+}
+
+body
+{
+    background-color: #DCDCDC
+}
+
+header
+{
+    padding: 10px;
+    margin: 10px;
+    text-align: center
+}
+
+header h1
+{
+    margin: 0px;
+    color: #7695FE;
+    font-size: 60pt;
+}
+
+.commonbutton
+{
+    margin-left: 20px;
+    width: 64px;
+    height: 64px;
+    text-align: center;
+    font-size: 10pt;
+    border-radius: 15px;
+}
+
+.centerleft
+{
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+.centerleft .centerright
+{
+    float: left;
+    position: relative;
+    left: -50%;
+}
+
+.centerleft .centerright .centerfloat
+{
+    position: relative;
+    float: right;
+}
