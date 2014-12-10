@@ -1,37 +1,3 @@
-header
-{
-    display: block;
-}
-
-body
-{
-    background-color: #DCDCDC
-}
-
-header
-{
-    padding: 10px;
-    margin: 10px;
-    text-align: center
-}
-
-header h1
-{
-    margin: 0px;
-    color: #7695FE;
-    font-size: 60pt;
-}
-
-.commonbutton
-{
-    margin-left: 20px;
-    width: 64px;
-    height: 64px;
-    text-align: center;
-    font-size: 10pt;
-    border-radius: 15px;
-}
-
 .centerleft
 {
     float: left;
@@ -46,8 +12,72 @@ header h1
     left: -50%;
 }
 
-.centerleft .centerright .centerfloat
+body
 {
-    position: relative;
+    background-color: rgb(222, 222, 222);
+    display: block;
+}
+
+.maincontainer
+{
+    width: 1024px;
+}
+
+.maincontainer .menubar
+{
+    width: 100%
+    height: 100px;
+}
+
+.maincontainer .menubar .logo
+{
+    width: 10%;  
+    margin-right: 5%;
+}
+
+.maincontainer .menubar .menuitem
+{
+    font-size: x-large;
+    color: rgb(157, 41, 50);
+    margin: 20px 0.5%;
     float: right;
+}
+
+.maincontainer .slogen
+{
+    width: 100%;
+}
+
+.maincontainer .slogen .slogentext
+{
+    color: rgb(65, 80, 101);
+    font-size: 80px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.maincontainer .app
+{
+    width: 100%;
+    margin-top: 20px;
+}
+
+.maincontainer .app .appitem
+{
+    width: 25%;
+    float: left;
+    margin: 10px 4%;
+}
+
+.maincontainer .app .appitemimg
+{
+    width: 100%;
+}
+
+.maincontainer .app .appitemtext
+{
+    color: rgb(64, 128, 128);
+    font-size: large;
+    text-align: center;
+    margin-top: 10px;
 }
