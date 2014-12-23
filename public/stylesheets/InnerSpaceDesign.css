@@ -1,0 +1,42 @@
+.centerleft
+{
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+.centerleft .centerright
+{
+    float: left;
+    position: relative;
+    left: -50%;
+}
+
+.centerleft .centerright .centerfloat
+{
+    position: relative;
+    float: right;
+}
+
+body
+{
+    background-color: rgb(222, 222, 222);
+    display: block;
+}
+
+.commonbutton
+{
+	display: block;
+    margin-left: 20px;
+    width: 64px;
+    height: 64px;
+    text-align: center;
+    font-size: 10pt;
+    border-radius: 15px;
+}
+
+.canvascontainer
+{
+	position: relative;
+	float: right;
+}
