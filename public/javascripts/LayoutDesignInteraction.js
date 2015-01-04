@@ -1,6 +1,6 @@
 ﻿function mousedown()
 {
-	console.log("mousedown:", event.clientX, event.clientY, event.offsetX, event.offsetY);
+	console.log("mousedown:", event.clientX, event.clientY, window.event.offsetX, window.event.offsetY);
 } 
 
 function mouseup()

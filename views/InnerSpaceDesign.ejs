@@ -6,6 +6,7 @@
     <link rel = "stylesheet" type="text/css" href="/stylesheets/InnerSpaceDesign.css">
     <script src="/javascripts/three.min.js"></script>
     <script src="/javascripts/LayoutDesignInteraction.js"></script>
+    <script src = "javascripts/LayoutDesignFramework.js"></script>
 </head>
 
 <body>
@@ -19,11 +20,15 @@
 				<button type="button" class="commonbutton">Fuck</button>
 		    </div>
 			<div id = "designspace" class = "centerfloat" onmousedown="mousedown()" onmouseup="mouseup()"></div>
-			<script src = "javascripts/LayoutDesignFramework.js"></script>
 		</div>
 	</div>
 	<script>
-	render();
+	window.temp = 1;
+	window.temp++;
+	console.log("window.temp value: ", window.temp);
+	var frame = new Real3D.Frame();
+	frame.init();
+	frame.run();
 	</script>
 </body>
 </html>
