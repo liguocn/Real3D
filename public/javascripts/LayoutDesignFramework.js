@@ -46,12 +46,26 @@ Real3D.Frame.prototype.init = function()
 	this.camera2.position.set(0, 0, 10);
 	this.renderer = new THREE.WebGLRenderer();
 	this.renderer.setSize( windowWidth, windowHeight);
-	var canvContainer = document.getElementById("designspace");
-	canvContainer.appendChild(this.renderer.domElement);
-	console.log("i am rendering");
-
 	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
 	var material = new THREE.MeshBasicMaterial( { color: 0xfefefe } );
 	this.cube = new THREE.Mesh( geometry, material );
 	this.scene.add( this.cube );
+
+	var dom = this.renderer.domElement;
+	var that = this;
+	dom.addEventListener('mousedown', function() { that.OnMouseDown(); }, false );
+	dom.addEventListener('mouseup', function() { that.OnMouseUp(); }, false );
+	var canvContainer = document.getElementById("designspace");
+	canvContainer.appendChild(dom);
+	console.log("i am rendering");
+}
+
+Real3D.Frame.prototype.OnMouseDown = function()
+{
+	console.log("mousedown:", event.clientX, event.clientY, window.event.offsetX, window.event.offsetY);
+}
+
+Real3D.Frame.prototype.OnMouseUp = function()
+{
+	console.log("mouseup:", event.clientX, event.clientY);
 }
