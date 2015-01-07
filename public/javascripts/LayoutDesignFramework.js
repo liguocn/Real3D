@@ -9,7 +9,6 @@ REAL3D.Framework.Init = function(containerId)
 	var canvContainer = document.getElementById(containerId);
 	canvContainer.appendChild(dom);
 	REAL3D.AppManager.Init();
-	console.log("i am rendering");
 },
 
 REAL3D.Framework.Run = function()
@@ -35,30 +34,46 @@ REAL3D.AppManager =
 
 	EnterApp : function(app)
 	{
-		
-		this.appSet.push(app);
+		if (app === undefined || app == null) 
+		{
+			console.error("app is invalid");
+			return false;
+		}
+		if (this.currentApp != null)
+		{
+			this.currentApp.Exit();
+		}
+		this.appSet[app.appName] = app;
 		this.currentApp = app;
+		this.currentApp.Enter();
 	},
 
 	SwitchCurrentApp : function(appName)
 	{
-
+		if (this.appSet[appName] === undefined)
+		{
+			return false;
+		}
+		if (this.currentApp != null)
+		{
+			this.currentApp.Exit();
+		}
+		this.currentApp = this.appSet[appName];
+		this.currentApp.Enter();
 	},
 
 	GetApp : function(appName)
 	{
-
+		return this.appSet[appName];
 	},
 
 	MouseDown : function(e)
 	{
-		console.log("AppManager: mousedown:", e.clientX, e.clientY, e.offsetX, e.offsetY);
 		this.currentApp.MouseDown(e);
 	},
 
 	MouseUp :  function(e)
 	{
-		console.log("AppManager: mouseup:", e.clientX, e.clientY);
 		this.currentApp.MouseUp(e);
 	},
 
@@ -82,13 +97,11 @@ REAL3D.Listener =
 
 	MouseDown : function(e)
 	{
-		console.log("Listener: mousedown:", e.clientX, e.clientY, e.offsetX, e.offsetY);
 		REAL3D.AppManager.MouseDown(e);
 	},
 
 	MouseUp : function(e)
 	{
-		console.log("Listener: mouseup:", e.clientX, e.clientY);
 		REAL3D.AppManager.MouseUp(e);
 	},
 
@@ -102,11 +115,9 @@ REAL3D.Listener =
 REAL3D.RenderManager = 
 {
     scene : null,
-	camera1 : null,
-	camera2 : null,
+	camera : null,
 	renderer : null,
 	cube : null,
-	cameraType : 1
 };
 
 REAL3D.RenderManager.Init = function()
@@ -128,7 +139,6 @@ REAL3D.RenderManager.Init = function()
 	this.cube2.position.x = 5;
 	this.cube.add(this.cube2);
 	this.scene.add( this.cube );
-	//this.scene.add( this.cube2);
 	return this.renderer.domElement;
 }
 
@@ -172,6 +182,16 @@ REAL3D.HelloApp = function()
 }
 
 REAL3D.HelloApp.prototype = Object.create(REAL3D.AppBase.prototype);
+
+REAL3D.HelloApp.prototype.Enter = function()
+{
+	console.log("Enter HelloApp");
+}
+
+REAL3D.HelloApp.prototype.Exit = function()
+{
+	console.log("Exit HelloApp");
+}
 
 REAL3D.HelloApp.prototype.MouseDown = function(e)
 {
