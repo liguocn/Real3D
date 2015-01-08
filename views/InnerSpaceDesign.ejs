@@ -4,7 +4,7 @@
     <meta charset = "UTF-8">
     <title>室内布局设计</title>
     <link rel = "stylesheet" type="text/css" href="/stylesheets/InnerSpaceDesign.css">
-    <script src="/javascripts/three.min.js"></script>
+    <script src="/javascripts/three.js"></script>
     <script src = "javascripts/LayoutDesignFramework.js"></script>
 </head>
 
@@ -12,11 +12,11 @@
 	<div class = "centerleft">
 		<div class = "centerright">
 			<div class="centerfloat">
-				<button type="button" class="commonbutton">设计</button>
+				<button type="button" class="commonbutton" onclick = "EnterDesignSpaceApp()">设计</button>
 				</br></br>
-				<button type="button" class="commonbutton">漫游</button>
+				<button type="button" class="commonbutton" onclick = "SwitchToHelloApp()">漫游</button>
 				</br></br>
-				<button type="button" class="commonbutton">Fuck</button>
+				<button type="button" class="commonbutton" onclick = "SwitchToDesignSpaceApp()">Fuck</button>
 		    </div>
 			<div id = "designspace" class = "centerfloat"></div>
 		</div>
