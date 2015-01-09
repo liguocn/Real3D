@@ -5,25 +5,28 @@
     <title>室内布局设计</title>
     <link rel = "stylesheet" type="text/css" href="/stylesheets/InnerSpaceDesign.css">
     <script src="/javascripts/three.js"></script>
+    <script src="/javascripts/jquery-2.1.3.js"></script>
+    <script src = "javascripts/Real3d.js"></script>
     <script src = "javascripts/LayoutDesignFramework.js"></script>
 </head>
 
 <body>
 	<div class = "centerleft">
 		<div class = "centerright">
-			<div class="centerfloat">
+			<!-- <div class="centerfloat">
 				<button type="button" class="commonbutton" onclick = "EnterDesignSpaceApp()">设计</button>
 				</br></br>
 				<button type="button" class="commonbutton" onclick = "SwitchToHelloApp()">漫游</button>
 				</br></br>
 				<button type="button" class="commonbutton" onclick = "SwitchToDesignSpaceApp()">Fuck</button>
-		    </div>
+		    </div> -->
 			<div id = "designspace" class = "centerfloat"></div>
 		</div>
 	</div>
 	<script>
 	REAL3D.Framework.Init("designspace");
     REAL3D.Framework.Run();
+    EnterDesignSpaceApp();
 	</script>
 </body>
 </html>
