@@ -90,6 +90,11 @@ REAL3D.AppManager =
 		this.currentApp.MouseMove(e);
 	},
 
+	KeyPress : function(e)
+	{
+		this.currentApp.KeyPress(e);
+	}
+
 	currentApp : null,
 	appSet : []
 }
@@ -102,9 +107,10 @@ REAL3D.Listener =
 		dom.addEventListener("mousedown", function(e) { that.MouseDown(e); }, false );
 		dom.addEventListener("mouseup", function(e) { that.MouseUp(e); }, false );
 		dom.addEventListener("mousemove", function(e) { that.MouseMove(e); }, false);
-		//dom.addEventListener("keypress", function() { that.KeyPress(); }, false);
-		//dom.focus();
-		window.addEventListener("keypress", function() { that.KeyPress(); }, false);
+		dom.addEventListener("keypress", function(e) { that.KeyPress(e); }, false);
+		dom.setAttribute("tabindex", 1);
+		dom.focus();
+		dom.style.outline = "none";
 	},
 
 	MouseDown : function(e)
@@ -122,9 +128,9 @@ REAL3D.Listener =
 		REAL3D.AppManager.MouseMove(e);
 	},
 
-	KeyPress : function()
+	KeyPress : function(e)
 	{
-		console.log("KeyPress");
+		REAL3D.AppManager.KeyPress(e);
 	}
 };
 
@@ -168,9 +174,86 @@ REAL3D.RenderManager.Update = function()
     this.renderer.render(this.scene, this.camera);
 }
 
+REAL3D.Publisher = function() 
+{
+    this.messageTypes = {};
+}
+
+REAL3D.Publisher.prototype.subscribe = function(message, subscriber, callback) 
+{
+    var subscribers = this.messageTypes[message];
+    if (subscribers)
+    {
+        if (this.findSubscriber(subscribers, subscriber) != -1)
+        {
+            return;
+        }
+    }
+    else
+    {
+        subscribers = [];
+        this.messageTypes[message] = subscribers;
+    }
+
+    subscribers.push({ subscriber : subscriber, callback : callback });
+}
+
+REAL3D.Publisher.prototype.unsubscribe = function(message, subscriber, callback) 
+{
+    if (subscriber)
+    {
+        var subscribers = this.messageTypes[message];
+
+        if (subscribers)
+        {
+            var i = this.findSubscriber(subscribers, subscriber, callback);
+            if (i != -1)
+            {
+                this.messageTypes[message].splice(i, 1);
+            }
+        }
+    }
+    else
+    {
+        delete this.messageTypes[message];
+    }
+}
+
+REAL3D.Publisher.prototype.publish = function(message) 
+{
+    var subscribers = this.messageTypes[message];
+
+    if (subscribers)
+    {
+        for (var i = 0; i < subscribers.length; i++)
+        {
+            var args = [];
+            for (var j = 0; j < arguments.length - 1; j++)
+            {
+                args.push(arguments[j + 1]);
+            }
+            subscribers[i].callback.apply(subscribers[i].subscriber, args);
+        }
+    }
+}
+
+REAL3D.Publisher.prototype.findSubscriber = function (subscribers, subscriber) 
+{
+    for (var i = 0; i < subscribers.length; i++)
+    {
+        if (subscribers[i] == subscriber)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
 
 REAL3D.AppBase = function()
-{}
+{
+	REAL3D.Publisher.call(this);
+}
 
 REAL3D.AppBase.prototype = 
 {
@@ -190,6 +273,9 @@ REAL3D.AppBase.prototype =
 	{},
 
 	MouseMove : function(e)
+	{},
+
+	KeyPress : function(e)
 	{}
 }
 
@@ -216,73 +302,7 @@ REAL3D.HelloApp.prototype.MouseDown = function(e)
 	console.log("HelloApp MouseDown: ", e.clientX, e.clientY, e.offsetX, e.offsetY);
 }
 
-REAL3D.Publisher = function() {
-    this.messageTypes = {};
-}
-
-REAL3D.Publisher.prototype.subscribe = function(message, subscriber, callback) {
-    var subscribers = this.messageTypes[message];
-    if (subscribers)
-    {
-        if (this.findSubscriber(subscribers, subscriber) != -1)
-        {
-            return;
-        }
-    }
-    else
-    {
-        subscribers = [];
-        this.messageTypes[message] = subscribers;
-    }
-
-    subscribers.push({ subscriber : subscriber, callback : callback });
-}
-
-REAL3D.Publisher.prototype.unsubscribe = function(message, subscriber, callback) {
-    if (subscriber)
-    {
-        var subscribers = this.messageTypes[message];
-
-        if (subscribers)
-        {
-            var i = this.findSubscriber(subscribers, subscriber, callback);
-            if (i != -1)
-            {
-                this.messageTypes[message].splice(i, 1);
-            }
-        }
-    }
-    else
-    {
-        delete this.messageTypes[message];
-    }
-}
-
-REAL3D.Publisher.prototype.publish = function(message) {
-    var subscribers = this.messageTypes[message];
-
-    if (subscribers)
-    {
-        for (var i = 0; i < subscribers.length; i++)
-        {
-            var args = [];
-            for (var j = 0; j < arguments.length - 1; j++)
-            {
-                args.push(arguments[j + 1]);
-            }
-            subscribers[i].callback.apply(subscribers[i].subscriber, args);
-        }
-    }
-}
-
-REAL3D.Publisher.prototype.findSubscriber = function (subscribers, subscriber) {
-    for (var i = 0; i < subscribers.length; i++)
-    {
-        if (subscribers[i] == subscriber)
-        {
-            return i;
-        }
-    }
-    
-    return -1;
+REAL3D.HelloApp.prototype.KeyPress = function(e)
+{
+	console.log("HelloApp KeyPress: ", e.which);
 }
