@@ -93,7 +93,7 @@ REAL3D.AppManager =
 	KeyPress : function(e)
 	{
 		this.currentApp.KeyPress(e);
-	}
+	},
 
 	currentApp : null,
 	appSet : []
