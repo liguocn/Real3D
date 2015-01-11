@@ -10,93 +10,93 @@ REAL3D.Framework.Init = function(containerId)
 	REAL3D.Listener.Init(dom);
 	var canvContainer = document.getElementById(containerId);
 	canvContainer.appendChild(dom);
-	REAL3D.AppManager.Init();
+	REAL3D.StateManager.Init();
 },
 
 REAL3D.Framework.Run = function()
 {
-	REAL3D.AppManager.Update();
+	REAL3D.StateManager.Update();
 	REAL3D.RenderManager.Update();
     var that = this;
     requestAnimationFrame( function() { that.Run();} );
 }
 
-REAL3D.AppManager = 
+REAL3D.StateManager = 
 {
 	Init : function()
 	{
-		var initApp = new REAL3D.HelloApp();
-		this.EnterApp(initApp);
+		var initState = new REAL3D.HelloState();
+		this.EnterState(initState);
 	},
 
 	Update : function()
 	{
-		this.currentApp.Update();
+		this.currentState.Update();
 	},
 
-	EnterApp : function(app)
+	EnterState : function(state)
 	{
-		if (app === undefined || app == null) 
+		if (state === undefined || state == null) 
 		{
-			console.error("app is invalid");
+			console.error("State is invalid");
 			return false;
 		}
-		if (this.currentApp != null)
+		if (this.currentState != null)
 		{
-			this.currentApp.Exit();
+			this.currentState.Exit();
 		}
-		this.appSet[app.appName] = app;
-		this.currentApp = app;
-		this.currentApp.Enter();
+		this.stateSet[state.stateName] = state;
+		this.currentState = state;
+		this.currentState.Enter();
 	},
 
-	SwitchCurrentApp : function(appName)
+	SwitchCurrentState : function(stateName)
 	{
-		if (this.appSet[appName] === undefined)
+		if (this.stateSet[stateName] === undefined)
 		{
 			return false;
 		}
-		if (this.currentApp != null)
+		if (this.currentState != null)
 		{
-			if (this.currentApp.appName == appName)
+			if (this.currentState.stateName == stateName)
 			{
-				console.log("Switch to the same app: ", appName);
+				console.log("Switch to the same state: ", stateName);
 				return true;
 			}
-			this.currentApp.Exit();
+			this.currentState.Exit();
 		}
-		this.currentApp = this.appSet[appName];
-		this.currentApp.Enter();
+		this.currentState = this.stateSet[stateName];
+		this.currentState.Enter();
 		return true;
 	},
 
-	GetApp : function(appName)
+	GetState : function(stateName)
 	{
-		return this.appSet[appName];
+		return this.stateSet[stateName];
 	},
 
 	MouseDown : function(e)
 	{
-		this.currentApp.MouseDown(e);
+		this.currentState.MouseDown(e);
 	},
 
 	MouseUp :  function(e)
 	{
-		this.currentApp.MouseUp(e);
+		this.currentState.MouseUp(e);
 	},
 
 	MouseMove : function(e)
 	{
-		this.currentApp.MouseMove(e);
+		this.currentState.MouseMove(e);
 	},
 
 	KeyPress : function(e)
 	{
-		this.currentApp.KeyPress(e);
+		this.currentState.KeyPress(e);
 	},
 
-	currentApp : null,
-	appSet : []
+	currentState : null,
+	stateSet : []
 }
 
 REAL3D.Listener = 
@@ -115,22 +115,22 @@ REAL3D.Listener =
 
 	MouseDown : function(e)
 	{
-		REAL3D.AppManager.MouseDown(e);
+		REAL3D.StateManager.MouseDown(e);
 	},
 
 	MouseUp : function(e)
 	{
-		REAL3D.AppManager.MouseUp(e);
+		REAL3D.StateManager.MouseUp(e);
 	},
 
 	MouseMove : function(e)
 	{
-		REAL3D.AppManager.MouseMove(e);
+		REAL3D.StateManager.MouseMove(e);
 	},
 
 	KeyPress : function(e)
 	{
-		REAL3D.AppManager.KeyPress(e);
+		REAL3D.StateManager.KeyPress(e);
 	}
 };
 
@@ -250,12 +250,12 @@ REAL3D.Publisher.prototype.findSubscriber = function (subscribers, subscriber)
     return -1;
 }
 
-REAL3D.AppBase = function()
+REAL3D.StateBase = function()
 {
 	REAL3D.Publisher.call(this);
 }
 
-REAL3D.AppBase.prototype = 
+REAL3D.StateBase.prototype = 
 {
 	Enter : function()
 	{},
@@ -279,30 +279,30 @@ REAL3D.AppBase.prototype =
 	{}
 }
 
-REAL3D.HelloApp = function()
+REAL3D.HelloState = function()
 {
-	REAL3D.AppBase.call(this);
-	this.appName = "HelloApp";
+	REAL3D.StateBase.call(this);
+	this.stateName = "HelloState";
 }
 
-REAL3D.HelloApp.prototype = Object.create(REAL3D.AppBase.prototype);
+REAL3D.HelloState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-REAL3D.HelloApp.prototype.Enter = function()
+REAL3D.HelloState.prototype.Enter = function()
 {
-	console.log("Enter HelloApp");
+	console.log("Enter HelloState");
 }
 
-REAL3D.HelloApp.prototype.Exit = function()
+REAL3D.HelloState.prototype.Exit = function()
 {
-	console.log("Exit HelloApp");
+	console.log("Exit HelloState");
 }
 
-REAL3D.HelloApp.prototype.MouseDown = function(e)
+REAL3D.HelloState.prototype.MouseDown = function(e)
 {
-	console.log("HelloApp MouseDown: ", e.clientX, e.clientY, e.offsetX, e.offsetY);
+	console.log("HelloState MouseDown: ", e.clientX, e.clientY, e.offsetX, e.offsetY);
 }
 
-REAL3D.HelloApp.prototype.KeyPress = function(e)
+REAL3D.HelloState.prototype.KeyPress = function(e)
 {
-	console.log("HelloApp KeyPress: ", e.which);
+	console.log("HelloState KeyPress: ", e.which);
 }

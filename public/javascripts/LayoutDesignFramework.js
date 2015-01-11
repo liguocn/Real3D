@@ -1,32 +1,32 @@
-REAL3D.LayoutDesignApp = function()
+REAL3D.LayoutDesignState = function()
 {
-	REAL3D.AppBase.call(this);
-	this.appName = "LayoutDesignApp";
+	REAL3D.StateBase.call(this);
+	this.stateName = "LayoutDesignState";
 	this.mousePos = new THREE.Vector2(0, 0);
 	this.isMouseDown = false;
 }
 
-REAL3D.LayoutDesignApp.prototype = Object.create(REAL3D.AppBase.prototype);
+REAL3D.LayoutDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-REAL3D.LayoutDesignApp.prototype.Enter = function()
+REAL3D.LayoutDesignState.prototype.Enter = function()
 {
-	console.log("Enter LayoutDesignApp");
+	console.log("Enter LayoutDesignState");
 }
 
-REAL3D.LayoutDesignApp.prototype.Exit = function()
+REAL3D.LayoutDesignState.prototype.Exit = function()
 {
-	console.log("Exit LayoutDesignApp");
+	console.log("Exit LayoutDesignState");
 }
 
-REAL3D.LayoutDesignApp.prototype.MouseDown = function(e)
+REAL3D.LayoutDesignState.prototype.MouseDown = function(e)
 {
 	var offset = $(REAL3D.RenderManager.renderer.domElement).offset();	
 	this.mousePos.set(e.pageX - offset.left, e.pageY - offset.top);
 	this.isMouseDown = true;
-	console.log("LayoutDesignApp MouseDown: ", e.pageX - offset.left, e.pageY - offset.top);
+	console.log("LayoutDesignState MouseDown: ", e.pageX - offset.left, e.pageY - offset.top);
 }
 
-REAL3D.LayoutDesignApp.prototype.MouseMove = function(e)
+REAL3D.LayoutDesignState.prototype.MouseMove = function(e)
 {
 	if (this.isMouseDown)
 	{
@@ -42,23 +42,23 @@ REAL3D.LayoutDesignApp.prototype.MouseMove = function(e)
 	}
 }
 
-REAL3D.LayoutDesignApp.prototype.MouseUp = function(e)
+REAL3D.LayoutDesignState.prototype.MouseUp = function(e)
 {
 	this.isMouseDown = false;
 }
 
-function EnterDesignSpaceApp()
+function EnterDesignSpaceState()
 {
-	var layoutDesignApp = new REAL3D.LayoutDesignApp();
-	REAL3D.AppManager.EnterApp(layoutDesignApp);
+	var layoutDesignState = new REAL3D.LayoutDesignState();
+	REAL3D.StateManager.EnterState(layoutDesignState);
 }
 
-function SwitchToHelloApp()
+function SwitchToHelloState()
 {
-	REAL3D.AppManager.SwitchCurrentApp("HelloApp");
+	REAL3D.StateManager.SwitchCurrentState("HelloState");
 }
 
-function SwitchToDesignSpaceApp()
+function SwitchToDesignSpaceState()
 {
-	REAL3D.AppManager.SwitchCurrentApp("LayoutDesignApp");
+	REAL3D.StateManager.SwitchCurrentState("LayoutDesignState");
 }
