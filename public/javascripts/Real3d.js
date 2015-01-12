@@ -138,7 +138,9 @@ REAL3D.Listener =
 REAL3D.RenderManager = 
 {
     scene : null,
-	camera : null,
+    windowWidth : 1024,
+    windowHeight : 768,
+	camera : [],
 	renderer : null,
 	cube : null,
 };
@@ -147,22 +149,22 @@ REAL3D.RenderManager.Init = function()
 {
 	console.log("frame.init");
 	this.scene = new THREE.Scene();
-	var windowWidth = 1024;
-	var windowHeight = 768;
-	this.camera = new THREE.PerspectiveCamera( 75, windowWidth / windowHeight, 0.1, 1000 );
-	this.camera.position.set(0, 0, 10);
+	var cameraDefault = new THREE.PerspectiveCamera( 75, this.windowWidth / this.windowHeight, 0.1, 1000 );
+	cameraDefault.position.set(0, 0, 10);
+	this.camera["default"] = cameraDefault;
+	this.currentCameraName = "default";
 	this.renderer = new THREE.WebGLRenderer({antialias:true});
 	this.renderer.setClearColor(0xd1d1d1, 1);
-	this.renderer.setSize( windowWidth, windowHeight);
-	var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+	this.renderer.setSize( this.windowWidth, this.windowHeight);
+	var geometry = new THREE.BoxGeometry( 250, 250, 250 );
 	var material = new THREE.MeshBasicMaterial( { color: 0xfcfcfc } );
 	this.cube = new THREE.Mesh( geometry, material );
 	this.cube.name = "root";
-	this.cube.position.set(1, 1, 1);
-	var geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
+	//this.cube.position.set(0, 0, 0);
+	var geometry2 = new THREE.BoxGeometry( 125, 125, 125 );
 	var material2 = new THREE.MeshBasicMaterial({color: 0x9efe9e});
 	this.cube2 = new THREE.Mesh(geometry2, material2);
-	this.cube2.position.x = 5;
+	this.cube2.position.set(250, 250, 250);
 	this.cube2.name = "cube2";
 	this.cube.add(this.cube2);
 	this.scene.add( this.cube );
@@ -171,7 +173,30 @@ REAL3D.RenderManager.Init = function()
 
 REAL3D.RenderManager.Update = function()
 {
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera[this.currentCameraName]);
+}
+
+REAL3D.RenderManager.SwitchCamera = function(cameraName) 
+{
+	this.currentCameraName = cameraName;
+}
+
+REAL3D.RenderManager.AddCamera = function(cameraName, camera)
+{
+	this.camera[cameraName] = camera;
+}
+
+REAL3D.RenderManager.DeleteCamera = function(cameraName)
+{
+	if (this.camera[cameraName] !== undefined)
+	{
+		delete this.camera[cameraName];
+	}
+}
+
+REAL3D.RenderManager.GetCamera = function(cameraName)
+{
+	return this.camera[cameraName];
 }
 
 REAL3D.Publisher = function() 
