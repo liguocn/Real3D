@@ -1,54 +1,55 @@
 /*jslint plusplus: true */
-/*global document, console, THREE, requestAnimationFrame */
-var REAL3D = {};
-/*members Publisher, Framework, RenderManager, Listener, StateManager, StateBase, HelloState*/
 
-/*properties messageTypes */
+var REAL3D = {};
+
+/*properties Publisher, messageTypes */
 REAL3D.Publisher = function () {
     "use strict";
     this.messageTypes = {};
 };
 
-/*members prototype, subscribe, unsubscribe, publish, findSubscriber */
+/*properties prototype, subscribe, findSubscriber */
 /*properties push, subscriber, callback */
-REAL3D.Publisher.prototype.subscribe = function (message, subscriber, callback) {
+REAL3D.Publisher.prototype.subscribe = function (parm_message, parm_subscriber, parm_callback) {
     "use strict";
-    var subscribers = this.messageTypes[message];
+    var subscribers = this.messageTypes[parm_message];
     if (subscribers) {
-        if (this.findSubscriber(subscribers, subscriber) !== -1) {
+        if (this.findSubscriber(subscribers, parm_subscriber) !== -1) {
             return;
         }
     } else {
         subscribers = [];
-        this.messageTypes[message] = subscribers;
+        this.messageTypes[parm_message] = subscribers;
     }
 
-    subscribers.push({ subscriber : subscriber, callback : callback });
+    subscribers.push({ subscriber : parm_subscriber, callback : parm_callback });
 };
 
+/*properties unsubscribe */
 /*properties splice */
-REAL3D.Publisher.prototype.unsubscribe = function(message, subscriber, callback) {
+REAL3D.Publisher.prototype.unsubscribe = function(parm_message, parm_subscriber) {
     "use strict";
     var subscribers, findIndex;
-    if (subscriber) {
-        subscribers = this.messageTypes[message];
+    if (parm_subscriber) {
+        subscribers = this.messageTypes[parm_message];
 
         if (subscribers) {
-            findIndex = this.findSubscriber(subscribers, subscriber, callback);
+            findIndex = this.findSubscriber(subscribers, parm_subscriber);
             if (findIndex !== -1) {
-                this.messageTypes[message].splice(findIndex, 1);
+                this.messageTypes[parm_message].splice(findIndex, 1);
             }
         }
     } else {
-        delete this.messageTypes[message];
+        delete this.messageTypes[parm_message];
     }
 };
 
+/*properties publish */
 /*properties length, apply */
-REAL3D.Publisher.prototype.publish = function(message) {
+REAL3D.Publisher.prototype.publish = function(parm_message) {
     "use strict";
     var subscribers, ii, jj, args;
-    subscribers = this.messageTypes[message];
+    subscribers = this.messageTypes[parm_message];
 
     if (subscribers) {
         for (ii = 0; ii < subscribers.length; ii++) {
@@ -61,18 +62,19 @@ REAL3D.Publisher.prototype.publish = function(message) {
     }
 };
 
-REAL3D.Publisher.prototype.findSubscriber = function (subscribers, subscriber) {
+/*properties findSubscriber */
+REAL3D.Publisher.prototype.findSubscriber = function (parm_subscribers, parm_subscriber) {
     "use strict";
     var ii;
-    for (ii = 0; ii < subscribers.length; ii++) {
-        if (subscribers[ii] === subscriber) {
+    for (ii = 0; ii < parm_subscribers.length; ii++) {
+        if (parm_subscribers[ii] === parm_subscriber) {
             return ii;
         }
     }
     return -1;
 };
 
-/*properties call */
+/*properties StateBase, call */
 REAL3D.StateBase = function() {
     "use strict";
     REAL3D.Publisher.call(this);
@@ -109,7 +111,7 @@ REAL3D.StateBase.prototype = {
     }
 };
 
-/*properties stateName, create, log, clientX, clientY, offsetX, offsetY, which */
+/*properties HelloState, stateName, create, log, clientX, clientY, offsetX, offsetY, which */
 REAL3D.HelloState = function() {
     "use strict";
     REAL3D.StateBase.call(this);
@@ -118,6 +120,7 @@ REAL3D.HelloState = function() {
 
 REAL3D.HelloState.prototype = Object.create(REAL3D.StateBase.prototype);
 
+/*global console */
 REAL3D.HelloState.prototype.enter = function() {
     "use strict";
     console.log("Enter HelloState");
@@ -138,7 +141,7 @@ REAL3D.HelloState.prototype.keyPress = function(e) {
     console.log("HelloState KeyPress: ", e.which);
 };
 
-/*properties init, update, enterState, switchCurrentState, getState, mouseDown, mouseUp, mouseMove, keyPress, currentState, stateSet, error */
+/*properties StateManager, init, update, enterState, switchCurrentState, getState, mouseDown, mouseUp, mouseMove, keyPress, currentState, stateSet, error */
 REAL3D.StateManager = {
     init : function() {
         "use strict";
@@ -211,7 +214,7 @@ REAL3D.StateManager = {
     stateSet : []
 };
 
-/*properties addEventListener, setAttribute, focus, style, outline */
+/*properties Listener, addEventListener, setAttribute, focus, style, outline */
 REAL3D.Listener = {
     init : function(dom) {
         "use strict";
@@ -246,7 +249,8 @@ REAL3D.Listener = {
     }
 };
 
-/*properties scene, windowWidth, windowHeight, camera, renderer, cube, init, update, switchCamera, addCamera, deleteCamera, getCamera */
+/*global THREE */
+/*properties RenderManager, scene, windowWidth, windowHeight, camera, renderer, cube, init, update, switchCamera, addCamera, deleteCamera, getCamera */
 /*properties Scene, PerspectiveCamera, position, set, default, currentCameraName, setClearColor, setSize, BoxGeometry, MeshBasicMaterial, color, WebGLRenderer, antialias */
 /*properties Mesh, name, cube2, add, domElement, render */
 REAL3D.RenderManager = {
@@ -311,7 +315,8 @@ REAL3D.RenderManager = {
     }
 };
 
-/*properties appendChild, getElementById, init, run */
+/*global document, requestAnimationFrame */
+/*properties Framework, appendChild, getElementById, init, run */
 REAL3D.Framework = {
     init : function(containerId) {
         "use strict";
