@@ -1,3 +1,4 @@
+/*jslint plusplus: true */
 /*global REAL3D, THREE */
 REAL3D.LayoutDesignState = function() {
     REAL3D.StateBase.call(this);
