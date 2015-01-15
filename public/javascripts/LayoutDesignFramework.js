@@ -91,7 +91,7 @@ REAL3D.LayoutDesignState.prototype.mouseDown = function(e) {
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
     this.isMouseDown = true;
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 /*properties scene, getObjectByName, rotateXGlobal, rotateYGlobal */
@@ -109,7 +109,6 @@ REAL3D.LayoutDesignState.prototype.mouseMove = function(e) {
             }
         } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT) {
             this.draggingUserPoint(curPosX, curPosY);
-            console.log("draggingUserPoint: ", curPosX, curPosY);
         } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITCANVAS) {
             if (this.isMouseMoved(curPosX, curPosY)) {
                 this.mouseState = REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS;
@@ -118,7 +117,6 @@ REAL3D.LayoutDesignState.prototype.mouseMove = function(e) {
             }
         } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS) {
             this.draggingCanvas(curPosX, curPosY);
-            console.log("draggingCanvas: ", curPosX, curPosY);
         }
 
         this.mouseMovePos.set(curPosX, curPosY);
@@ -151,7 +149,7 @@ REAL3D.LayoutDesignState.prototype.mouseUp = function(e) {
         console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
     }
     this.isMouseDown = false;
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 REAL3D.LayoutDesignState.prototype.updateUserUIDataDisplay = function() {
@@ -190,17 +188,37 @@ REAL3D.LayoutDesignState.prototype.finishCreatingNewUserPoint = function() {
     this.lastCreatedPointIndex = -1;
 };
 
+/*properties prototype, DISTANCETHRESHOLD */
 REAL3D.LayoutDesignState.prototype.isMouseMoved = function(mousePosX, mousePosY) {
     "use strict";
-    return false;
+    var dist, isMoved;
+    dist = (mousePosX - this.mouseMovePos.x) * (mousePosX - this.mouseMovePos.x) + (mousePosY - this.mouseMovePos.y) * (mousePosY - this.mouseMovePos.y);
+    if (dist < REAL3D.LayoutDesignState.DISTANCETHRESHOLD) {
+        isMoved = true;
+    } else {
+        isMoved = false;
+    }
+    return isMoved;
 };
 
+/*properties dragPoint, translateX, translateY  */
 REAL3D.LayoutDesignState.prototype.draggingUserPoint = function(mousePosX, mousePosY) {
     "use strict";
+    var cameraPos, worldPosX, worldPosY;
+    mousePosY = this.winH - mousePosY;
+    cameraPos = this.cameraOrtho.position;
+    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
+    this.userUIData.dragPoint(this.hitUserPointIndex, worldPosX, worldPosY);
 };
 
 REAL3D.LayoutDesignState.prototype.draggingCanvas = function(mousePosX, mousePosY) {
     "use strict";
+    var worldDifX, worldDifY;
+    worldDifX = this.mouseMovePos.x - mousePosX;
+    worldDifY = mousePosY - this.mouseMovePos.y;
+    this.cameraOrtho.translateX(worldDifX);
+    this.cameraOrtho.translateY(worldDifY);
 };
 
 
@@ -213,8 +231,7 @@ REAL3D.LayoutDesignState.MouseState = {
     HITCANVAS : 5
 };
 
-/*properties prototype, DISTANCETHRESHOLD */
-REAL3D.LayoutDesignState.prototype.DISTANCETHRESHOLD = 10;
+REAL3D.LayoutDesignState.DISTANCETHRESHOLD = 25;
 
 /*properties UserPoint, posX, posY, neighbors */
 REAL3D.LayoutDesignState.UserPoint = function(posX, posY) {
@@ -225,14 +242,15 @@ REAL3D.LayoutDesignState.UserPoint = function(posX, posY) {
 };
 
 
-/*properties push, uiData, length */
+/*properties push, uiData, length, uiLineRoot */
 REAL3D.LayoutDesignState.UserTree = function() {
     "use strict";
     this.points = [];
     this.uiData = [];
+    this.uiLineRoot = null;
 };
 
-/*properties SphereGeometry, MeshBasicMaterial, color, Mesh, center, add*/
+/*properties SphereGeometry, MeshBasicMaterial, color, Mesh, center, add, remove, LineBasicMaterial, Geometry, Object3D, vertices, Vector3, Line, updateUiConnection*/
 REAL3D.LayoutDesignState.UserTree.prototype = {
     addNewPoint : function(worldPosX, worldPosY) {
         "use strict";
@@ -251,20 +269,13 @@ REAL3D.LayoutDesignState.UserTree.prototype = {
 
     connectPoints : function(index1, index2) {
         "use strict";
-        var point1, point2, lineMaterial, lineGeometry, lineObj;
+        var point1, point2;
         point1 = this.points[index1];
         point2 = this.points[index2];
         point1.neighbors.push(point2);
         point2.neighbors.push(point1);
+        this.updateUiConnection();
         console.log("add line");
-        lineMaterial = new THREE.LineBasicMaterial({color: 0xae0e1e});
-        lineGeometry = new THREE.Geometry();
-        lineGeometry.vertices.push(
-            new THREE.Vector3(point1.posX, point1.posY, 0),
-            new THREE.Vector3(point2.posX, point2.posY, 0)
-            );
-        var lineObj = new THREE.Line(lineGeometry, lineMaterial);
-        REAL3D.RenderManager.center.add(lineObj);
     },
 
     deletePoint : function(index) {
@@ -289,6 +300,41 @@ REAL3D.LayoutDesignState.UserTree.prototype = {
             }
         }
         return -1;
+    },
+
+    dragPoint : function(index, worldPosX, worldPosY) {
+        "use strict";
+        this.points[index].posX = worldPosX;
+        this.points[index].posY = worldPosY;
+        this.uiData[index].position.set(worldPosX, worldPosY, 0);
+        this.updateUiConnection();
+    },
+
+    updateUiConnection : function() {
+        "use strict";
+        var point, neigPoint, pointLen, neighborLen, pid, nid, lineMaterial, lineGeometry, lineObj;
+        if (this.uiLineRoot === null) {
+            this.uiLineRoot = new THREE.Object3D();
+            REAL3D.RenderManager.center.add(this.uiLineRoot);
+        } else {
+            REAL3D.RenderManager.center.remove(this.uiLineRoot);
+            this.uiLineRoot = new THREE.Object3D();
+            REAL3D.RenderManager.center.add(this.uiLineRoot);
+        }
+        pointLen = this.points.length;
+        for (pid = 0; pid < pointLen; pid++) {
+            point = this.points[pid];
+            neighborLen = point.neighbors.length;
+            for (nid = 0; nid < neighborLen; nid++) {
+                neigPoint = point.neighbors[nid];
+                lineMaterial = new THREE.LineBasicMaterial({color: 0xae0e1e});
+                lineGeometry = new THREE.Geometry();
+                lineGeometry.vertices.push(new THREE.Vector3(point.posX, point.posY, 0),
+                    new THREE.Vector3(neigPoint.posX, neigPoint.posY, 0));
+                lineObj = new THREE.Line(lineGeometry, lineMaterial);
+                this.uiLineRoot.add(lineObj);
+            }
+        }
     }
 };
 
