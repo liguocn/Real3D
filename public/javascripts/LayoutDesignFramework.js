@@ -52,14 +52,15 @@ REAL3D.LayoutDesignState.prototype.exit = function() {
     console.log("Exit LayoutDesignState");
 };
 
-/*properties x, y, connectUserPoint */
+/*properties x, y, connectUserPoint, DISTANCETHRESHOLD */
 REAL3D.LayoutDesignState.prototype.mouseDown = function(e) {
     "use strict";
     console.log("---------------------------------------------mousedown: ", this.mouseState);
-    var curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
+    var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
-    isHittingTheSamePos = (curPosX === this.mouseDownPos.x && curPosY === this.mouseDownPos.y);
+    mouseDownDist = (curPosX - this.mouseDownPos.x) * (curPosX - this.mouseDownPos.x) + (curPosY - this.mouseDownPos.y) + (curPosY - this.mouseDownPos.y);
+    isHittingTheSamePos = (mouseDownDist < REAL3D.LayoutDesignState.DISTANCETHRESHOLD);
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
     console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
     if (this.mouseState === REAL3D.LayoutDesignState.MouseState.NONE) {
@@ -188,7 +189,7 @@ REAL3D.LayoutDesignState.prototype.finishCreatingNewUserPoint = function() {
     this.lastCreatedPointIndex = -1;
 };
 
-/*properties prototype, DISTANCETHRESHOLD */
+/*properties prototype */
 REAL3D.LayoutDesignState.prototype.isMouseMoved = function(mousePosX, mousePosY) {
     "use strict";
     var dist, isMoved;
@@ -231,7 +232,7 @@ REAL3D.LayoutDesignState.MouseState = {
     HITCANVAS : 5
 };
 
-REAL3D.LayoutDesignState.DISTANCETHRESHOLD = 25;
+REAL3D.LayoutDesignState.DISTANCETHRESHOLD = 225;
 
 /*properties UserPoint, posX, posY, neighbors */
 REAL3D.LayoutDesignState.UserPoint = function(posX, posY) {
