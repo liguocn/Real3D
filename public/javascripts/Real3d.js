@@ -250,7 +250,7 @@ REAL3D.Listener = {
 };
 
 /*global THREE */
-/*properties RenderManager, scene, windowWidth, windowHeight, camera, renderer, cube, init, update, switchCamera, addCamera, deleteCamera, getCamera */
+/*properties RenderManager, scene, windowWidth, windowHeight, camera, renderer, center, xNode, yNode, init, update, switchCamera, addCamera, deleteCamera, getCamera */
 /*properties Scene, PerspectiveCamera, position, set, default, currentCameraName, setClearColor, setSize, BoxGeometry, MeshBasicMaterial, color, WebGLRenderer, antialias */
 /*properties Mesh, name, cube2, add, domElement, render */
 REAL3D.RenderManager = {
@@ -259,12 +259,14 @@ REAL3D.RenderManager = {
     windowHeight : 768,
     camera : [],
     renderer : null,
-    cube : null,
+    center : null,
+    xNode : null,
+    yNode : null,
     init : function() {
         "use strict";
         console.log("frame.init");
         this.scene = new THREE.Scene();
-        var cameraDefault, geometry, material, geometry2, material2;
+        var cameraDefault, geometryCenter, materialCenter, geometryXNode, materialXNode, geometryYNode, materialYNode;
         cameraDefault = new THREE.PerspectiveCamera(75, this.windowWidth / this.windowHeight, 0.1, 1000);
         cameraDefault.position.set(0, 0, 10);
         this.camera["default"] = cameraDefault;
@@ -272,18 +274,24 @@ REAL3D.RenderManager = {
         this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.setClearColor(0xd1d1d1, 1);
         this.renderer.setSize(this.windowWidth, this.windowHeight);
-        geometry = new THREE.BoxGeometry(250, 250, 250);
-        material = new THREE.MeshBasicMaterial({color: 0xfcfcfc});
-        this.cube = new THREE.Mesh(geometry, material);
-        this.cube.name = "root";
-        //this.cube.position.set(0, 0, 0);
-        geometry2 = new THREE.BoxGeometry(125, 125, 125);
-        material2 = new THREE.MeshBasicMaterial({color: 0x9efe9e});
-        this.cube2 = new THREE.Mesh(geometry2, material2);
-        this.cube2.position.set(250, 250, 250);
-        this.cube2.name = "cube2";
-        this.cube.add(this.cube2);
-        this.scene.add(this.cube);
+        geometryCenter = new THREE.BoxGeometry(10, 10, 10);
+        materialCenter = new THREE.MeshBasicMaterial({color: 0xfcfcfc});
+        this.center = new THREE.Mesh(geometryCenter, materialCenter);
+        this.center.name = "center";
+        this.center.position.set(0, 0, 0);
+        geometryXNode = new THREE.BoxGeometry(10, 10, 10);
+        materialXNode = new THREE.MeshBasicMaterial({color: 0x9efe9e});
+        this.xNode = new THREE.Mesh(geometryXNode, materialXNode);
+        this.xNode.position.set(250, 0, 0);
+        this.xNode.name = "xNode";
+        this.center.add(this.xNode);
+        geometryYNode = new THREE.BoxGeometry(10, 10, 10);
+        materialYNode = new THREE.MeshBasicMaterial({color: 0xae0e1e});
+        this.yNode = new THREE.Mesh(geometryYNode, materialYNode);
+        this.yNode.position.set(0, 250, 0);
+        this.yNode.name = "yNode";
+        this.center.add(this.yNode);
+        this.scene.add(this.center);
         return this.renderer.domElement;
     },
 

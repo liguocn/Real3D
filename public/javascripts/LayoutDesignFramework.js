@@ -30,7 +30,7 @@ REAL3D.LayoutDesignState = function() {
 /*properties create, prototype */
 REAL3D.LayoutDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-/*properties updateUserUIDataDisplay, hitDetection, addHittedUserPointNeighbor, createNewUserPoint, finishCreatingNewUserPoint, isMouseMoved, draggingUserPoint, draggingCanvas */
+/*properties updateUserUIDataDisplay, hitDetection, connectUserPoint, createNewUserPoint, finishCreatingNewUserPoint, isMouseMoved, draggingUserPoint, draggingCanvas */
 /*properties log, enter, exit, mouseDown, mouseMove, mouseUp, getCamera, OrthographicCamera, position, set, addCamera, renderer, domElement, offset, pageX, pageY, left, top, switchCamera */
 REAL3D.LayoutDesignState.prototype.enter = function() {
     "use strict";
@@ -52,106 +52,106 @@ REAL3D.LayoutDesignState.prototype.exit = function() {
     console.log("Exit LayoutDesignState");
 };
 
-/*properties x, y */
+/*properties x, y, connectUserPoint */
 REAL3D.LayoutDesignState.prototype.mouseDown = function(e) {
     "use strict";
+    console.log("---------------------------------------------mousedown: ", this.mouseState);
     var curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
-    //test    
-    this.mousePos.set(e.pageX - this.canvasOffset.left, e.pageY - this.canvasOffset.top);
-    this.isMouseDown = true;
-    console.log("LayoutDesignState MouseDown: ", e.pageX - this.canvasOffset.left, e.pageY - this.canvasOffset.top);
-    //
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
     isHittingTheSamePos = (curPosX === this.mouseDownPos.x && curPosY === this.mouseDownPos.y);
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
+    console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
     if (this.mouseState === REAL3D.LayoutDesignState.MouseState.NONE) {
         if (this.hitUserPointIndex === -1) {
             this.mouseState = REAL3D.LayoutDesignState.MouseState.HITCANVAS;
+            console.log("state: NONE -> HITCANVAS");
         } else {
             this.mouseState = REAL3D.LayoutDesignState.MouseState.HITUSERPOINT;
+            console.log("state: NONE -> HITUSERPOINT");
         }
     } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.CREATINGUSERPOINT) {
         if (isHittingTheSamePos) {
             this.finishCreatingNewUserPoint();
             this.mouseState = REAL3D.LayoutDesignState.MouseState.NONE;
+            console.log("state: CREATINGUSERPOINT -> NONE, hit the same point, finishCreatingNewUserPoint");
         } else {
             if (this.hitUserPointIndex === -1) {
                 newUserPointIndex = this.createNewUserPoint(curPosX, curPosY);
-                this.addNeighbor(this.lastCreatedPointIndex, newUserPointIndex);
+                console.log("createNewUserPoint: ", this.lastCreatedPointIndex, newUserPointIndex);
+                this.connectUserPoint(this.lastCreatedPointIndex, newUserPointIndex);
                 this.lastCreatedPointIndex = newUserPointIndex;
             } else {
-                this.addNeighbor(this.hitUserPointIndex, this.lastCreatedPointIndex);
+                this.connectUserPoint(this.hitUserPointIndex, this.lastCreatedPointIndex);
                 this.lastCreatedPointIndex = this.hitUserPointIndex;
+                console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
             }
         }
     }
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
+    this.isMouseDown = true;
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 /*properties scene, getObjectByName, rotateXGlobal, rotateYGlobal */
 REAL3D.LayoutDesignState.prototype.mouseMove = function(e) {
     "use strict";
-    var offset, eltx, elty, mouseDifX, mouseDifY, rotateObj, curPosX, curPosY;
-    //test
+    var curPosX, curPosY;
     if (this.isMouseDown) {
-        offset = $(REAL3D.RenderManager.renderer.domElement).offset();
-        eltx = e.pageX - offset.left;
-        elty = e.pageY - offset.top;
-        mouseDifX = eltx - this.mousePos.x;
-        mouseDifY = elty - this.mousePos.y;
-        rotateObj = REAL3D.RenderManager.scene.getObjectByName("root", true);
-        rotateObj.rotateXGlobal(mouseDifY / 300);
-        rotateObj.rotateYGlobal(mouseDifX / 300);
-        this.mousePos.set(eltx, elty);
-    }
-    //
-
-    curPosX = e.pageX - this.canvasOffset.left;
-    curPosY = e.pageY - this.canvasOffset.top;
-    if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITUSERPOINT) {
-        if (this.isMouseMoved(curPosX, curPosY)) {
-            this.mouseState = REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT;
+        curPosX = e.pageX - this.canvasOffset.left;
+        curPosY = e.pageY - this.canvasOffset.top;
+        if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITUSERPOINT) {
+            if (this.isMouseMoved(curPosX, curPosY)) {
+                this.mouseState = REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT;
+                this.draggingUserPoint(curPosX, curPosY);
+                console.log("state: HITUSERPOINT -> DRAGGINGUSERPOINT");
+            }
+        } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT) {
             this.draggingUserPoint(curPosX, curPosY);
-        }
-    } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT) {
-        this.draggingUserPoint(curPosX, curPosY);
-    } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITCANVAS) {
-        if (this.isMouseMoved(curPosX, curPosY)) {
-            this.mouseState = REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS;
+            console.log("draggingUserPoint: ", curPosX, curPosY);
+        } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITCANVAS) {
+            if (this.isMouseMoved(curPosX, curPosY)) {
+                this.mouseState = REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS;
+                this.draggingCanvas(curPosX, curPosY);
+                console.log("state: HITCANVAS -> DRAGGINGCANVAS");
+            }
+        } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS) {
             this.draggingCanvas(curPosX, curPosY);
+            console.log("draggingCanvas: ", curPosX, curPosY);
         }
-    } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS) {
-        this.draggingCanvas(curPosX, curPosY);
-    }
 
-    this.mouseMovePos.set(curPosX, curPosY);
+        this.mouseMovePos.set(curPosX, curPosY);
+    }
 };
 
 REAL3D.LayoutDesignState.prototype.mouseUp = function(e) {
     "use strict";
+    console.log("---------------------------------------------mouseup: ", this.mouseState);
     var curPosX, curPosY;
-    //test
-    this.isMouseDown = false;
-    //
-
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
     if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGUSERPOINT) {
         this.draggingUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.LayoutDesignState.MouseState.NONE;
+        console.log("state: DRAGGINGUSERPOINT -> NONE");
     } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.DRAGGINGCANVAS) {
         this.draggingCanvas(curPosX, curPosY);
         this.mouseState = REAL3D.LayoutDesignState.MouseState.NONE;
+        console.log("state: DRAGGINGCANVAS -> NONE");
     } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITUSERPOINT) {
-        this.addNeighbor(this.lastCreatedPointIndex, this.hitUserPointIndex);
+        this.connectUserPoint(this.lastCreatedPointIndex, this.hitUserPointIndex);
         this.lastCreatedPointIndex = this.hitUserPointIndex;
         this.mouseState = REAL3D.LayoutDesignState.MouseState.CREATINGUSERPOINT;
-    } else if (this.MouseState === REAL3D.LayoutDesignState.MouseState.HITCANVAS) {
-        this.lastCreatedPointIndex = createNewUserPoint(curPosX, curPosY);
+        console.log("state: HITUSERPOINT -> CREATINGUSERPOINT, connectUserPoint to exist point");
+    } else if (this.mouseState === REAL3D.LayoutDesignState.MouseState.HITCANVAS) {
+        console.log("state: HITCANVAS -> CREATINGUSERPOINT, createNewUserPoint");
+        this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.LayoutDesignState.MouseState.CREATINGUSERPOINT;
+        console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
     }
+    this.isMouseDown = false;
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 REAL3D.LayoutDesignState.prototype.updateUserUIDataDisplay = function() {
@@ -160,7 +160,7 @@ REAL3D.LayoutDesignState.prototype.updateUserUIDataDisplay = function() {
 
 REAL3D.LayoutDesignState.prototype.hitDetection = function(mousePosX, mousePosY) {
     "use strict";
-    var cameraPos, worldPosX, worldPosY, isHitted;
+    var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.cameraOrtho.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
@@ -177,7 +177,7 @@ REAL3D.LayoutDesignState.prototype.connectUserPoint = function(index1, index2) {
 
 REAL3D.LayoutDesignState.prototype.createNewUserPoint = function(mousePosX, mousePosY) {
     "use strict";
-    var cameraPos, worldPosX, worldPosY, newPointId;
+    var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.cameraOrtho.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
@@ -225,25 +225,46 @@ REAL3D.LayoutDesignState.UserPoint = function(posX, posY) {
 };
 
 
-/*properties push */
+/*properties push, uiData, length */
 REAL3D.LayoutDesignState.UserTree = function() {
     "use strict";
     this.points = [];
-    this.curLastId = -1;
+    this.uiData = [];
 };
 
+/*properties SphereGeometry, MeshBasicMaterial, color, Mesh, center, add*/
 REAL3D.LayoutDesignState.UserTree.prototype = {
-    addNewPoint : function(userPoint) {
+    addNewPoint : function(worldPosX, worldPosY) {
         "use strict";
-        this.curLastId++;
-        this.points.push(userPoint);
-        return this.curLastId;
+        var newUserPoint, geometry, material, newUIData;
+        newUserPoint = new REAL3D.LayoutDesignState.UserPoint(worldPosX, worldPosY);
+        this.points.push(newUserPoint);
+        geometry = new THREE.SphereGeometry(5, 32, 32);
+        material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
+        newUIData = new THREE.Mesh(geometry, material);
+        newUIData.position.set(worldPosX, worldPosY, 0);
+        this.uiData.push(newUIData);
+        REAL3D.RenderManager.center.add(newUIData);
+        console.log("UserTree.points.length: ", this.points.length);
+        return (this.points.length - 1);
     },
 
     connectPoints : function(index1, index2) {
         "use strict";
-        this.points[index1].neighbors.push(this.points[index2]);
-        this.points[index2].neighbors.push(this.points[index1]);
+        var point1, point2, lineMaterial, lineGeometry, lineObj;
+        point1 = this.points[index1];
+        point2 = this.points[index2];
+        point1.neighbors.push(point2);
+        point2.neighbors.push(point1);
+        console.log("add line");
+        lineMaterial = new THREE.LineBasicMaterial({color: 0xae0e1e});
+        lineGeometry = new THREE.Geometry();
+        lineGeometry.vertices.push(
+            new THREE.Vector3(point1.posX, point1.posY, 0),
+            new THREE.Vector3(point2.posX, point2.posY, 0)
+            );
+        var lineObj = new THREE.Line(lineGeometry, lineMaterial);
+        REAL3D.RenderManager.center.add(lineObj);
     },
 
     deletePoint : function(index) {
@@ -254,13 +275,14 @@ REAL3D.LayoutDesignState.UserTree.prototype = {
         "use strict";
     },
 
-    selectPoint : function(posX, posY) {
+    selectPoint : function(worldPosX, worldPosY) {
         "use strict";
-        var pid, dist, curPoint;
-        for (pid = 0; pid < this.curLastId; pid++) {
+        var pid, dist, curPoint, pointLen;
+        pointLen = this.points.length;
+        for (pid = 0; pid < pointLen; pid++) {
             curPoint = this.points[pid];
             if (curPoint !== undefined && curPoint !== null) {
-                dist = (posX - curPoint.posX) * (posX - curPoint.posX) + (posY - curPoint.posY) * (posY - curPoint.posY);
+                dist = (worldPosX - curPoint.posX) * (worldPosX - curPoint.posX) + (worldPosY - curPoint.posY) * (worldPosY - curPoint.posY);
                 if (dist < REAL3D.LayoutDesignState.DISTANCETHRESHOLD) {
                     return pid;
                 }
