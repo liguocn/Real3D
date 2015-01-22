@@ -3,17 +3,30 @@
 <head>
     <meta charset = "UTF-8">
     <title>登陆</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/LogReg.css">
 </head>
 
 <body>        
-   登陆 
-   <form action="/dologin" method="post">
-    User Name: <input type="text" id="username" name="username">
-    <br>
-    Password : <input type="text" id="password" name="password">
-    <br>
-    <button type="submit">提交</button>
-   </form>
+  <div class="centerleft">
+    <div class="centerright">
+      <div class="maincontainer">
+        <div class="menubar">
+          <img class="logo" src="/images/logo.jpg">
+          <a class="menuitem" href="/">主页</a>
+          <a class="menuitem" href="/doreg">新用户注册</a>
+        </div>
+        <div class="mainbody">
+          <div class="title">登 陆</div>
+          <form action="/dologin" method="post">
+            用户名:<input class="usertext" type="text" id="username" name="username">
+            密 码:<input class="usertext" type="text" id="password" name="password">
+            <br>
+            <button class="submitbutton" type="submit">登录</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
 
