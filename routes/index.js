@@ -1,33 +1,19 @@
 var express = require('express');
 var router = express.Router();
+var LogReg = require("./LogReg");
 
 /* GET home page. */
 router.get('/', function(req, res) {
     res.render('index');
 });
 
-router.get("/doreg", function(req, res) {
-    res.render("DoReg");
-})
+router.get("/doreg", LogReg.reg);
 
-router.post('/doreg', function(req, res) {
-    console.log("    doreg--username: ", req.body["username"], "session: ", req.session.user);
-    req.session.user = req.body["username"];
-    res.redirect("/innerspacedesign");
-});
+router.post('/doreg', LogReg.doReg);
 
-router.get('/dologin', function(req, res) {
-    res.render('DoLogin');
-});
+router.get('/dologin', LogReg.login);
 
-router.post("/doLogin", function(req, res) {
-    console.log("    doLogin--username: ", req.body["username"], "session: ", req.session.user);
-    if (req.session.user === req.body["username"]) {
-        res.redirect("/innerspacedesign");
-    } else {
-        res.redirect("/doreg");
-    }
-})
+router.post("/dologin", LogReg.doLogin);
 
 router.get('/aboutus', function(req, res) {
     res.render('AboutUs');
