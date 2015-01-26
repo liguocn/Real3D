@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var PersonalHomepage = require("./PersonalHomepage");
 
 /* GET users listing. */
-router.get('/', function(req, res) {
-  res.send('respond with a resource');
-});
+router.get('/:username', PersonalHomepage.login);
 
 module.exports = router;
