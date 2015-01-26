@@ -3,9 +3,23 @@
 <head>
     <meta charset = "UTF-8">
     <title><%= username %></title>
+    <link rel = "stylesheet" type="text/css" href="/stylesheets/PersonalHomepage.css">
 </head>
 
 <body>        
-   欢迎<%= username %>
+    <div class="centerleft">
+        <div class="centerright">
+            <div class="maincontainer">
+                <div class="title">欢迎 <%= username %></div>
+                <div class="pinfo">我的信息</div>
+                <div class="pdata">我的数据</div>
+                <div class="papp">
+                    我的应用
+                    <br>
+                    <button class="enterbutton">室内设计</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
