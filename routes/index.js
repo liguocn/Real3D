@@ -20,6 +20,7 @@ router.get('/aboutus', function(req, res) {
 });
 
 router.get('/innerspacedesign', function(req, res) {
+    console.log("get innerspacedesign");
     res.render('InnerSpaceDesign');
 });
 
