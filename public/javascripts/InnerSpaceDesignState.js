@@ -357,3 +357,13 @@ function enterInnerSpaceDesignState(winW, winH, containerId) {
     canvContainer.appendChild(canvasElement);
     REAL3D.StateManager.enterState(InnerSpaceDesignState);
 }
+
+function newWorkSpace() {
+    "use strict";
+    console.log("New Work Space");
+}
+
+function saveWorkSpace() {
+    "use strict";
+    console.log("Save Work Space");
+}

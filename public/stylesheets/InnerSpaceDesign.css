@@ -12,31 +12,26 @@
     left: -50%;
 }
 
-.centerleft .centerright .centerfloat
-{
-    position: relative;
-    float: right;
-}
-
 body
 {
     background-color: rgb(222, 222, 222);
     display: block;
 }
 
-.commonbutton
+.toolbar
 {
-	display: block;
-    margin-left: 20px;
+    width: 1024px;
+    height: 100px;
+}
+
+.toolbar .button
+{
+    margin-left: 10px;
     width: 64px;
     height: 64px;
     text-align: center;
-    font-size: 10pt;
-    border-radius: 15px;
-}
-
-.canvascontainer
-{
-	position: relative;
-	float: right;
+    font-size: 16pt;
+    border-radius: 16px;
+    color: rgb(165, 180, 101) ;
+    background-color: rgb(50, 150, 180);
 }
