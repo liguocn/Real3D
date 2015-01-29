@@ -276,7 +276,7 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.updateRendering = function() {
     pointLen = userPoints.length;
     for (pid = 0; pid < pointLen; pid++) {
         curPoint = userPoints[pid];
-        geometry = new THREE.SphereGeometry(5, 32, 32);
+        geometry = new THREE.SphereGeometry(5, 4, 4);
         material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
         mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(curPoint.posX, curPoint.posY, 0);
