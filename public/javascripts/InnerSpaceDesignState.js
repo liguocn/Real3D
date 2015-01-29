@@ -16,9 +16,10 @@ REAL3D.InnerSpaceDesignState = function(winW, winH) {
     this.canvasOffset = null;
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
+    this.needUpdateRendering = false;
 
-    this.cameraOrthoPostion = new THREE.Vector3(0, 0, 1000);
-    this.sceneRenderData = new REAL3D.InnerSpaceDesignState.SceneRenderData();
+    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
+    this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 };
 
 REAL3D.InnerSpaceDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
@@ -41,7 +42,7 @@ REAL3D.InnerSpaceDesignState.prototype.enter = function() {
     if (REAL3D.RenderManager.getCamera(this.cameraOrthoName) === undefined) {
         console.log("Win size: ", this.winW, this.winH);
         var cameraOrthographic = new THREE.OrthographicCamera(this.winW / (-2), this.winW / 2, this.winH / 2, this.winH / (-2), 1, 2000);
-        cameraOrthographic.position.copy(this.cameraOrthoPostion);
+        cameraOrthographic.position.copy(this.cameraOrthoPosition);
         REAL3D.RenderManager.addCamera(this.cameraOrthoName, cameraOrthographic);
     }
     this.cameraOrtho = REAL3D.RenderManager.getCamera(this.cameraOrthoName);
@@ -53,6 +54,10 @@ REAL3D.InnerSpaceDesignState.prototype.enter = function() {
 REAL3D.InnerSpaceDesignState.prototype.update = function() {
     "use strict";
     REAL3D.RenderManager.update();
+    if (this.needUpdateRendering) {
+        this.sceneData.updateRendering();
+        this.needUpdateRendering = false;
+    }
 };
 
 REAL3D.InnerSpaceDesignState.prototype.exit = function() {
@@ -170,27 +175,30 @@ REAL3D.InnerSpaceDesignState.prototype.hitDetection = function(mousePosX, mouseP
     "use strict";
     var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
-    cameraPos = this.cameraOrtho.position;
+    cameraPos = this.cameraOrthoPosition;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    return this.userUIData.selectPoint(worldPosX, worldPosY);
+    return this.sceneData.userPointTree.selectPoint(worldPosX, worldPosY);
 };
 
 REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function(index1, index2) {
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
-        this.userUIData.connectPoints(index1, index2);
+        this.sceneData.userPointTree.connectPoints(index1, index2);
+        this.needUpdateRendering = true;
     }
 };
 
 REAL3D.InnerSpaceDesignState.prototype.createNewUserPoint = function(mousePosX, mousePosY) {
     "use strict";
-    var cameraPos, worldPosX, worldPosY;
+    var cameraPos, worldPosX, worldPosY, newId;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.cameraOrtho.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    return this.userUIData.addNewPoint(worldPosX, worldPosY);
+    newId = this.sceneData.userPointTree.addPoint(worldPosX, worldPosY);
+    this.needUpdateRendering = true;
+    return newId;
 };
 
 REAL3D.InnerSpaceDesignState.prototype.finishCreatingNewUserPoint = function() {
@@ -218,7 +226,8 @@ REAL3D.InnerSpaceDesignState.prototype.draggingUserPoint = function(mousePosX, m
     cameraPos = this.cameraOrtho.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    this.userUIData.dragPoint(this.hitUserPointIndex, worldPosX, worldPosY);
+    this.sceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
+    this.needUpdateRendering = true;
 };
 
 REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function(mousePosX, mousePosY) {
@@ -226,8 +235,9 @@ REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function(mousePosX, mous
     var worldDifX, worldDifY;
     worldDifX = this.mouseMovePos.x - mousePosX;
     worldDifY = mousePosY - this.mouseMovePos.y;
-    this.cameraOrtho.translateX(worldDifX);
-    this.cameraOrtho.translateY(worldDifY);
+    this.cameraOrthoPosition.x += worldDifX;
+    this.cameraOrthoPosition.y += worldDifY;
+    this.cameraOrtho.position.copy(this.cameraOrthoPosition);
 };
 
 
@@ -243,14 +253,45 @@ REAL3D.InnerSpaceDesignState.MouseState = {
 REAL3D.InnerSpaceDesignState.HITRADIUS = 250;
 REAL3D.InnerSpaceDesignState.MOVERADIUS = 100;
 
-REAL3D.InnerSpaceDesignState.SceneRenderData = function() {
+REAL3D.InnerSpaceDesignState.SceneData = function() {
     "use strict";
     this.userPointTree = new REAL3D.Wall.UserPointTree();
-}
+    //rendering data
+    this.refFrame = null;
+};
 
 
-REAL3D.InnerSpaceDesignState.UIData.prototype.updateRenderData = function() {
-    "use strict"
+REAL3D.InnerSpaceDesignState.SceneData.prototype.updateRendering = function() {
+    "use strict";
+    var userPoints, pointLen, pid, curPoint, geometry, material, mesh, neighborLen, nid, neigPoint;
+    if (this.refFrame === null) {
+        this.refFrame = new THREE.Object3D();
+        REAL3D.RenderManager.scene.add(this.refFrame);
+    } else {
+        REAL3D.RenderManager.scene.remove(this.refFrame);
+        this.refFrame = new THREE.Object3D();
+        REAL3D.RenderManager.scene.add(this.refFrame);
+    }
+    userPoints = this.userPointTree.points;
+    pointLen = userPoints.length;
+    for (pid = 0; pid < pointLen; pid++) {
+        curPoint = userPoints[pid];
+        geometry = new THREE.SphereGeometry(5, 32, 32);
+        material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(curPoint.posX, curPoint.posY, 0);
+        this.refFrame.add(mesh);
+        neighborLen = curPoint.neighbors.length;
+        for (nid = 0; nid < neighborLen; nid++) {
+            neigPoint = curPoint.neighbors[nid];
+            material = new THREE.LineBasicMaterial({color: 0xae0e1e});
+            geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(curPoint.posX, curPoint.posY, 0),
+                new THREE.Vector3(neigPoint.posX, neigPoint.posY, 0));
+            mesh = new THREE.Line(geometry, material);
+            this.refFrame.add(mesh);
+        }
+    }
 };
 
 function enterInnerSpaceDesignState(winW, winH, containerId) {
