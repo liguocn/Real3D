@@ -15,7 +15,7 @@
 body
 {
     background-color: rgb(222, 222, 222);
-    display: block;
+    /*display: block;*/
 }
 
 .toolbar
