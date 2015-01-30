@@ -1,5 +1,5 @@
 /*jslint plusplus: true */
-/*global REAL3D */
+/*global REAL3D, THREE */
 
 REAL3D.Wall = {};
 
@@ -7,10 +7,13 @@ REAL3D.Wall.SELECTRADIUS = 200;
 
 REAL3D.Wall.UserPoint = function(posX, posY) {
     "use strict";
+    REAL3D.Publisher.call(this);
     this.posX = posX;
     this.posY = posY;
     this.neighbors = [];
 };
+
+REAL3D.Wall.UserPoint.prototype = Object.create(REAL3D.Publisher.prototype);
 
 REAL3D.Wall.UserPointTree = function() {
     "use strict";
@@ -74,6 +77,71 @@ REAL3D.Wall.UserPointTree.prototype = {
         this.points[index].posX = worldPosX;
         this.points[index].posY = worldPosY;
     }
+};
+
+REAL3D.Wall.UserPointBall = function(point, parent) {
+    "use strict";
+    var geometry, material;
+    this.point = point;
+    this.point.subscribe("move", this, this.move);
+    this.point.subscribe("remove", this, this.remove);
+    geometry = new THREE.SphereGeometry(5, 32, 32);
+    material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
+    this.ball = new THREE.Mesh(geometry, material);
+    this.ball.position.set(point.posX, point.posY, 0);
+    this.parent = parent;
+    this.parent.add(this.ball);
+};
+
+REAL3D.Wall.UserPointBall.prototype.move = function() {
+    "use strict";
+    this.ball.position.set(this.point.posX, this.point.posY, 0);
+};
+
+REAL3D.Wall.UserPointBall.prototype.remove = function() {
+    "use strict";
+    this.parent.remove(this.ball);
+    this.point.unsubscribe("move", this);
+    this.point.unsubscribe("remove", this);
+    this.parent = null;
+};
+
+REAL3D.Wall.UserPointLine = function(point1, point2, parent) {
+    "use strict";
+    var geometry, material;
+    this.point1 = point1;
+    this.point1.subscribe("move", this, this.move);
+    this.point1.subscribe("remove", this, this.remove);
+    this.point2 = point2;
+    this.point2.subscribe("move", this, this.move);
+    this.point2.subscribe("remove", this, this.remove);
+    material = new THREE.LineBasicMaterial({color: 0xae0e1e});
+    geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(this.point1.posX, this.point1.posY, 0),
+                           new THREE.Vector3(this.point2.posX, this.point2.posY, 0));
+    this.line = new THREE.Line(geometry, material);
+    this.parent = parent;
+    this.parent.add(this.line);
+};
+
+REAL3D.Wall.UserPointLine.prototype.move = function() {
+    "use strict";
+    var geometry, material;
+    this.parent.remove(this.line);
+    material = new THREE.LineBasicMaterial({color: 0xae0e1e});
+    geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(this.point1.posX, this.point1.posY, 0),
+                           new THREE.Vector3(this.point2.posX, this.point2.posY, 0));
+    this.line = new THREE.Line(geometry, material);
+    this.parent.add(this.line);
+};
+
+REAL3D.Wall.UserPointLine.prototype.remove = function() {
+    "use strict";
+    this.parent.remove(this.line);
+    this.point1.unsubscribe("remove", this);
+    this.point2.unsubscribe("remove", this);
+    this.parent = null;
 };
 
 REAL3D.Wall.WallPoint2D = function(posX, posY) {
