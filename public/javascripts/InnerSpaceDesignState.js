@@ -50,6 +50,10 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
 
 REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     "use strict";
+    $.post("/innerspacedesign/save", {stateId: "testId", pointCount: 5}, function(data) {
+        console.log("data return from server");
+        console.log("serverId: ", data.serverId, "serverCount: ", data.serverCount);
+    });
 };
 
 REAL3D.InnerSpaceDesignState.prototype.enter = function() {

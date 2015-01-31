@@ -24,6 +24,14 @@ router.get('/innerspacedesign', function(req, res) {
     res.render('InnerSpaceDesign');
 });
 
+router.post('/innerspacedesign/save', function(req, res) {
+    console.log("post innerspacedesign/save");
+    console.log("stateId:", req.body.stateId, " pointCount: ", req.body.pointCount);
+    console.log("ContentType: ", res.ContentType);
+    res.set({"Content-Type": "application/json"});
+    res.send({serverId: "serverId12", serverCount: 12});
+});
+
 router.get('/furnituredesign', function(req, res) {
     res.render('FurnitureDesign');
 });
