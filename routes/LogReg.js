@@ -11,17 +11,17 @@ exports.reg = function(req, res) {
 exports.doReg = function(req, res) {
     "use strict";
     console.log("    doreg--username: ", req.body.username, "password: ", req.body.password);
-    var md5 = crypto.createHash("md5");
-    var password = md5.update(req.body.password).digest('base64');
-    var newUserInfo = {
-        userName: req.body.username,
-        password: password
-    };
     UserInfo.findByName(req.body.username, function(err, obj) {
         if (obj) {
             console.log("    user alreay exists: ", obj);
             res.redirect("/doreg");
         } else {
+            var md5 = crypto.createHash("md5");
+            var password = md5.update(req.body.password).digest('base64');
+            var newUserInfo = {
+                userName: req.body.username,
+                password: password
+            };
             UserInfo.save(newUserInfo, function(err) {
                 if (err) {
                     console.log("    error: ", err);

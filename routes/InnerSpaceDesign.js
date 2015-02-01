@@ -11,6 +11,7 @@ exports.enter = function(req, res) {
 exports.save = function(req, res) {
     "use strict";
     console.log("post innerspacedesign/save");
+    
     res.set({"Content-Type": "application/json"});
     InnerSpaceInfo.findByDesignId(req.body.designedId, function(err, obj) {
         if (obj) {
