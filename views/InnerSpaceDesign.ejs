@@ -16,18 +16,24 @@
 <body>
 	<div class = "centerleft">
 		<div class = "centerright">
-            <div id = "designspace" onselectstart="return false"></div>
-            <div class="toolbar">
+            <div class="leftContainer">
                 <button class="button" onclick = "newWorkSpace()">新建</button>
+                <br>
                 <button class="button" onclick = "saveWorkSpace()">保存</button>
+                <br>
+                <button class="button" onclick = "saveWorkSpace()">另存</button>
+                <br>
                 <button class="button" onclick = "openWorkSpace()">打开</button>
+            </div>
+            <div class="mainContainer">
+                <div id = "designspace" onselectstart="return false"></div>
             </div>
 		</div>
 	</div>
 	<script>
 	REAL3D.Framework.init();
     REAL3D.Framework.run();
-    enterInnerSpaceDesignState(1300, 768, "designspace");
+    enterInnerSpaceDesignState("designspace");
 	</script>
 </body>
 </html>

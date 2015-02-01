@@ -309,9 +309,13 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function() {
     REAL3D.RenderManager.scene.add(this.refFrame);
 };
 
-function enterInnerSpaceDesignState(winW, winH, containerId) {
+function enterInnerSpaceDesignState(containerId) {
     "use strict";
-    var InnerSpaceDesignState, canvasElement, canvContainer;
+    var InnerSpaceDesignState, canvasElement, canvContainer, winW, winH;
+    winW = $(window).width() - 100;
+    winW = (winW < 1024) ? 1024 : winW;
+    winH = $(window).height();
+    winH = (winH < 768) ? 768 : winH;
     canvasElement = REAL3D.RenderManager.init(winW, winH);
     canvContainer = document.getElementById(containerId);
     canvContainer.appendChild(canvasElement);
@@ -329,6 +333,11 @@ function saveWorkSpace() {
     "use strict";
     REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).saveUserData();
     console.log("Save Work Space");
+}
+
+function savaAsWorkSpace() {
+    "use strict";
+    console.log("Save As Work Space");
 }
 
 function openWorkSpace() {

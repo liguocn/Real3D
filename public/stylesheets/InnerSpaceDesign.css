@@ -18,15 +18,15 @@ body
     /*display: block;*/
 }
 
-.toolbar
+.leftContainer
 {
-    /*width: 524px;*/
-    height: 100px;
+    float: left;
+    width: 80px;
 }
 
-.toolbar .button
+.leftContainer .button
 {
-    margin-left: 10px;
+    margin-bottom: 10px;
     width: 64px;
     height: 64px;
     text-align: center;
@@ -34,4 +34,9 @@ body
     border-radius: 16px;
     color: rgb(165, 180, 101) ;
     background-color: rgb(50, 150, 180);
+}
+
+.mainContainer
+{
+    float: right;
 }
