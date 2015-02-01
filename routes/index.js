@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var LogReg = require("./LogReg");
+var InnerSpaceDesign = require("./InnerSpaceDesign");
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -19,18 +20,11 @@ router.get('/aboutus', function(req, res) {
     res.render('AboutUs');
 });
 
-router.get('/innerspacedesign', function(req, res) {
-    console.log("get innerspacedesign");
-    res.render('InnerSpaceDesign');
-});
+router.get('/innerspacedesign', InnerSpaceDesign.enter);
 
-router.post('/innerspacedesign/save', function(req, res) {
-    console.log("post innerspacedesign/save");
-    console.log("stateId:", req.body.stateId, " pointCount: ", req.body.pointCount);
-    console.log("ContentType: ", res.ContentType);
-    res.set({"Content-Type": "application/json"});
-    res.send({serverId: "serverId12", serverCount: 12});
-});
+router.post('/innerspacedesign/save', InnerSpaceDesign.save);
+
+router.get('/innerspacedesign/load', InnerSpaceDesign.load);
 
 router.get('/furnituredesign', function(req, res) {
     res.render('FurnitureDesign');

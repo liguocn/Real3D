@@ -20,6 +20,7 @@ exports.doReg = function(req, res) {
     UserInfo.findByName(req.body.username, function(err, obj) {
         if (obj) {
             console.log("    user alreay exists: ", obj);
+            res.redirect("/doreg");
         } else {
             UserInfo.save(newUserInfo, function(err) {
                 if (err) {

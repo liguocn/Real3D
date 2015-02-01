@@ -18,7 +18,6 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
     this.lastCreatedPointIndex = -1;
 
     this.designId = null;
-    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
     this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 
     var that = this;
@@ -43,16 +42,39 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
     this.lastCreatedPointIndex = -1;
 
     this.designId = null;
-    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
-    this.cameraOrtho.position.copy(this.cameraOrthoPosition);
     this.sceneData.reInit();
+    this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
 REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     "use strict";
-    $.post("/innerspacedesign/save", {stateId: "testId", pointCount: 5}, function(data) {
+    var camPos, postData, points, pointLen, pid, userPoints;
+    camPos = this.sceneData.cameraOrthoPosition;
+    userPoints = [];
+    points = this.sceneData.userPointTree.points;
+    pointLen = points.length;
+    for (pid = 0; pid < pointLen; pid++) {
+        userPoints.push({
+            posX: points[pid].posX,
+            posY: points[pid].posY,
+            neighbors: points[pid].neighbors
+        });
+    }
+    postData = {
+        designId: this.designId,
+        sceneData: {
+            cameraOrthoPosition: [camPos.x, camPos.y, camPos.z],
+            userPointTree: {
+                points: userPoints
+            }
+        }
+    };
+    $.post("/innerspacedesign/save", postData, function(data) {
         console.log("data return from server");
-        console.log("serverId: ", data.serverId, "serverCount: ", data.serverCount);
+        console.log("data saved: ", data.saved);
+        if (data.saved) {
+            this.designId = data.designId;
+        }
     });
 };
 
@@ -62,7 +84,7 @@ REAL3D.InnerSpaceDesignState.prototype.enter = function() {
     if (REAL3D.RenderManager.getCamera(this.cameraOrthoName) === undefined) {
         console.log("Win size: ", this.winW, this.winH);
         var cameraOrthographic = new THREE.OrthographicCamera(this.winW / (-2), this.winW / 2, this.winH / 2, this.winH / (-2), 1, 2000);
-        cameraOrthographic.position.copy(this.cameraOrthoPosition);
+        cameraOrthographic.position.copy(this.sceneData.cameraOrthoPosition);
         REAL3D.RenderManager.addCamera(this.cameraOrthoName, cameraOrthographic);
     }
     this.cameraOrtho = REAL3D.RenderManager.getCamera(this.cameraOrthoName);
@@ -189,7 +211,7 @@ REAL3D.InnerSpaceDesignState.prototype.hitDetection = function(mousePosX, mouseP
     "use strict";
     var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
-    cameraPos = this.cameraOrthoPosition;
+    cameraPos = this.sceneData.cameraOrthoPosition;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     return this.sceneData.userPointTree.selectPoint(worldPosX, worldPosY);
@@ -251,9 +273,9 @@ REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function(mousePosX, mous
     var worldDifX, worldDifY;
     worldDifX = this.mouseMovePos.x - mousePosX;
     worldDifY = mousePosY - this.mouseMovePos.y;
-    this.cameraOrthoPosition.x += worldDifX;
-    this.cameraOrthoPosition.y += worldDifY;
-    this.cameraOrtho.position.copy(this.cameraOrthoPosition);
+    this.sceneData.cameraOrthoPosition.x += worldDifX;
+    this.sceneData.cameraOrthoPosition.y += worldDifY;
+    this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
 REAL3D.InnerSpaceDesignState.MouseState = {
@@ -271,6 +293,7 @@ REAL3D.InnerSpaceDesignState.STATENAME = "InnerSpaceDesignState";
 
 REAL3D.InnerSpaceDesignState.SceneData = function() {
     "use strict";
+    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
     this.userPointTree = new REAL3D.Wall.UserPointTree();
     //rendering data
     this.refFrame = new THREE.Object3D();
@@ -279,6 +302,7 @@ REAL3D.InnerSpaceDesignState.SceneData = function() {
 
 REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function() {
     "use strict";
+    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
     this.userPointTree = new REAL3D.Wall.UserPointTree();
     REAL3D.RenderManager.scene.remove(this.refFrame);
     this.refFrame = new THREE.Object3D();
