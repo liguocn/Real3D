@@ -11,6 +11,7 @@ REAL3D.Wall.UserPoint = function(posX, posY) {
     this.posX = posX;
     this.posY = posY;
     this.neighbors = [];
+    this.assistId = null;
 };
 
 REAL3D.Wall.UserPoint.prototype = Object.create(REAL3D.Publisher.prototype);
@@ -76,6 +77,15 @@ REAL3D.Wall.UserPointTree.prototype = {
         "use strict";
         this.points[index].posX = worldPosX;
         this.points[index].posY = worldPosY;
+    },
+
+    updateAssistId : function() {
+        "use strict";
+        var pid, pointLen;
+        pointLen = this.points.length;
+        for (pid = 0; pid < pointLen; pid++) {
+            this.points[pid].assistId = pid;
+        }
     }
 };
 

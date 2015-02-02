@@ -1,5 +1,5 @@
 /*jslint plusplus: true */
-/*global REAL3D, THREE, console, document, $ */
+/*global REAL3D, THREE, console, window, document, $ */
 
 REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
     "use strict";
@@ -17,7 +17,7 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designId = null;
+    this.designName = "test";
     this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 
     var that = this;
@@ -41,27 +41,34 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designId = null;
+    this.designName = null;
     this.sceneData.reInit();
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
 REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     "use strict";
-    var camPos, postData, points, pointLen, pid, userPoints;
+    var camPos, postData, points, pointLen, pid, userPoints, curPoint, neighbors, neighborLen, nid;
     camPos = this.sceneData.cameraOrthoPosition;
+    this.sceneData.userPointTree.updateAssistId();
     userPoints = [];
     points = this.sceneData.userPointTree.points;
     pointLen = points.length;
     for (pid = 0; pid < pointLen; pid++) {
+        curPoint = points[pid];
+        neighbors = [];
+        neighborLen = curPoint.neighbors.length;
+        for (nid = 0; nid < neighborLen; nid++) {
+            neighbors.push(curPoint.neighbors[nid].assistId);
+        }
         userPoints.push({
             posX: points[pid].posX,
             posY: points[pid].posY,
-            neighbors: points[pid].neighbors
+            neighbors: neighbors
         });
     }
     postData = {
-        designId: this.designId,
+        designName: this.designName,
         sceneData: {
             cameraOrthoPosition: [camPos.x, camPos.y, camPos.z],
             userPointTree: {
@@ -69,13 +76,16 @@ REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
             }
         }
     };
+    console.log("postData: ", postData);
     $.post("/innerspacedesign/save", postData, function(data) {
         console.log("data return from server");
         console.log("data saved: ", data.saved);
-        if (data.saved) {
-            this.designId = data.designId;
-        }
-    });
+    },
+    "json");
+};
+
+REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
+    "use strict";
 };
 
 REAL3D.InnerSpaceDesignState.prototype.enter = function() {
@@ -312,9 +322,9 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function() {
 function enterInnerSpaceDesignState(containerId) {
     "use strict";
     var InnerSpaceDesignState, canvasElement, canvContainer, winW, winH;
-    winW = $(window).width() - 100;
+    winW = $(window).width() - 128;
     winW = (winW < 1024) ? 1024 : winW;
-    winH = $(window).height();
+    winH = $(window).height() - 32;
     winH = (winH < 768) ? 768 : winH;
     canvasElement = REAL3D.RenderManager.init(winW, winH);
     canvContainer = document.getElementById(containerId);
@@ -335,12 +345,7 @@ function saveWorkSpace() {
     console.log("Save Work Space");
 }
 
-function savaAsWorkSpace() {
+function loadWorkSpace() {
     "use strict";
-    console.log("Save As Work Space");
-}
-
-function openWorkSpace() {
-    "use strict";
-    console.log("Open Work Space");
+    console.log("Load Work Space");
 }

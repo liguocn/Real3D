@@ -12,6 +12,7 @@ var userPointSchema = new Schema({
 
 var InnerSpaceInfoSchema = new Schema({
     designId: String,
+    designName: String,
     creator: String,
     sceneData: {
         cameraOrthoPosition: [Number],
@@ -30,7 +31,7 @@ var InnerSpaceInfoDAO = function() {
 InnerSpaceInfoDAO.prototype.save = function(obj, callback) {
     "use strict";
     var innerSpaceInfoInstance = new InnerSpaceInfoModel(obj);
-    innerSpaceInfoInstance.sava(function(err) {
+    innerSpaceInfoInstance.save(function(err) {
         callback(err);
     });
 };
