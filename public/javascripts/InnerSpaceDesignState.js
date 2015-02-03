@@ -53,6 +53,9 @@ REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     console.log("postData: ", postData);
     $.post("/innerspacedesign/save", $.param(postData, true), function(data) {
         console.log("  data return from server:", data);
+        if (data.saved === -1) {
+            window.location.href = "/DoLogin";
+        }
     }, "json");
 };
 

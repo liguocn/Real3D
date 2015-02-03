@@ -37,6 +37,7 @@ exports.doReg = function(req, res) {
 
 exports.login = function(req, res) {
     "use strict";
+    console.log("get login");
     res.render('DoLogin');
 };
 

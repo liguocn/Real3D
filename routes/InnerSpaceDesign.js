@@ -49,6 +49,10 @@ exports.save = function(req, res) {
     "use strict";
     var designId, sceneData, innerSpaceData;
     console.log("    --post innerspacedesign/save");
+    if (req.session.user === undefined) {
+        res.send({saved: -1});
+        return;
+    }
     res.set({"Content-Type": "application/json"});
     designId = generateDesignId(req.session.user, req.body.designName);
     console.log("    --designId: ", designId);
@@ -61,16 +65,16 @@ exports.save = function(req, res) {
                 function(err) {
                     if (err) {
                         console.log("error", err);
-                        res.send({saved: false});
+                        res.send({saved: 0});
                     } else {
-                        res.send({saved: true});
+                        res.send({saved: 1});
                     }
                 });
         } else {
             if (err) {
                 //error
                 console.log("error: ", err);
-                res.send({saved: false});
+                res.send({saved: 0});
             } else {
                 //create a new record and save it
                 console.log("    --create a new record and save it");
@@ -85,9 +89,9 @@ exports.save = function(req, res) {
                     if (err) {
                         //error
                         console.log("error: ", err);
-                        res.send({saved: false});
+                        res.send({saved: 0});
                     } else {
-                        res.send({saved: true});
+                        res.send({saved: 1});
                     }
                 });
             }
