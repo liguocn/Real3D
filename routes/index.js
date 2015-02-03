@@ -24,7 +24,7 @@ router.get('/innerspacedesign', InnerSpaceDesign.enter);
 
 router.post('/innerspacedesign/save', InnerSpaceDesign.save);
 
-router.get('/innerspacedesign/load', InnerSpaceDesign.load);
+router.post('/innerspacedesign/load', InnerSpaceDesign.load);
 
 router.get('/furnituredesign', function(req, res) {
     res.render('FurnitureDesign');

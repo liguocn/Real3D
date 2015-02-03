@@ -32,7 +32,7 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
 
 REAL3D.InnerSpaceDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
+REAL3D.InnerSpaceDesignState.prototype.initUserData = function(sceneData) {
     "use strict";
     this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
     this.isMouseDown = false;
@@ -42,7 +42,8 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
     this.lastCreatedPointIndex = -1;
 
     this.designName = "test";
-    this.sceneData.reInit();
+    this.sceneData.reInit(sceneData);
+
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
@@ -51,8 +52,7 @@ REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     var postData = this.packUserData();
     console.log("postData: ", postData);
     $.post("/innerspacedesign/save", $.param(postData, true), function(data) {
-        console.log("data return from server");
-        console.log("  data: ", data);
+        console.log("  data return from server:", data);
     }, "json");
 };
 
@@ -83,8 +83,47 @@ REAL3D.InnerSpaceDesignState.prototype.packUserData = function() {
     return postData;
 };
 
+REAL3D.InnerSpaceDesignState.prototype.unPackUserData = function(userData) {
+    "use strict";
+    var sceneData, camOrthPos, userPoints, userPointLen, pid, curPoint, neighbors, neiLen, nid, scenePoints;
+    camOrthPos = userData.cameraOrthoPosition;
+    sceneData = {};
+    sceneData.cameraOrthoPosition = new THREE.Vector3(camOrthPos[0], camOrthPos[1], camOrthPos[2]);
+    sceneData.userPointTree = new REAL3D.Wall.UserPointTree();
+    userPoints = userData.userPointTree.points;
+    userPointLen = userPoints.length;
+    for (pid = 0; pid < userPointLen; pid++) {
+        curPoint = new REAL3D.Wall.UserPoint(userPoints[pid].posX, userPoints[pid].posY);
+        sceneData.userPointTree.points.push(curPoint);
+    }
+    scenePoints = sceneData.userPointTree.points;
+    for (pid = 0; pid < userPointLen; pid++) {
+        curPoint = scenePoints[pid];
+        neighbors = userPoints[pid].neighbors;
+        neiLen = neighbors.length;
+        curPoint.neighbors = [];
+        for (nid = 0; nid < neiLen; nid++) {
+            curPoint.neighbors.push(scenePoints[neighbors[nid]]);
+        }
+    }
+    return sceneData;
+};
+
 REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
     "use strict";
+    var postData, curState, sceneData;
+    postData = {
+        designName: this.designName
+    };
+    curState = this;
+    $.post("/innerspacedesign/load", $.param(postData, true), function(data) {
+        console.log("  data return from server");
+        if (data.success) {
+            console.log("  loaded data: ", data);
+            sceneData = curState.unPackUserData(data.sceneData);
+            curState.initUserData(sceneData);
+        }
+    }, "json");
 };
 
 REAL3D.InnerSpaceDesignState.prototype.enter = function() {
@@ -309,13 +348,33 @@ REAL3D.InnerSpaceDesignState.SceneData = function() {
     REAL3D.RenderManager.scene.add(this.refFrame);
 };
 
-REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function() {
+REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function(sceneData) {
     "use strict";
-    this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
-    this.userPointTree = new REAL3D.Wall.UserPointTree();
+    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, userPointLine;
+    if (sceneData === null) {
+        this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
+        this.userPointTree = new REAL3D.Wall.UserPointTree();
+    } else {
+        this.cameraOrthoPosition = sceneData.cameraOrthoPosition;
+        this.userPointTree = sceneData.userPointTree;
+    }
+    console.log(" userPointTree:", this.userPointTree);
     REAL3D.RenderManager.scene.remove(this.refFrame);
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
+    //render scene data
+    userPoints = this.userPointTree.points;
+    userPointLen = userPoints.length;
+    for (pid = 0; pid < userPointLen; pid++) {
+        userPointBall = new REAL3D.Wall.UserPointBall(userPoints[pid], this.refFrame);
+    }
+    for (pid = 0; pid < userPointLen; pid++) {
+        neighbors = userPoints[pid].neighbors;
+        neiLen = neighbors.length;
+        for (nid = 0; nid < neiLen; nid++) {
+            userPointLine = new REAL3D.Wall.UserPointLine(userPoints[pid], neighbors[nid], this.refFrame);
+        }
+    }
 };
 
 function enterInnerSpaceDesignState(containerId) {
@@ -334,7 +393,7 @@ function enterInnerSpaceDesignState(containerId) {
 
 function newWorkSpace() {
     "use strict";
-    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData();
+    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData(null);
     console.log("New Work Space");
 }
 
@@ -347,4 +406,5 @@ function saveWorkSpace() {
 function loadWorkSpace() {
     "use strict";
     console.log("Load Work Space");
+    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).loadUserData();
 }

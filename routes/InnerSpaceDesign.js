@@ -97,4 +97,18 @@ exports.save = function(req, res) {
 
 exports.load = function(req, res) {
     "use strict";
+    var designId;
+    console.log("    --post innerspacedesign/load");
+    res.set({"Content-Type": "application/json"});
+    designId = generateDesignId(req.session.user, req.body.designName);
+    console.log("    --designId: ", designId);
+    InnerSpaceInfo.findByDesignId(designId, function(err, obj) {
+        if (obj) {
+            console.log("    find obj");
+            res.send({success: true, sceneData: obj.sceneData});
+        } else {
+            console.log("    not find");
+            res.send({success: false});
+        }
+    });
 };
