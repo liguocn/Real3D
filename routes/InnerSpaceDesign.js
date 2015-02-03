@@ -1,3 +1,4 @@
+/*jslint plusplus: true */
 /*jslint node: true */
 
 var InnerSpaceInfo = require("../models/InnerSpaceInfo");
@@ -13,21 +14,50 @@ exports.enter = function(req, res) {
     res.render('InnerSpaceDesign');
 };
 
+function unPackSceneData(body) {
+    "use strict";
+    var sceneData, userPointLen, curIndex, pid, userPoint, neiLen, nid;
+    sceneData = {
+        cameraOrthoPosition: [],
+        userPointTree: {
+            points: []
+        }
+    };
+    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[0]));
+    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[1]));
+    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[2]));
+    userPointLen = parseInt(body.userPointLen, 10);
+    curIndex = 0;
+    for (pid = 0; pid < userPointLen; pid++) {
+        userPoint = {
+            posX: parseFloat(body.userPoints[curIndex]),
+            posY: parseFloat(body.userPoints[curIndex + 1]),
+            neighbors: []
+        };
+        neiLen = parseInt(body.userPoints[curIndex + 2], 10);
+        curIndex += 3;
+        for (nid = 0; nid < neiLen; nid++) {
+            userPoint.neighbors.push(parseInt(body.userPoints[curIndex + nid], 10));
+        }
+        curIndex += neiLen;
+        sceneData.userPointTree.points.push(userPoint);
+    }
+    return sceneData;
+}
+
 exports.save = function(req, res) {
     "use strict";
-    var designId, savedData;
+    var designId, sceneData, innerSpaceData;
     console.log("    --post innerspacedesign/save");
     res.set({"Content-Type": "application/json"});
     designId = generateDesignId(req.session.user, req.body.designName);
     console.log("    --designId: ", designId);
-    console.log("    body: ", req.body);
-    savedData = JSON.parse(req.body);
-    if (req.body.sceneData === undefined) return;
-    InnerSpaceInfo.findByDesignId(req.body.designedId, function(err, obj) {
+    InnerSpaceInfo.findByDesignId(designId, function(err, obj) {
         if (obj) {
             //update user data
             console.log("    --update user data");
-            InnerSpaceInfo.update(designId, req.body.sceneData,
+            sceneData = unPackSceneData(req.body);
+            InnerSpaceInfo.updateSceneData(designId, sceneData,
                 function(err) {
                     if (err) {
                         console.log("error", err);
@@ -44,15 +74,14 @@ exports.save = function(req, res) {
             } else {
                 //create a new record and save it
                 console.log("    --create a new record and save it");
-                console.log("    sceneData: ", req.body.sceneData);
-                savedData = {
+                sceneData = unPackSceneData(req.body);
+                innerSpaceData = {
                     designId: designId,
                     designName: req.body.designName,
                     creator: req.session.user,
-                    sceneData: req.body.sceneData
+                    sceneData: sceneData
                 };
-                console.log("    savedData: ", savedData);
-                InnerSpaceInfo.save(savedData, function(err) {
+                InnerSpaceInfo.save(innerSpaceData, function(err) {
                     if (err) {
                         //error
                         console.log("error: ", err);

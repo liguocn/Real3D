@@ -41,47 +41,46 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function() {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designName = null;
+    this.designName = "test";
     this.sceneData.reInit();
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
 REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     "use strict";
-    var camPos, postData, points, pointLen, pid, userPoints, curPoint, neighbors, neighborLen, nid;
+    var postData = this.packUserData();
+    console.log("postData: ", postData);
+    $.post("/innerspacedesign/save", $.param(postData, true), function(data) {
+        console.log("data return from server");
+        console.log("  data: ", data);
+    }, "json");
+};
+
+REAL3D.InnerSpaceDesignState.prototype.packUserData = function() {
+    "use strict";
+    var camPos, postData, points, userPointLen, pid, userPoints, curPoint, neighborLen, nid;
     camPos = this.sceneData.cameraOrthoPosition;
     this.sceneData.userPointTree.updateAssistId();
     userPoints = [];
     points = this.sceneData.userPointTree.points;
-    pointLen = points.length;
-    for (pid = 0; pid < pointLen; pid++) {
+    userPointLen = points.length;
+    for (pid = 0; pid < userPointLen; pid++) {
         curPoint = points[pid];
-        neighbors = [];
+        userPoints.push(curPoint.posX);
+        userPoints.push(curPoint.posY);
         neighborLen = curPoint.neighbors.length;
+        userPoints.push(neighborLen);
         for (nid = 0; nid < neighborLen; nid++) {
-            neighbors.push(curPoint.neighbors[nid].assistId);
+            userPoints.push(curPoint.neighbors[nid].assistId);
         }
-        userPoints.push({
-            posX: points[pid].posX,
-            posY: points[pid].posY,
-            neighbors: neighbors
-        });
     }
     postData = {
         designName: this.designName,
-        sceneData: {
-            cameraOrthoPosition: [camPos.x, camPos.y, camPos.z],
-            userPointTree: {
-                points: userPoints
-            }
-        }
+        cameraOrthoPosition: [camPos.x, camPos.y, camPos.z],
+        userPointLen: userPointLen,
+        userPoints: userPoints
     };
-    console.log("postData: ", postData);
-    $.post("/innerspacedesign/save", postData, function(data) {
-        console.log("data return from server");
-        console.log("data saved: ", data.saved);
-    },
-    "json");
+    return postData;
 };
 
 REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
