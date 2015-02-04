@@ -441,3 +441,11 @@ function renameWorkSpace() {
     }
     console.log("ReName Work Space");
 }
+
+function backToHome() {
+    "use strict";
+    window.location.href = "/users/test";
+    // $.get("/users/test", function(data) {
+    //     console.log(" data: ", data);
+    // });
+}
