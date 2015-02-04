@@ -45,7 +45,15 @@ InnerSpaceInfoDAO.prototype.findByDesignId = function(designId, callback) {
 
 InnerSpaceInfoDAO.prototype.updateSceneData = function(designId, sceneData, callback) {
     "use strict";
-    InnerSpaceInfoModel.update({designId: designId}, {sceneData: sceneData}, 
+    InnerSpaceInfoModel.update({designId: designId}, {sceneData: sceneData},
+        function(err, numberAffected, rawResponse) {
+            callback(err);
+        });
+};
+
+InnerSpaceInfoDAO.prototype.updateDesignName = function(designId, newDesignId, newDesignName, callback) {
+    "use strict";
+    InnerSpaceInfoModel.update({designId: designId}, {designId: newDesignId, designName: newDesignName},
         function(err, numberAffected, rawResponse) {
             callback(err);
         });

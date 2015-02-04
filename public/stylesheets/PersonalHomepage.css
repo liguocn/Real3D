@@ -23,13 +23,20 @@ body
     width: 1024px;
 }
 
-.maincontainer .title
+.maincontainer .menubar
 {
-    width: 100%;
+    width: 100%
     height: 100px;
-    font-size: 64px;
-    text-align: center;
-    color: rgb(99, 122, 230);
+}
+
+.maincontainer .menubar .menuitem
+{
+    font-size: x-large;
+    color: rgb(157, 41, 50);
+    margin: 20px 0.5%;
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .maincontainer .pinfo

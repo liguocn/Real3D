@@ -17,7 +17,7 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designName = "test";
+    this.designName = null;
     this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 
     var that = this;
@@ -41,7 +41,7 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function(sceneData) {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designName = "test";
+    this.designName = null;
     this.sceneData.reInit(sceneData);
 
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
@@ -398,16 +398,46 @@ function newWorkSpace() {
     "use strict";
     REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData(null);
     console.log("New Work Space");
+    // var userName = window.prompt("Input your name: ");
+    // console.log("userName: ", userName);
 }
 
 function saveWorkSpace() {
     "use strict";
-    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).saveUserData();
+    var designState, designName;
+    designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
+    if (designState.designName === null) {
+        designName = window.prompt("请输入设计名字：");
+        //Need to verify designName, which will be done later.
+        designState.designName = designName;
+    }
+    designState.saveUserData();
     console.log("Save Work Space");
 }
 
-function loadWorkSpace() {
+function renameWorkSpace() {
     "use strict";
-    console.log("Load Work Space");
-    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).loadUserData();
+    var newName, designState, postData;
+    newName = window.prompt("请输入新的设计名字：");
+    if (newName === null) {
+        return;
+    }
+    console.log("newName: ", newName);
+    //Need to verify newName, which will be done later.
+    designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
+    if (designState.designName === null) {
+        designState.designName = newName;
+    } else {
+        postData = {
+            originDesignName: designState.designName,
+            newDesignName: newName
+        };
+        $.post("/innerspacedesign/rename", $.param(postData, true), function(data) {
+            console.log("  rename result:", data);
+            if (data.success === 1) {
+                designState.designName = newName;
+            }
+        }, "json");
+    }
+    console.log("ReName Work Space");
 }

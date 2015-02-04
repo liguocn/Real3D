@@ -99,6 +99,39 @@ exports.save = function(req, res) {
     });
 };
 
+exports.rename = function(req, res) {
+    "use strict";
+    var originDesignId, newDesignId;
+    console.log("    --post innerspacedesign/rename");
+    if (req.session.user === undefined) {
+        res.send({success: -1});
+        return;
+    }
+    res.set({"Content-Type": "application/json"});
+    console.log(" data: ", req);
+    newDesignId = generateDesignId(req.session.user, req.body.newDesignName);
+    InnerSpaceInfo.findByDesignId(newDesignId, function(err, obj) {
+        if (err) {
+            console.log("    err: ", err);
+            res.send({success: -1});
+        } else if (obj) {
+            console.log("    object exist, rename fail: ", req.body.originDesignName);
+            res.send({success: 0});
+        } else {
+            originDesignId = generateDesignId(req.session.user, req.body.originDesignName);
+            InnerSpaceInfo.updateDesignName(originDesignId,
+                newDesignId, req.body.newDesignName, function(err) {
+                    if (err) {
+                        console.log("error", err);
+                        res.send({success: -1});
+                    } else {
+                        res.send({success: 1});
+                    }
+                });
+        }
+    });
+};
+
 exports.load = function(req, res) {
     "use strict";
     var designId;

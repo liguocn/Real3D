@@ -16,6 +16,8 @@ router.get('/dologin', LogReg.login);
 
 router.post("/dologin", LogReg.doLogin);
 
+router.post("/dologout", LogReg.doLogout);
+
 router.get('/aboutus', function(req, res) {
     res.render('AboutUs');
 });
@@ -25,6 +27,8 @@ router.get('/innerspacedesign', InnerSpaceDesign.enter);
 router.post('/innerspacedesign/save', InnerSpaceDesign.save);
 
 router.post('/innerspacedesign/load', InnerSpaceDesign.load);
+
+router.post('/innerspacedesign/rename', InnerSpaceDesign.rename);
 
 router.get('/furnituredesign', function(req, res) {
     res.render('FurnitureDesign');

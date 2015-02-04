@@ -5,20 +5,22 @@
     <title><%= username %></title>
     <link rel = "stylesheet" type="text/css" href="/stylesheets/PersonalHomepage.css">
     <script src="/javascripts/jquery-2.1.3.min.js"></script>
-    <script src="/javascripts/HomepageState.js"></script>
+    <script src="/javascripts/PersonalHomepage.js"></script>
 </head>
 
 <body>        
-    <div class="centerleft">/javascripts/
+    <div class="centerleft">
         <div class="centerright">
             <div class="maincontainer">
-                <div class="title">欢迎 <%= username %></div>
+                <div class="menubar">
+                    <div class="menuitem" onclick="logOut()">退出</div>
+                </div>
                 <div class="pinfo">我的信息</div>
                 <div class="pdata">我的数据</div>
                 <div class="papp">
                     我的应用
                     <br>
-                    <button class="enterbutton" onclick = "EnterInnerSpaceDesignState()">室内设计</button>
+                    <button class="enterbutton" onclick="enterInnerSpaceDesignState()">室内设计</button>
                 </div>
             </div>
         </div>

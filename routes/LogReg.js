@@ -61,3 +61,12 @@ exports.doLogin = function(req, res) {
         }
     });
 };
+
+exports.doLogout = function(req, res) {
+    "use strict";
+    console.log("    doLogout: ", req.session.user);
+    if (req.session.user !== undefined) {
+        delete req.session.user;
+    }
+    res.send({success: true});
+};
