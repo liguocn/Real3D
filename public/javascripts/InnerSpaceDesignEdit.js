@@ -51,7 +51,7 @@ REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     "use strict";
     var postData = this.packUserData();
     console.log("postData: ", postData);
-    $.post("/innerspacedesign/save", $.param(postData, true), function(data) {
+    $.post("/innerspacedesign/edit/save", $.param(postData, true), function(data) {
         console.log("  data return from server:", data);
         if (data.saved === -1) {
             window.location.href = "/DoLogin";
@@ -119,7 +119,7 @@ REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
         designName: this.designName
     };
     curState = this;
-    $.post("/innerspacedesign/load", $.param(postData, true), function(data) {
+    $.post("/innerspacedesign/edit/load", $.param(postData, true), function(data) {
         console.log("  data return from server");
         if (data.success) {
             console.log("  loaded data: ", data);
@@ -432,7 +432,7 @@ function renameWorkSpace() {
             originDesignName: designState.designName,
             newDesignName: newName
         };
-        $.post("/innerspacedesign/rename", $.param(postData, true), function(data) {
+        $.post("/innerspacedesign/edit/rename", $.param(postData, true), function(data) {
             console.log("  rename result:", data);
             if (data.success === 1) {
                 designState.designName = newName;

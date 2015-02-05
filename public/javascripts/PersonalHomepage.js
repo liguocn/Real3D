@@ -1,6 +1,6 @@
 function enterInnerSpaceDesignState() {
     console.log("EnterInnerSpaceDesignState");
-    window.location.href = "/innerspacedesign";
+    window.location.href = "/innerspacedesign/edit";
 }
 
 function logOut() {
