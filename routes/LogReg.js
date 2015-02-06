@@ -28,7 +28,7 @@ exports.doReg = function(req, res) {
                     res.redirect("/doreg");
                 } else {
                     req.session.user = req.body.username;
-                    res.redirect("/users/" + req.body.username);
+                    res.redirect("/personalhomepage");
                 }
             });
         }
@@ -50,7 +50,7 @@ exports.doLogin = function(req, res) {
             var password = md5.update(req.body.password).digest('base64');
             if (obj.userName === req.body.username && obj.password === password) {
                 req.session.user = req.body.username;
-                res.redirect("/users/" + req.body.username);
+                res.redirect("/personalhomepage");
             } else {
                 console.log("    error: wrong password");
                 res.redirect("/dologin");

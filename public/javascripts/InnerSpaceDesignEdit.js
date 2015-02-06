@@ -444,7 +444,7 @@ function renameWorkSpace() {
 
 function backToHome() {
     "use strict";
-    window.location.href = "/users/test";
+    window.location.href = "/innerspacedesign";
     // $.get("/users/test", function(data) {
     //     console.log(" data: ", data);
     // });
