@@ -10,7 +10,7 @@ function generateDesignId(userName, designName) {
 
 exports.enter = function(req, res) {
     "use strict";
-    console.log("get innerspacedesign");
+    console.log("get innerspacedesign: ", req.query.designId);
     res.render('InnerSpaceDesignEdit');
 };
 

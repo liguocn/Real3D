@@ -43,6 +43,13 @@ InnerSpaceInfoDAO.prototype.findByDesignId = function(designId, callback) {
     });
 };
 
+InnerSpaceInfoDAO.prototype.findByCreator = function(creator, callback) {
+    "use strict";
+    InnerSpaceInfoModel.find({creator: creator}, function(err, objs) {
+        callback(err, objs);
+    });
+}
+
 InnerSpaceInfoDAO.prototype.updateSceneData = function(designId, sceneData, callback) {
     "use strict";
     InnerSpaceInfoModel.update({designId: designId}, {sceneData: sceneData},

@@ -34,6 +34,8 @@ router.get("/personalhomepage", PersonalHomePage.enter);
 
 router.get("/innerspacedesign", InnerSpaceDesign.enter);
 
+router.get("/innerspacedesign/getitems", InnerSpaceDesign.getItems);
+
 router.get("/innerspacedesign/edit", InnerSpaceDesignEdit.enter);
 
 router.post("/innerspacedesign/edit/save", InnerSpaceDesignEdit.save);
