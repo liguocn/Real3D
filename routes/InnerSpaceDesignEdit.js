@@ -8,10 +8,13 @@ function generateDesignId(userName, designName) {
     return "_" + userName + "_" + designName;
 }
 
-exports.enter = function(req, res) {
+exports.enter = function (req, res) {
     "use strict";
     console.log("get innerspacedesign: ", req.query.designName);
-    res.render('InnerSpaceDesignEdit');
+    if (req.query.designName === '') {
+        console.log("designName is space");
+    }
+    res.render('InnerSpaceDesignEdit', {designName: req.query.designName});
 };
 
 function unPackSceneData(body) {
@@ -45,7 +48,7 @@ function unPackSceneData(body) {
     return sceneData;
 }
 
-exports.save = function(req, res) {
+exports.save = function (req, res) {
     "use strict";
     var designId, sceneData, innerSpaceData;
     console.log("    --post innerspacedesign/save");
@@ -56,13 +59,13 @@ exports.save = function(req, res) {
     res.set({"Content-Type": "application/json"});
     designId = generateDesignId(req.session.user, req.body.designName);
     console.log("    --designId: ", designId);
-    InnerSpaceInfo.findByDesignId(designId, function(err, obj) {
+    InnerSpaceInfo.findByDesignId(designId, function (err, obj) {
         if (obj) {
             //update user data
             console.log("    --update user data");
             sceneData = unPackSceneData(req.body);
             InnerSpaceInfo.updateSceneData(designId, sceneData,
-                function(err) {
+                function (err) {
                     if (err) {
                         console.log("error", err);
                         res.send({saved: 0});
@@ -85,7 +88,7 @@ exports.save = function(req, res) {
                     creator: req.session.user,
                     sceneData: sceneData
                 };
-                InnerSpaceInfo.save(innerSpaceData, function(err) {
+                InnerSpaceInfo.save(innerSpaceData, function (err) {
                     if (err) {
                         //error
                         console.log("error: ", err);
@@ -99,7 +102,7 @@ exports.save = function(req, res) {
     });
 };
 
-exports.rename = function(req, res) {
+exports.rename = function (req, res) {
     "use strict";
     var originDesignId, newDesignId;
     console.log("    --post innerspacedesign/rename");
@@ -110,7 +113,7 @@ exports.rename = function(req, res) {
     res.set({"Content-Type": "application/json"});
     console.log(" data: ", req);
     newDesignId = generateDesignId(req.session.user, req.body.newDesignName);
-    InnerSpaceInfo.findByDesignId(newDesignId, function(err, obj) {
+    InnerSpaceInfo.findByDesignId(newDesignId, function (err, obj) {
         if (err) {
             console.log("    err: ", err);
             res.send({success: -1});
@@ -120,7 +123,7 @@ exports.rename = function(req, res) {
         } else {
             originDesignId = generateDesignId(req.session.user, req.body.originDesignName);
             InnerSpaceInfo.updateDesignName(originDesignId,
-                newDesignId, req.body.newDesignName, function(err) {
+                newDesignId, req.body.newDesignName, function (err) {
                     if (err) {
                         console.log("error", err);
                         res.send({success: -1});
@@ -132,15 +135,18 @@ exports.rename = function(req, res) {
     });
 };
 
-exports.load = function(req, res) {
+exports.load = function (req, res) {
     "use strict";
     var designId;
     console.log("    --post innerspacedesign/load");
     res.set({"Content-Type": "application/json"});
     designId = generateDesignId(req.session.user, req.body.designName);
     console.log("    --designId: ", designId);
-    InnerSpaceInfo.findByDesignId(designId, function(err, obj) {
-        if (obj) {
+    InnerSpaceInfo.findByDesignId(designId, function (err, obj) {
+        if (err) {
+            console.log("error: ", err);
+            res.send({success: false});
+        } else if (obj) {
             console.log("    find obj");
             res.send({success: true, sceneData: obj.sceneData});
         } else {

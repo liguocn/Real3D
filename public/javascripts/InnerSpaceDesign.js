@@ -32,9 +32,10 @@ function getDesignItemsFromServer() {
             for (itemId = 0; itemId < itemLen; itemId++) {
                 item = $('<div class="designitem"></div>');
                 item.text(designNames[itemId]);
-                item.attr({id: designNames[itemId]});
+                //item.attr({id: designNames[itemId]});
                 item.click(function () {
-                    var designName = $(this).prop('id');
+                    //var designName = $(this).prop('id');
+                    var designName = $(this).text();
                     editDesignItem(designName);
                 });
                 item.appendTo('#designSet');
@@ -54,18 +55,18 @@ function backToPersonalHomePage() {
 $(document).ready(function () {
     console.log("document.ready...");
     $('<div id="plink" class="menuitem" onclick="backToPersonalHomePage()">个人主页</div>').appendTo('#menu');
-    // $('<div id="new" class="designitem">新建</div>').appendTo('#designSet');
-    // $('#new').click(function () {
-    //     editDesignItem(null);
-    // });
-    var item = $('<div class="designitem"></div>');
-    item.text("new");
-    item.attr({id: "new"});
-    item.click(function () {
-        var designName = $(this).prop('id');
-        editDesignItem(designName);
+    $('<div id="new" class="designitem">新建</div>').appendTo('#designSet');
+    $('#new').click(function () {
+        editDesignItem('');
     });
-    item.appendTo('#designSet');
+    // var item = $('<div class="designitem"></div>');
+    // item.text("new");
+    // item.attr({id: "new"});
+    // item.click(function () {
+    //     var designName = $(this).prop('id');
+    //     editDesignItem(designName);
+    // });
+    //item.appendTo('#designSet');
     console.log("value: ", $("#plink").prop('id'));
     getDesignItemsFromServer();
 });

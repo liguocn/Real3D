@@ -1,7 +1,7 @@
 /*jslint plusplus: true */
 /*global REAL3D, THREE, console, window, document, $ */
 
-REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
+REAL3D.InnerSpaceDesignState = function (winW, winH, canvasElement) {
     "use strict";
     REAL3D.StateBase.call(this);
     this.stateName = REAL3D.InnerSpaceDesignState.STATENAME;
@@ -21,9 +21,9 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
     this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 
     var that = this;
-    canvasElement.addEventListener("mousedown", function(e) { that.mouseDown(e); }, false);
-    canvasElement.addEventListener("mouseup", function(e) { that.mouseUp(e); }, false);
-    canvasElement.addEventListener("mousemove", function(e) { that.mouseMove(e); }, false);
+    canvasElement.addEventListener("mousedown", function (e) { that.mouseDown(e); }, false);
+    canvasElement.addEventListener("mouseup", function (e) { that.mouseUp(e); }, false);
+    canvasElement.addEventListener("mousemove", function (e) { that.mouseMove(e); }, false);
     // canvasElement.addEventListener("keypress", function(e) { that.keyPress(e); }, false);
     canvasElement.setAttribute("tabindex", 1);
     canvasElement.focus();
@@ -32,7 +32,7 @@ REAL3D.InnerSpaceDesignState = function(winW, winH, canvasElement) {
 
 REAL3D.InnerSpaceDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-REAL3D.InnerSpaceDesignState.prototype.initUserData = function(sceneData) {
+REAL3D.InnerSpaceDesignState.prototype.initUserData = function (sceneData) {
     "use strict";
     this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
     this.isMouseDown = false;
@@ -47,11 +47,11 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function(sceneData) {
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
 };
 
-REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
+REAL3D.InnerSpaceDesignState.prototype.saveUserData = function () {
     "use strict";
     var postData = this.packUserData();
     console.log("postData: ", postData);
-    $.post("/innerspacedesign/edit/save", $.param(postData, true), function(data) {
+    $.post("/innerspacedesign/edit/save", $.param(postData, true), function (data) {
         console.log("  data return from server:", data);
         if (data.saved === -1) {
             window.location.href = "/DoLogin";
@@ -59,7 +59,7 @@ REAL3D.InnerSpaceDesignState.prototype.saveUserData = function() {
     }, "json");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.packUserData = function() {
+REAL3D.InnerSpaceDesignState.prototype.packUserData = function () {
     "use strict";
     var camPos, postData, points, userPointLen, pid, userPoints, curPoint, neighborLen, nid;
     camPos = this.sceneData.cameraOrthoPosition;
@@ -86,7 +86,7 @@ REAL3D.InnerSpaceDesignState.prototype.packUserData = function() {
     return postData;
 };
 
-REAL3D.InnerSpaceDesignState.prototype.unPackUserData = function(userData) {
+REAL3D.InnerSpaceDesignState.prototype.unPackUserData = function (userData) {
     "use strict";
     var sceneData, camOrthPos, userPoints, userPointLen, pid, curPoint, neighbors, neiLen, nid, scenePoints;
     camOrthPos = userData.cameraOrthoPosition;
@@ -112,14 +112,14 @@ REAL3D.InnerSpaceDesignState.prototype.unPackUserData = function(userData) {
     return sceneData;
 };
 
-REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
+REAL3D.InnerSpaceDesignState.prototype.loadUserData = function () {
     "use strict";
     var postData, curState, sceneData;
     postData = {
         designName: this.designName
     };
     curState = this;
-    $.post("/innerspacedesign/edit/load", $.param(postData, true), function(data) {
+    $.post("/innerspacedesign/edit/load", $.param(postData, true), function (data) {
         console.log("  data return from server");
         if (data.success) {
             console.log("  loaded data: ", data);
@@ -129,7 +129,7 @@ REAL3D.InnerSpaceDesignState.prototype.loadUserData = function() {
     }, "json");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.enter = function() {
+REAL3D.InnerSpaceDesignState.prototype.enter = function () {
     "use strict";
     console.log("Enter InnerSpaceDesignState");
     if (REAL3D.RenderManager.getCamera(this.cameraOrthoName) === undefined) {
@@ -142,17 +142,17 @@ REAL3D.InnerSpaceDesignState.prototype.enter = function() {
     REAL3D.RenderManager.switchCamera(this.cameraOrthoName);
 };
 
-REAL3D.InnerSpaceDesignState.prototype.update = function() {
+REAL3D.InnerSpaceDesignState.prototype.update = function () {
     "use strict";
     REAL3D.RenderManager.update();
 };
 
-REAL3D.InnerSpaceDesignState.prototype.exit = function() {
+REAL3D.InnerSpaceDesignState.prototype.exit = function () {
     "use strict";
     console.log("Exit InnerSpaceDesignState");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.mouseDown = function(e) {
+REAL3D.InnerSpaceDesignState.prototype.mouseDown = function (e) {
     "use strict";
     console.log("---------------------------------------------mousedown: ", this.mouseState, "stateName: ", this.stateName);
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
@@ -197,7 +197,7 @@ REAL3D.InnerSpaceDesignState.prototype.mouseDown = function(e) {
     console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.mouseMove = function(e) {
+REAL3D.InnerSpaceDesignState.prototype.mouseMove = function (e) {
     "use strict";
     var curPosX, curPosY;
     if (this.isMouseDown) {
@@ -228,7 +228,7 @@ REAL3D.InnerSpaceDesignState.prototype.mouseMove = function(e) {
     }
 };
 
-REAL3D.InnerSpaceDesignState.prototype.mouseUp = function(e) {
+REAL3D.InnerSpaceDesignState.prototype.mouseUp = function (e) {
     "use strict";
     console.log("---------------------------------------------mouseup: ", this.mouseState, "stateName: ", this.stateName);
     var curPosX, curPosY;
@@ -258,7 +258,7 @@ REAL3D.InnerSpaceDesignState.prototype.mouseUp = function(e) {
     console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.hitDetection = function(mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignState.prototype.hitDetection = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
@@ -268,7 +268,7 @@ REAL3D.InnerSpaceDesignState.prototype.hitDetection = function(mousePosX, mouseP
     return this.sceneData.userPointTree.selectPoint(worldPosX, worldPosY);
 };
 
-REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function(index1, index2) {
+REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, index2) {
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         this.sceneData.userPointTree.connectPoints(index1, index2);
@@ -277,7 +277,7 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function(index1, index
     }
 };
 
-REAL3D.InnerSpaceDesignState.prototype.createNewUserPoint = function(mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignState.prototype.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY, newId, userPointBall;
     mousePosY = this.winH - mousePosY;
@@ -290,12 +290,12 @@ REAL3D.InnerSpaceDesignState.prototype.createNewUserPoint = function(mousePosX, 
     return newId;
 };
 
-REAL3D.InnerSpaceDesignState.prototype.finishCreatingNewUserPoint = function() {
+REAL3D.InnerSpaceDesignState.prototype.finishCreatingNewUserPoint = function () {
     "use strict";
     this.lastCreatedPointIndex = -1;
 };
 
-REAL3D.InnerSpaceDesignState.prototype.isMouseMoved = function(mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignState.prototype.isMouseMoved = function (mousePosX, mousePosY) {
     "use strict";
     var dist, isMoved;
     dist = (mousePosX - this.mouseDownPos.x) * (mousePosX - this.mouseDownPos.x) + (mousePosY - this.mouseDownPos.y) * (mousePosY - this.mouseDownPos.y);
@@ -308,7 +308,7 @@ REAL3D.InnerSpaceDesignState.prototype.isMouseMoved = function(mousePosX, mouseP
     return isMoved;
 };
 
-REAL3D.InnerSpaceDesignState.prototype.draggingUserPoint = function(mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignState.prototype.draggingUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
@@ -319,7 +319,7 @@ REAL3D.InnerSpaceDesignState.prototype.draggingUserPoint = function(mousePosX, m
     this.sceneData.userPointTree.points[this.hitUserPointIndex].publish("move");
 };
 
-REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function(mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function (mousePosX, mousePosY) {
     "use strict";
     var worldDifX, worldDifY;
     worldDifX = this.mouseMovePos.x - mousePosX;
@@ -342,7 +342,7 @@ REAL3D.InnerSpaceDesignState.HITRADIUS = 250;
 REAL3D.InnerSpaceDesignState.MOVERADIUS = 100;
 REAL3D.InnerSpaceDesignState.STATENAME = "InnerSpaceDesignState";
 
-REAL3D.InnerSpaceDesignState.SceneData = function() {
+REAL3D.InnerSpaceDesignState.SceneData = function () {
     "use strict";
     this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
     this.userPointTree = new REAL3D.Wall.UserPointTree();
@@ -351,7 +351,7 @@ REAL3D.InnerSpaceDesignState.SceneData = function() {
     REAL3D.RenderManager.scene.add(this.refFrame);
 };
 
-REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function(sceneData) {
+REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     "use strict";
     var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, userPointLine;
     if (sceneData === null) {
@@ -385,8 +385,8 @@ function enterInnerSpaceDesignState(containerId) {
     var InnerSpaceDesignState, canvasElement, canvContainer, winW, winH;
     winW = $(window).width() - 128;
     winW = (winW < 1024) ? 1024 : winW;
-    winH = $(window).height() - 32;
-    winH = (winH < 768) ? 768 : winH;
+    winH = $(window).height() - 55;
+    winH = (winH < 640) ? 640 : winH;
     canvasElement = REAL3D.RenderManager.init(winW, winH);
     canvContainer = document.getElementById(containerId);
     canvContainer.appendChild(canvasElement);
@@ -432,7 +432,7 @@ function renameWorkSpace() {
             originDesignName: designState.designName,
             newDesignName: newName
         };
-        $.post("/innerspacedesign/edit/rename", $.param(postData, true), function(data) {
+        $.post("/innerspacedesign/edit/rename", $.param(postData, true), function (data) {
             console.log("  rename result:", data);
             if (data.success === 1) {
                 designState.designName = newName;
@@ -449,3 +449,25 @@ function backToHome() {
     //     console.log(" data: ", data);
     // });
 }
+
+$(document).ready(function () {
+    console.log("document is ready...");
+    $('<button class="button" onclick = "newWorkSpace()">新建</button>').appendTo('#leftContainer');
+    $('<button class="button" onclick = "saveWorkSpace()">保存</button>').appendTo('#leftContainer');
+    $('<button class="button" onclick = "renameWorkSpace()">改名</button>').appendTo('#leftContainer');
+    $('<button class="button" onclick = "backToHome()">返回</button>').appendTo('#leftContainer');
+    $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
+    REAL3D.Framework.init();
+    REAL3D.Framework.run();
+    enterInnerSpaceDesignState("designspace");
+    var designState, designName;
+    designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
+    designName = $('#designName').text();
+    if (designName !== '') {
+        console.log("designName is ", designName);
+        designState.designName = designName;
+        designState.loadUserData();
+    } else {
+        console.log("designName is space");
+    }
+});

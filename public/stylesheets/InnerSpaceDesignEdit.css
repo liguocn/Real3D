@@ -18,6 +18,13 @@ body
     /*display: block;*/
 }
 
+.title
+{
+    text-align: center;
+    font-size: 16pt;
+    color: rgb(100, 210, 65);
+}
+
 .leftContainer
 {
     float: left;

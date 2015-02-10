@@ -16,25 +16,11 @@
 <body>
     <div class = "centerleft">
         <div class = "centerright">
-            <div class="leftContainer">
-                <button class="button" onclick = "newWorkSpace()">新建</button>
-                <br>
-                <button class="button" onclick = "saveWorkSpace()">保存</button>
-                <br>
-                <button class="button" onclick = "renameWorkSpace()">改名</button>
-                <br>
-                <button class="button" onclick = "backToHome()">返回</button>
-            </div>
-            <div class="mainContainer">
-                <div id = "designspace" onselectstart="return false"></div>
-            </div>
+            <div id="designName" class="title"><%= designName %></div>
+            <div id="leftContainer" class="leftContainer"></div>
+            <div id="mainContainer" class="mainContainer"></div>
         </div>
     </div>
-    <script>
-    REAL3D.Framework.init();
-    REAL3D.Framework.run();
-    enterInnerSpaceDesignState("designspace");
-    </script>
 </body>
 </html>
 
