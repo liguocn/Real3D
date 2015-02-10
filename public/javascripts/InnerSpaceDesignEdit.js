@@ -32,7 +32,7 @@ REAL3D.InnerSpaceDesignState = function (winW, winH, canvasElement) {
 
 REAL3D.InnerSpaceDesignState.prototype = Object.create(REAL3D.StateBase.prototype);
 
-REAL3D.InnerSpaceDesignState.prototype.initUserData = function (sceneData) {
+REAL3D.InnerSpaceDesignState.prototype.initUserData = function (designName, sceneData) {
     "use strict";
     this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
     this.isMouseDown = false;
@@ -41,7 +41,7 @@ REAL3D.InnerSpaceDesignState.prototype.initUserData = function (sceneData) {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designName = null;
+    this.designName = designName;
     this.sceneData.reInit(sceneData);
 
     this.cameraOrtho.position.copy(this.sceneData.cameraOrthoPosition);
@@ -124,7 +124,7 @@ REAL3D.InnerSpaceDesignState.prototype.loadUserData = function () {
         if (data.success) {
             console.log("  loaded data: ", data);
             sceneData = curState.unPackUserData(data.sceneData);
-            curState.initUserData(sceneData);
+            curState.initUserData(postData.designName, sceneData);
         }
     }, "json");
 };
@@ -396,7 +396,7 @@ function enterInnerSpaceDesignState(containerId) {
 
 function newWorkSpace() {
     "use strict";
-    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData(null);
+    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData(null, null);
     console.log("New Work Space");
     // var userName = window.prompt("Input your name: ");
     // console.log("userName: ", userName);
@@ -406,7 +406,8 @@ function saveWorkSpace() {
     "use strict";
     var designState, designName;
     designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
-    if (designState.designName === null) {
+    console.log("designName: ", designState.designName);
+    if (designState.designName === null || designState.designName === '') {
         designName = window.prompt("请输入设计名字：");
         //Need to verify designName, which will be done later.
         designState.designName = designName;
@@ -445,9 +446,6 @@ function renameWorkSpace() {
 function backToHome() {
     "use strict";
     window.location.href = "/innerspacedesign";
-    // $.get("/users/test", function(data) {
-    //     console.log(" data: ", data);
-    // });
 }
 
 $(document).ready(function () {
