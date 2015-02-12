@@ -69,8 +69,8 @@ REAL3D.InnerSpaceDesignState.prototype.packUserData = function () {
     userPointLen = points.length;
     for (pid = 0; pid < userPointLen; pid++) {
         curPoint = points[pid];
-        userPoints.push(curPoint.posX);
-        userPoints.push(curPoint.posY);
+        userPoints.push(curPoint.pos.getX());
+        userPoints.push(curPoint.pos.getY());
         neighborLen = curPoint.neighbors.length;
         userPoints.push(neighborLen);
         for (nid = 0; nid < neighborLen; nid++) {

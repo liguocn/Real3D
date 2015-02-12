@@ -92,3 +92,7 @@ REAL3D.Framework = {
     }
 };
 
+REAL3D.isZero = function (v) {
+    return (v === 0);
+};
+
