@@ -23,6 +23,7 @@ REAL3D.Wall.UserPoint.prototype.updateNeighborOrder = function () {
     var neigLen, neighbors, neigVectors, curVector, nid, sortVectors;
     neigLen = this.neighbors.length;
     if (neigLen > 2) {
+        console.log("updateNeighborOrder: ", neigLen);
         neighbors = this.neighbors;
         neigVectors = [];
         for (nid = 0; nid < neigLen; nid++) {

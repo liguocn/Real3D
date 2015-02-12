@@ -24,7 +24,7 @@ REAL3D.InnerSpaceDesignState = function (winW, winH, canvasElement) {
     canvasElement.addEventListener("mousedown", function (e) { that.mouseDown(e); }, false);
     canvasElement.addEventListener("mouseup", function (e) { that.mouseUp(e); }, false);
     canvasElement.addEventListener("mousemove", function (e) { that.mouseMove(e); }, false);
-    // canvasElement.addEventListener("keypress", function(e) { that.keyPress(e); }, false);
+    canvasElement.addEventListener("keypress", function (e) { that.keyPress(e); }, false);
     canvasElement.setAttribute("tabindex", 1);
     canvasElement.focus();
     canvasElement.style.outline = "none";
@@ -256,6 +256,12 @@ REAL3D.InnerSpaceDesignState.prototype.mouseUp = function (e) {
     this.isMouseDown = false;
     console.log("Mouse state: ", this.mouseState);
     console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+};
+
+REAL3D.InnerSpaceDesignState.prototype.keyPress = function (e) {
+    "use strict";
+    var keyCode = e.which;
+    console.log("keyCode: ", keyCode);
 };
 
 REAL3D.InnerSpaceDesignState.prototype.hitDetection = function (mousePosX, mousePosY) {

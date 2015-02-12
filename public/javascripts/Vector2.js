@@ -65,5 +65,11 @@ REAL3D.Vector2.prototype = {
             this.y = 0;
         }
         return len;
+    },
+
+    multiply: function (s) {
+        this.x *= s;
+        this.y *= s;
+        return this;
     }
 };
