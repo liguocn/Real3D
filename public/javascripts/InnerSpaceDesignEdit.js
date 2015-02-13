@@ -278,8 +278,10 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, inde
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         this.sceneData.userPointTree.connectPoints(index1, index2);
-        var userPointLine = new REAL3D.Wall.UserPointLine(this.sceneData.userPointTree.points[index1],
-            this.sceneData.userPointTree.points[index2], this.sceneData.refFrame);
+        // var userPointLine = new REAL3D.Wall.UserPointLine(this.sceneData.userPointTree.points[index1],
+        //     this.sceneData.userPointTree.points[index2], this.sceneData.refFrame);
+        // var wall2d = new REAL3D.Wall.Wall2D(this.sceneData.userPointTree.points[index1],
+        //     this.sceneData.userPointTree.points[index2], 20, this.sceneData.refFrame);
     }
 };
 
