@@ -73,3 +73,24 @@ REAL3D.Vector2.prototype = {
         return this;
     }
 };
+
+REAL3D.Vector2.sub = function (vec1, vec2) {
+    "use strict";
+    var res = vec1.copyTo();
+    res.subVector(vec2);
+    return res;
+};
+
+REAL3D.Vector2.add = function (vec1, vec2) {
+    "use strict";
+    var res = vec1.copyTo();
+    res.addVector(vec2);
+    return res;
+};
+
+REAL3D.Vector2.scale = function (vec, scale) {
+    "use strict";
+    var res = vec.copyTo();
+    res.multiply(scale);
+    return res;
+};

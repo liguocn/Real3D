@@ -190,16 +190,16 @@ REAL3D.Wall.UserPointLine.prototype.remove = function () {
     this.parent = null;
 };
 
-REAL3D.Wall.Wall2D = function (point1, point2, width, parent) {
+REAL3D.Wall.Wall2D = function (point1, point2, thick, parent) {
     "use strict";
     REAL3D.Publisher.call(this);
     this.point1 = point1;
     this.point2 = point2;
-    this.width = width;
+    this.thick = thick;
     this.parent = parent;
-    this.geometry = null;
+    this.mesh = null;
     //generate geometry
-    this.generateGeometry();
+    this.generateMesh();
     //registrate update callback
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
     this.point1.subscribe("move", this, this.move);
@@ -215,13 +215,98 @@ REAL3D.Wall.Wall2D = function (point1, point2, width, parent) {
     }
 };
 
-REAL3D.Wall.Wall2D.prototype.generateGeometry = function () {
+REAL3D.Wall.Wall2D.prototype.generateWallVector = function (pos1, pos2, assistPos) {
     "use strict";
+    var mainVec, assistVec, wallVec, wallVecLen, dirFlag;
+    mainVec = REAL3D.Vector2.sub(pos2, pos1);
+    mainVec.unify();
+    assistVec = REAL3D.Vector2.sub(assistPos, pos1);
+    assistVec.unify();
+    wallVec = REAL3D.Vector2.add(mainVec, assistVec);
+    wallVecLen = wallVec.unify();
+    if (REAL3D.isZero(wallVecLen)) {
+        wallVec = new REAL3D.Vector2(mainVec.getY() * (-1), mainVec.getX());
+    }
+    dirFlag = mainVec.x * wallVec.y - mainVec.y * wallVec.x;
+    if (dirFlag < 0) {
+        wallVec.multiply(-1);
+    }
+    return wallVec;
+};
+
+REAL3D.Wall.Wall2D.prototype.generateWallPoint = function (point1, point2) {
+    "use strict";
+    var wallPoints, neighbors1, neigLen1, mainVec, wallVec, assistPos, wallPos1, wallPos2, nid;
+    neighbors1 = point1.neighbors;
+    neigLen1 = neighbors1.length;
+    if (neigLen1 === 1) {
+        mainVec = REAL3D.Vector2.sub(point2.pos, point1.pos);
+        mainVec.unify();
+        wallVec = new REAL3D.Vector2(mainVec.getY() * (-1), mainVec.getX());
+        wallPos2 = point1.pos.copyTo();
+        wallPos2.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+        wallPos1 = point1.pos.copyTo();
+        wallPos1.subVector(REAL3D.Vector2.scale(wallVec, this.thick));
+    } else if (neigLen1 === 2) {
+        if (neighbors1[0] === point2) {
+            assistPos = neighbors1[1].pos;
+        } else {
+            assistPos = neighbors1[0].pos;
+        }
+        wallVec = this.generateWallVector(point1.pos, point2.pos, assistPos);
+        wallPos2 = point1.pos.copyTo();
+        wallPos2.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+        wallPos1 = point1.pos.copyTo();
+        wallPos1.subVector(REAL3D.Vector2.scale(wallVec, this.thick));
+    } else {
+        for (nid = 0; nid < neigLen1; nid++) {
+            if (neighbors1[nid] === point2) {
+                assistPos = neighbors1[(nid - 1 + neigLen1) % neigLen1].pos;
+                wallVec = this.generateWallVector(point1.pos, assistPos, point2.pos);
+                wallPos1 = point1.pos.copyTo();
+                wallPos1.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+
+                assistPos = neighbors1[(nid + 1) % neigLen1].pos;
+                wallVec = this.generateWallVector(point1.pos, point2.pos, assistPos);
+                wallPos2 = point1.pos.copyTo();
+                wallPos2.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+
+                break;
+            }
+        }
+    }
+    wallPoints = [wallPos1, wallPos2];
+    return wallPoints;
+};
+
+REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
+    "use strict";
+    var wallPoints, wallPos1, wallPos2, wallPos3, wallPos4;
+    wallPoints = this.generateWallPoint(this.point1, this.point2);
+    wallPos1 = wallPoints[0];
+    wallPos2 = wallPoints[1];
+
+    wallPoints = this.generateWallPoint(this.point2, this.point1);
+    wallPos3 = wallPoints[3];
+    wallPos4 = wallPoints[2];
+
+    var geometry, material;
+    this.parent.remove(this.mesh);
+    material = new THREE.LineBasicMaterial({color: 0xae0e1e});
+    geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(wallPos1.getX(), wallPos1.getY(), 0),
+                           new THREE.Vector3(wallPos2.getX(), wallPos2.getY(), 0),
+                           new THREE.Vector3(wallPos3.getX(), wallPos3.getY(), 0),
+                           new THREE.Vector3(wallPos4.getX(), wallPos4.getY(), 0));
+    geometry.faces.push(new THREE.Faces(0, 1, 3),
+                        new THREE.Faces(0, 2, 3));
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.parent.add(this.mesh);
 };
 
 REAL3D.Wall.Wall2D.prototype.move = function () {
     "use strict";
-    this.generateGeometry();
+    this.generateMesh();
     this.publish("move");
 };
 
