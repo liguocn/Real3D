@@ -90,6 +90,8 @@ REAL3D.Wall.UserPointTree.prototype = {
         point2 = this.points[index2];
         point1.neighbors.push(point2);
         point2.neighbors.push(point1);
+        point1.updateNeighborOrder();
+        point2.updateNeighborOrder();
     },
 
     selectPoint : function (worldPosX, worldPosY) {
@@ -200,19 +202,9 @@ REAL3D.Wall.Wall2D = function (point1, point2, thick, parent) {
     this.mesh = null;
     //generate geometry
     this.generateMesh();
-    //registrate update callback
-    var neighbors1, neigLen1, nid, neighbors2, neigLen2;
-    this.point1.subscribe("move", this, this.move);
-    neighbors1 = this.point1.neighbors;
-    neigLen1 = neighbors1.length;
-    for (nid = 0; nid < neigLen1; nid++) {
-        neighbors1[nid].subscribe("move", this, this.move);
-    }
-    neighbors2 = this.point2.neighbors;
-    neigLen2 = neighbors2.length;
-    for (nid = 0; nid < neigLen2; nid++) {
-        neighbors2[nid].subscribe("move", this, this.move);
-    }
+    //register callback functions
+    this.point1.subscribe("updateSubscriber", this, this.updateSubscriber);
+    this.point2.subscribe("updateSubscriber", this, this.updateSubscriber);
 };
 
 REAL3D.Wall.Wall2D.prototype.generateWallVector = function (pos1, pos2, assistPos) {
@@ -236,7 +228,7 @@ REAL3D.Wall.Wall2D.prototype.generateWallVector = function (pos1, pos2, assistPo
 
 REAL3D.Wall.Wall2D.prototype.generateWallPoint = function (point1, point2) {
     "use strict";
-    var wallPoints, neighbors1, neigLen1, mainVec, wallVec, assistPos, wallPos1, wallPos2, nid;
+    var wallPoints, neighbors1, neigLen1, mainVec, wallVec, assistPos, wallPos1, wallPos2, nid, cosTheta, extrudLen;
     neighbors1 = point1.neighbors;
     neigLen1 = neighbors1.length;
     if (neigLen1 === 1) {
@@ -254,22 +246,45 @@ REAL3D.Wall.Wall2D.prototype.generateWallPoint = function (point1, point2) {
             assistPos = neighbors1[0].pos;
         }
         wallVec = this.generateWallVector(point1.pos, point2.pos, assistPos);
+        mainVec = REAL3D.Vector2.sub(point2.pos, point1.pos);
+        mainVec.unify();
+        cosTheta = Math.abs(wallVec.getY() * mainVec.getX() - wallVec.getX() * mainVec.getY());
+        if (REAL3D.isZero(cosTheta)) {
+            console.log("error: cosTheta is zero");
+        } else {
+            extrudLen = this.thick / cosTheta;
+        }
         wallPos2 = point1.pos.copyTo();
-        wallPos2.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+        wallPos2.addVector(REAL3D.Vector2.scale(wallVec, extrudLen));
         wallPos1 = point1.pos.copyTo();
-        wallPos1.subVector(REAL3D.Vector2.scale(wallVec, this.thick));
+        wallPos1.subVector(REAL3D.Vector2.scale(wallVec, extrudLen));
     } else {
         for (nid = 0; nid < neigLen1; nid++) {
             if (neighbors1[nid] === point2) {
+                mainVec = REAL3D.Vector2.sub(point2.pos, point1.pos);
+                mainVec.unify();
+
                 assistPos = neighbors1[(nid - 1 + neigLen1) % neigLen1].pos;
                 wallVec = this.generateWallVector(point1.pos, assistPos, point2.pos);
+                cosTheta = Math.abs(wallVec.getY() * mainVec.getX() - wallVec.getX() * mainVec.getY());
+                if (REAL3D.isZero(cosTheta)) {
+                    console.log("error: cosTheta is zero");
+                } else {
+                    extrudLen = this.thick / cosTheta;
+                }
                 wallPos1 = point1.pos.copyTo();
-                wallPos1.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+                wallPos1.addVector(REAL3D.Vector2.scale(wallVec, extrudLen));
 
                 assistPos = neighbors1[(nid + 1) % neigLen1].pos;
                 wallVec = this.generateWallVector(point1.pos, point2.pos, assistPos);
+                cosTheta = Math.abs(wallVec.getY() * mainVec.getX() - wallVec.getX() * mainVec.getY());
+                if (REAL3D.isZero(cosTheta)) {
+                    console.log("error: cosTheta is zero");
+                } else {
+                    extrudLen = this.thick / cosTheta;
+                }
                 wallPos2 = point1.pos.copyTo();
-                wallPos2.addVector(REAL3D.Vector2.scale(wallVec, this.thick));
+                wallPos2.addVector(REAL3D.Vector2.scale(wallVec, extrudLen));
 
                 break;
             }
@@ -287,8 +302,8 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     wallPos2 = wallPoints[1];
 
     wallPoints = this.generateWallPoint(this.point2, this.point1);
-    wallPos3 = wallPoints[3];
-    wallPos4 = wallPoints[2];
+    wallPos3 = wallPoints[0];
+    wallPos4 = wallPoints[1];
 
     this.parent.remove(this.mesh);
     var shape = new THREE.Shape();
@@ -306,7 +321,24 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
 REAL3D.Wall.Wall2D.prototype.move = function () {
     "use strict";
     this.generateMesh();
-    this.publish("move");
+    //this.publish("move");
+};
+
+REAL3D.Wall.Wall2D.prototype.updateSubscriber = function () {
+    "use strict";
+    var neighbors1, neigLen1, nid, neighbors2, neigLen2;
+    this.point1.subscribe("move", this, this.move);
+    neighbors1 = this.point1.neighbors;
+    neigLen1 = neighbors1.length;
+    for (nid = 0; nid < neigLen1; nid++) {
+        neighbors1[nid].subscribe("move", this, this.move);
+    }
+    this.point2.subscribe("move", this, this.move);
+    neighbors2 = this.point2.neighbors;
+    neigLen2 = neighbors2.length;
+    for (nid = 0; nid < neigLen2; nid++) {
+        neighbors2[nid].subscribe("move", this, this.move);
+    }
 };
 
 REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
@@ -315,16 +347,16 @@ REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
     this.height = height;
     this.parent = parent;
     this.geometry = null;
-    this.generateGeometry();
+    this.generateMesh();
     //registrate update callback
     this.wall2D.subscribe("move", this, this.move);
 };
 
-REAL3D.Wall.Wall3D.prototype.generateGeometry = function () {
+REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
     "use strict";
 };
 
-REAL3D.Wall.Wall2D.prototype.move = function () {
+REAL3D.Wall.Wall3D.prototype.move = function () {
     "use strict";
-    this.generateGeometry();
+    this.generateMesh();
 };

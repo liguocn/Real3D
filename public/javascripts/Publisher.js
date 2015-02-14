@@ -5,11 +5,15 @@ REAL3D.Publisher = function () {
     this.messageTypes = {};
 };
 
+//if parm_callback exists, it will overrite it.
 REAL3D.Publisher.prototype.subscribe = function (parm_message, parm_subscriber, parm_callback) {
     "use strict";
-    var subscribers = this.messageTypes[parm_message];
+    var subscribers, findId;
+    subscribers = this.messageTypes[parm_message];
     if (subscribers) {
-        if (this.findSubscriber(subscribers, parm_subscriber) !== -1) {
+        findId = this.findSubscriber(subscribers, parm_subscriber);
+        if (findId !== -1) {
+            subscribers[findId].callback = parm_callback;
             return;
         }
     } else {
@@ -20,7 +24,7 @@ REAL3D.Publisher.prototype.subscribe = function (parm_message, parm_subscriber, 
     subscribers.push({ subscriber : parm_subscriber, callback : parm_callback });
 };
 
-REAL3D.Publisher.prototype.unsubscribe = function(parm_message, parm_subscriber) {
+REAL3D.Publisher.prototype.unsubscribe = function (parm_message, parm_subscriber) {
     "use strict";
     var subscribers, findIndex;
     if (parm_subscriber) {
@@ -37,7 +41,7 @@ REAL3D.Publisher.prototype.unsubscribe = function(parm_message, parm_subscriber)
     }
 };
 
-REAL3D.Publisher.prototype.publish = function(parm_message) {
+REAL3D.Publisher.prototype.publish = function (parm_message) {
     "use strict";
     var subscribers, ii, jj, args;
     subscribers = this.messageTypes[parm_message];
@@ -57,7 +61,7 @@ REAL3D.Publisher.prototype.findSubscriber = function (parm_subscribers, parm_sub
     "use strict";
     var ii;
     for (ii = 0; ii < parm_subscribers.length; ii++) {
-        if (parm_subscribers[ii] === parm_subscriber) {
+        if (parm_subscribers[ii].subscriber === parm_subscriber) {
             return ii;
         }
     }

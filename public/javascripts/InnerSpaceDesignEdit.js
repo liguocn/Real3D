@@ -154,47 +154,47 @@ REAL3D.InnerSpaceDesignState.prototype.exit = function () {
 
 REAL3D.InnerSpaceDesignState.prototype.mouseDown = function (e) {
     "use strict";
-    console.log("---------------------------------------------mousedown: ", this.mouseState, "stateName: ", this.stateName);
+    //console.log("---------------------------------------------mousedown: ", this.mouseState, "stateName: ", this.stateName);
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
-    console.log("mousePos: ", this.mouseDownPos.x, this.mouseDownPos.y, curPosX, curPosY);
+    //console.log("mousePos: ", this.mouseDownPos.x, this.mouseDownPos.y, curPosX, curPosY);
     mouseDownDist = (curPosX - this.mouseDownPos.x) * (curPosX - this.mouseDownPos.x) + (curPosY - this.mouseDownPos.y) * (curPosY - this.mouseDownPos.y);
-    console.log("mouseDownDist: ", mouseDownDist);
+    //console.log("mouseDownDist: ", mouseDownDist);
     isHittingTheSamePos = (mouseDownDist < REAL3D.InnerSpaceDesignState.HITRADIUS);
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
-    console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
+    //console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
     if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.NONE) {
         if (this.hitUserPointIndex === -1) {
             this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.HITCANVAS;
-            console.log("state: NONE -> HITCANVAS");
+            //console.log("state: NONE -> HITCANVAS");
         } else {
             this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.HITUSERPOINT;
-            console.log("state: NONE -> HITUSERPOINT");
+            //console.log("state: NONE -> HITUSERPOINT");
         }
     } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.CREATINGUSERPOINT) {
         if (isHittingTheSamePos) {
             this.finishCreatingNewUserPoint();
             this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
-            console.log("state: CREATINGUSERPOINT -> NONE, hit the same point, finishCreatingNewUserPoint");
+            //console.log("state: CREATINGUSERPOINT -> NONE, hit the same point, finishCreatingNewUserPoint");
         } else {
             if (this.hitUserPointIndex === -1) {
                 newUserPointIndex = this.createNewUserPoint(curPosX, curPosY);
-                console.log("createNewUserPoint: ", this.lastCreatedPointIndex, newUserPointIndex);
+                //console.log("createNewUserPoint: ", this.lastCreatedPointIndex, newUserPointIndex);
                 this.connectUserPoint(this.lastCreatedPointIndex, newUserPointIndex);
                 this.lastCreatedPointIndex = newUserPointIndex;
             } else {
                 this.connectUserPoint(this.hitUserPointIndex, this.lastCreatedPointIndex);
                 this.lastCreatedPointIndex = this.hitUserPointIndex;
-                console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
+                //console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
             }
         }
     }
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
     this.isMouseDown = true;
-    console.log("Mouse state: ", this.mouseState);
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    //console.log("Mouse state: ", this.mouseState);
+    //console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 REAL3D.InnerSpaceDesignState.prototype.mouseMove = function (e) {
@@ -208,7 +208,7 @@ REAL3D.InnerSpaceDesignState.prototype.mouseMove = function (e) {
             if (this.isMouseMoved(curPosX, curPosY)) {
                 this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGUSERPOINT;
                 this.draggingUserPoint(curPosX, curPosY);
-                console.log("state: HITUSERPOINT -> DRAGGINGUSERPOINT");
+                //console.log("state: HITUSERPOINT -> DRAGGINGUSERPOINT");
             }
         } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGUSERPOINT) {
             this.draggingUserPoint(curPosX, curPosY);
@@ -216,7 +216,7 @@ REAL3D.InnerSpaceDesignState.prototype.mouseMove = function (e) {
             if (this.isMouseMoved(curPosX, curPosY)) {
                 this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGCANVAS;
                 this.draggingCanvas(curPosX, curPosY);
-                console.log("state: HITCANVAS -> DRAGGINGCANVAS");
+                //console.log("state: HITCANVAS -> DRAGGINGCANVAS");
             }
         } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGCANVAS) {
             this.draggingCanvas(curPosX, curPosY);
@@ -230,32 +230,32 @@ REAL3D.InnerSpaceDesignState.prototype.mouseMove = function (e) {
 
 REAL3D.InnerSpaceDesignState.prototype.mouseUp = function (e) {
     "use strict";
-    console.log("---------------------------------------------mouseup: ", this.mouseState, "stateName: ", this.stateName);
+    //console.log("---------------------------------------------mouseup: ", this.mouseState, "stateName: ", this.stateName);
     var curPosX, curPosY;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
     if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGUSERPOINT) {
         this.draggingUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
-        console.log("state: DRAGGINGUSERPOINT -> NONE");
+        //console.log("state: DRAGGINGUSERPOINT -> NONE");
     } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.DRAGGINGCANVAS) {
         this.draggingCanvas(curPosX, curPosY);
         this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.NONE;
-        console.log("state: DRAGGINGCANVAS -> NONE");
+        //console.log("state: DRAGGINGCANVAS -> NONE");
     } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.HITUSERPOINT) {
         this.connectUserPoint(this.lastCreatedPointIndex, this.hitUserPointIndex);
         this.lastCreatedPointIndex = this.hitUserPointIndex;
         this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.CREATINGUSERPOINT;
-        console.log("state: HITUSERPOINT -> CREATINGUSERPOINT, connectUserPoint to exist point");
+        //console.log("state: HITUSERPOINT -> CREATINGUSERPOINT, connectUserPoint to exist point");
     } else if (this.mouseState === REAL3D.InnerSpaceDesignState.MouseState.HITCANVAS) {
-        console.log("state: HITCANVAS -> CREATINGUSERPOINT, createNewUserPoint");
+        //console.log("state: HITCANVAS -> CREATINGUSERPOINT, createNewUserPoint");
         this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.InnerSpaceDesignState.MouseState.CREATINGUSERPOINT;
-        console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
+        //console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
     }
     this.isMouseDown = false;
-    console.log("Mouse state: ", this.mouseState);
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    //console.log("Mouse state: ", this.mouseState);
+    //console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
 REAL3D.InnerSpaceDesignState.prototype.keyPress = function (e) {
@@ -278,10 +278,16 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, inde
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         this.sceneData.userPointTree.connectPoints(index1, index2);
+        var wall2d, point1, point2;
+        point1 = this.sceneData.userPointTree.points[index1];
+        point2 = this.sceneData.userPointTree.points[index2];
+        var wall2d = new REAL3D.Wall.Wall2D(point1, point2, 20, this.sceneData.refFrame);
+        point1.publish("updateSubscriber");
+        point2.publish("updateSubscriber");
+        point1.publish("move");
+        point2.publish("move");
         // var userPointLine = new REAL3D.Wall.UserPointLine(this.sceneData.userPointTree.points[index1],
         //     this.sceneData.userPointTree.points[index2], this.sceneData.refFrame);
-        // var wall2d = new REAL3D.Wall.Wall2D(this.sceneData.userPointTree.points[index1],
-        //     this.sceneData.userPointTree.points[index2], 20, this.sceneData.refFrame);
     }
 };
 
@@ -307,7 +313,7 @@ REAL3D.InnerSpaceDesignState.prototype.isMouseMoved = function (mousePosX, mouse
     "use strict";
     var dist, isMoved;
     dist = (mousePosX - this.mouseDownPos.x) * (mousePosX - this.mouseDownPos.x) + (mousePosY - this.mouseDownPos.y) * (mousePosY - this.mouseDownPos.y);
-    console.log("isMouseMoved: dist = ", dist, mousePosX, mousePosY, this.mouseDownPos.x, this.mouseDownPos.y);
+    //console.log("isMouseMoved: dist = ", dist, mousePosX, mousePosY, this.mouseDownPos.x, this.mouseDownPos.y);
     if (dist > REAL3D.InnerSpaceDesignState.MOVERADIUS) {
         isMoved = true;
     } else {
