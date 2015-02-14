@@ -129,6 +129,13 @@ REAL3D.InnerSpaceDesignState.prototype.loadUserData = function () {
     }, "json");
 };
 
+REAL3D.InnerSpaceDesignState.prototype.setupScene = function () {
+    "use strict";
+    var light = new THREE.PointLight(0x197db1, 1, 5000);
+    light.position.set(0, 0, 1000);
+    REAL3D.RenderManager.scene.add(light);
+};
+
 REAL3D.InnerSpaceDesignState.prototype.enter = function () {
     "use strict";
     console.log("Enter InnerSpaceDesignState");
@@ -140,6 +147,7 @@ REAL3D.InnerSpaceDesignState.prototype.enter = function () {
     }
     this.cameraOrtho = REAL3D.RenderManager.getCamera(this.cameraOrthoName);
     REAL3D.RenderManager.switchCamera(this.cameraOrthoName);
+    this.setupScene();
 };
 
 REAL3D.InnerSpaceDesignState.prototype.update = function () {
@@ -281,7 +289,7 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, inde
         var wall2d, point1, point2;
         point1 = this.sceneData.userPointTree.points[index1];
         point2 = this.sceneData.userPointTree.points[index2];
-        var wall2d = new REAL3D.Wall.Wall2D(point1, point2, 20, this.sceneData.refFrame);
+        wall2d = new REAL3D.Wall.Wall2D(point1, point2, 10, this.sceneData.refFrame);
         point1.publish("updateSubscriber");
         point2.publish("updateSubscriber");
         point1.publish("move");
@@ -367,7 +375,7 @@ REAL3D.InnerSpaceDesignState.SceneData = function () {
 
 REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     "use strict";
-    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, userPointLine;
+    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, assistFlag, wall2d;
     if (sceneData === null) {
         this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
         this.userPointTree = new REAL3D.Wall.UserPointTree();
@@ -385,12 +393,25 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     for (pid = 0; pid < userPointLen; pid++) {
         userPointBall = new REAL3D.Wall.UserPointBall(userPoints[pid], this.refFrame);
     }
+    this.userPointTree.updateAssistId();
+    assistFlag = [];
+    for (pid = 0; pid < userPointLen; pid++) {
+        assistFlag[pid] = 1;
+        userPoints[pid].updateNeighborOrder();
+    }
     for (pid = 0; pid < userPointLen; pid++) {
         neighbors = userPoints[pid].neighbors;
         neiLen = neighbors.length;
         for (nid = 0; nid < neiLen; nid++) {
-            userPointLine = new REAL3D.Wall.UserPointLine(userPoints[pid], neighbors[nid], this.refFrame);
+            if (assistFlag[neighbors[nid].assistId] === 1) {
+                wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], 10, this.refFrame);
+            }
         }
+        assistFlag[pid] = -1;
+    }
+    for (pid = 0; pid < userPointLen; pid++) {
+        userPoints[pid].publish("updateSubscriber");
+        userPoints[pid].publish("move");
     }
 };
 

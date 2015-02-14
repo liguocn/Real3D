@@ -296,7 +296,7 @@ REAL3D.Wall.Wall2D.prototype.generateWallPoint = function (point1, point2) {
 
 REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     "use strict";
-    var wallPoints, wallPos1, wallPos2, wallPos3, wallPos4;
+    var wallPoints, wallPos1, wallPos2, wallPos3, wallPos4, geometry, material;
     wallPoints = this.generateWallPoint(this.point1, this.point2);
     wallPos1 = wallPoints[0];
     wallPos2 = wallPoints[1];
@@ -306,15 +306,17 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     wallPos4 = wallPoints[1];
 
     this.parent.remove(this.mesh);
-    var geometry = new THREE.Geometry();
+    geometry = new THREE.Geometry();
     geometry.vertices.push(new THREE.Vector3(wallPos1.getX(), wallPos1.getY(), 0),
                            new THREE.Vector3(wallPos2.getX(), wallPos2.getY(), 0),
                            new THREE.Vector3(wallPos3.getX(), wallPos3.getY(), 0),
                            new THREE.Vector3(wallPos4.getX(), wallPos4.getY(), 0));
     geometry.faces.push(new THREE.Face3(0, 2, 1),
                         new THREE.Face3(0, 3, 2));
-    //geometry.computeFaceNormals();
-    this.mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff0000}));
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
+    this.mesh = new THREE.Mesh(geometry, material);
     this.parent.add(this.mesh);
 };
 
