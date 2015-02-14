@@ -306,15 +306,15 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     wallPos4 = wallPoints[1];
 
     this.parent.remove(this.mesh);
-    var shape = new THREE.Shape();
-    shape.moveTo(wallPos1.getX(), wallPos1.getY());
-    shape.lineTo(wallPos2.getX(), wallPos2.getY());
-    shape.lineTo(wallPos3.getX(), wallPos3.getY());
-    shape.lineTo(wallPos4.getX(), wallPos4.getY());
-    shape.lineTo(wallPos1.getX(), wallPos1.getY());
-    var geometry = new THREE.ShapeGeometry(shape);
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(wallPos1.getX(), wallPos1.getY(), 0),
+                           new THREE.Vector3(wallPos2.getX(), wallPos2.getY(), 0),
+                           new THREE.Vector3(wallPos3.getX(), wallPos3.getY(), 0),
+                           new THREE.Vector3(wallPos4.getX(), wallPos4.getY(), 0));
+    geometry.faces.push(new THREE.Face3(0, 2, 1),
+                        new THREE.Face3(0, 3, 2));
+    //geometry.computeFaceNormals();
     this.mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff0000}));
-    REAL3D.RenderManager.scene.add(this.mesh);
     this.parent.add(this.mesh);
 };
 
