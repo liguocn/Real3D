@@ -22,6 +22,8 @@ function unPackSceneData(body) {
     var sceneData, userPointLen, curIndex, pid, userPoint, neiLen, nid;
     sceneData = {
         cameraOrthoPosition: [],
+        wallThick: parseFloat(body.wallThick),
+        wallHeight: parseFloat(body.wallHeight),
         userPointTree: {
             points: []
         }

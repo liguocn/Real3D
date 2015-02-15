@@ -18,11 +18,31 @@ body
     /*display: block;*/
 }
 
-.title
+.info
 {
     text-align: center;
     font-size: 16pt;
-    color: rgb(100, 210, 65);
+    color: rgb(50, 150, 180);
+}
+
+.info .parmStrCtl
+{
+    width: 80px;
+    height: 16px;
+    background-color: rgb(222, 222, 222);
+    color: rgb(64, 128, 128);
+    vertical-align: middle;
+    margin-left: 3px;
+}
+
+.info .parmNumCtl
+{
+    width: 45px;
+    height: 16px;
+    background-color: rgb(222, 222, 222);
+    color: rgb(64, 128, 128);
+    vertical-align: middle;
+    margin-left: 3px;
 }
 
 .leftContainer

@@ -16,6 +16,8 @@ var InnerSpaceInfoSchema = new Schema({
     creator: String,
     sceneData: {
         cameraOrthoPosition: [Number],
+        wallThick: Number,
+        wallHeight: Number,
         userPointTree: {
             points: [userPointSchema]
         }
@@ -24,41 +26,41 @@ var InnerSpaceInfoSchema = new Schema({
 
 var InnerSpaceInfoModel = mongoose.model("InnerSpaceInfo", InnerSpaceInfoSchema);
 
-var InnerSpaceInfoDAO = function() {
+var InnerSpaceInfoDAO = function () {
     "use strict";
 };
 
-InnerSpaceInfoDAO.prototype.save = function(obj, callback) {
+InnerSpaceInfoDAO.prototype.save = function (obj, callback) {
     "use strict";
     var innerSpaceInfoInstance = new InnerSpaceInfoModel(obj);
-    innerSpaceInfoInstance.save(function(err) {
+    innerSpaceInfoInstance.save(function (err) {
         callback(err);
     });
 };
 
-InnerSpaceInfoDAO.prototype.findByDesignId = function(designId, callback) {
+InnerSpaceInfoDAO.prototype.findByDesignId = function (designId, callback) {
     "use strict";
-    InnerSpaceInfoModel.findOne({designId: designId}, function(err, obj) {
+    InnerSpaceInfoModel.findOne({designId: designId}, function (err, obj) {
         callback(err, obj);
     });
 };
 
-InnerSpaceInfoDAO.prototype.findByCreator = function(creator, callback) {
+InnerSpaceInfoDAO.prototype.findByCreator = function (creator, callback) {
     "use strict";
-    InnerSpaceInfoModel.find({creator: creator}, function(err, objs) {
+    InnerSpaceInfoModel.find({creator: creator}, function (err, objs) {
         callback(err, objs);
     });
-}
+};
 
-InnerSpaceInfoDAO.prototype.updateSceneData = function(designId, sceneData, callback) {
+InnerSpaceInfoDAO.prototype.updateSceneData = function (designId, sceneData, callback) {
     "use strict";
     InnerSpaceInfoModel.update({designId: designId}, {sceneData: sceneData},
-        function(err, numberAffected, rawResponse) {
+        function (err, numberAffected, rawResponse) {
             callback(err);
         });
 };
 
-InnerSpaceInfoDAO.prototype.updateDesignName = function(designId, newDesignId, newDesignName, callback) {
+InnerSpaceInfoDAO.prototype.updateDesignName = function (designId, newDesignId, newDesignName, callback) {
     "use strict";
     InnerSpaceInfoModel.update({designId: designId}, {designId: newDesignId, designName: newDesignName},
         function(err, numberAffected, rawResponse) {

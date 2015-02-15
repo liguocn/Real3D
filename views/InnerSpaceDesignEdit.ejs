@@ -17,8 +17,16 @@
 <body>
     <div class = "centerleft">
         <div class = "centerright">
-            <div id="designName" class="title"><%= designName %></div>
-            <div id="leftContainer" class="leftContainer"></div>
+            <div id="designInfo" class="info">
+                设计名<input id="designName" class="parmStrCtl" type="text" value=<%= designName %> >
+                墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" value="10" min="1" max="50">
+                墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" value="200" min="100" max="500">
+            </div>
+            <div id="leftContainer" class="leftContainer">
+                <button id="newDesign" class="button">新建</button>
+                <button id="saveDesign" class="button">保存</button>
+                <button id="return" class="button">返回</button>
+            </div>
             <div id="mainContainer" class="mainContainer"></div>
         </div>
     </div>

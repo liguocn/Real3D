@@ -129,7 +129,7 @@ REAL3D.Wall.UserPointBall = function (point, parent) {
     "use strict";
     var geometry, material;
     this.point = point;
-    this.point.subscribe("move", this, this.move);
+    this.point.subscribe("updateMesh", this, this.updateMesh);
     this.point.subscribe("remove", this, this.remove);
     geometry = new THREE.SphereGeometry(5, 32, 32);
     material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
@@ -139,7 +139,7 @@ REAL3D.Wall.UserPointBall = function (point, parent) {
     this.parent.add(this.ball);
 };
 
-REAL3D.Wall.UserPointBall.prototype.move = function () {
+REAL3D.Wall.UserPointBall.prototype.updateMesh = function () {
     "use strict";
     this.ball.position.set(this.point.pos.getX(), this.point.pos.getY(), 0);
 };
@@ -147,7 +147,7 @@ REAL3D.Wall.UserPointBall.prototype.move = function () {
 REAL3D.Wall.UserPointBall.prototype.remove = function () {
     "use strict";
     this.parent.remove(this.ball);
-    this.point.unsubscribe("move", this);
+    this.point.unsubscribe("updateMesh", this);
     this.point.unsubscribe("remove", this);
     this.parent = null;
 };
@@ -156,10 +156,10 @@ REAL3D.Wall.UserPointLine = function (point1, point2, parent) {
     "use strict";
     var geometry, material;
     this.point1 = point1;
-    this.point1.subscribe("move", this, this.move);
+    this.point1.subscribe("updateMesh", this, this.updateMesh);
     this.point1.subscribe("remove", this, this.remove);
     this.point2 = point2;
-    this.point2.subscribe("move", this, this.move);
+    this.point2.subscribe("updateMesh", this, this.updateMesh);
     this.point2.subscribe("remove", this, this.remove);
     material = new THREE.LineBasicMaterial({color: 0xae0e1e});
     geometry = new THREE.Geometry();
@@ -170,7 +170,7 @@ REAL3D.Wall.UserPointLine = function (point1, point2, parent) {
     this.parent.add(this.line);
 };
 
-REAL3D.Wall.UserPointLine.prototype.move = function () {
+REAL3D.Wall.UserPointLine.prototype.updateMesh = function () {
     "use strict";
     var geometry, material;
     this.parent.remove(this.line);
@@ -320,26 +320,26 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     this.parent.add(this.mesh);
 };
 
-REAL3D.Wall.Wall2D.prototype.move = function () {
+REAL3D.Wall.Wall2D.prototype.updateMesh = function () {
     "use strict";
     this.generateMesh();
-    this.publish("move");
+    this.publish("updateMesh");
 };
 
 REAL3D.Wall.Wall2D.prototype.updateSubscriber = function () {
     "use strict";
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
-    this.point1.subscribe("move", this, this.move);
+    this.point1.subscribe("updateMesh", this, this.updateMesh);
     neighbors1 = this.point1.neighbors;
     neigLen1 = neighbors1.length;
     for (nid = 0; nid < neigLen1; nid++) {
-        neighbors1[nid].subscribe("move", this, this.move);
+        neighbors1[nid].subscribe("updateMesh", this, this.updateMesh);
     }
-    this.point2.subscribe("move", this, this.move);
+    this.point2.subscribe("updateMesh", this, this.updateMesh);
     neighbors2 = this.point2.neighbors;
     neigLen2 = neighbors2.length;
     for (nid = 0; nid < neigLen2; nid++) {
-        neighbors2[nid].subscribe("move", this, this.move);
+        neighbors2[nid].subscribe("updateMesh", this, this.updateMesh);
     }
 };
 
@@ -351,14 +351,14 @@ REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
     this.geometry = null;
     this.generateMesh();
     //registrate update callback
-    this.wall2D.subscribe("move", this, this.move);
+    this.wall2D.subscribe("updateMesh", this, this.updateMesh);
 };
 
 REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
     "use strict";
 };
 
-REAL3D.Wall.Wall3D.prototype.move = function () {
+REAL3D.Wall.Wall3D.prototype.updateMesh = function () {
     "use strict";
     this.generateMesh();
 };

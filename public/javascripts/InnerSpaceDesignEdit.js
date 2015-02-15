@@ -80,6 +80,8 @@ REAL3D.InnerSpaceDesignState.prototype.packUserData = function () {
     postData = {
         designName: this.designName,
         cameraOrthoPosition: [camPos.x, camPos.y, camPos.z],
+        wallThick: this.wallThick,
+        wallHeight: this.wallHeight,
         userPointLen: userPointLen,
         userPoints: userPoints
     };
@@ -92,6 +94,8 @@ REAL3D.InnerSpaceDesignState.prototype.unPackUserData = function (userData) {
     camOrthPos = userData.cameraOrthoPosition;
     sceneData = {};
     sceneData.cameraOrthoPosition = new THREE.Vector3(camOrthPos[0], camOrthPos[1], camOrthPos[2]);
+    sceneData.wallThick = userData.wallThick;
+    sceneData.wallHeight = userData.wallHeight;
     sceneData.userPointTree = new REAL3D.Wall.UserPointTree();
     userPoints = userData.userPointTree.points;
     userPointLen = userPoints.length;
@@ -289,11 +293,11 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, inde
         var wall2d, point1, point2;
         point1 = this.sceneData.userPointTree.points[index1];
         point2 = this.sceneData.userPointTree.points[index2];
-        wall2d = new REAL3D.Wall.Wall2D(point1, point2, 10, this.sceneData.refFrame);
+        wall2d = new REAL3D.Wall.Wall2D(point1, point2, this.sceneData.wallThick, this.sceneData.refFrame);
         point1.publish("updateSubscriber");
         point2.publish("updateSubscriber");
-        point1.publish("move");
-        point2.publish("move");
+        point1.publish("updateMesh");
+        point2.publish("updateMesh");
         // var userPointLine = new REAL3D.Wall.UserPointLine(this.sceneData.userPointTree.points[index1],
         //     this.sceneData.userPointTree.points[index2], this.sceneData.refFrame);
     }
@@ -338,7 +342,7 @@ REAL3D.InnerSpaceDesignState.prototype.draggingUserPoint = function (mousePosX, 
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     this.sceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    this.sceneData.userPointTree.points[this.hitUserPointIndex].publish("move");
+    this.sceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
 };
 
 REAL3D.InnerSpaceDesignState.prototype.draggingCanvas = function (mousePosX, mousePosY) {
@@ -363,10 +367,14 @@ REAL3D.InnerSpaceDesignState.MouseState = {
 REAL3D.InnerSpaceDesignState.HITRADIUS = 250;
 REAL3D.InnerSpaceDesignState.MOVERADIUS = 100;
 REAL3D.InnerSpaceDesignState.STATENAME = "InnerSpaceDesignState";
+REAL3D.InnerSpaceDesignState.WALLTHICK = 10;
+REAL3D.InnerSpaceDesignState.WALLHEIGHT = 200;
 
 REAL3D.InnerSpaceDesignState.SceneData = function () {
     "use strict";
     this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
+    this.wallThick = REAL3D.InnerSpaceDesignState.WALLTHICK;
+    this.wallHeight = REAL3D.InnerSpaceDesignState.WALLHEIGHT;
     this.userPointTree = new REAL3D.Wall.UserPointTree();
     //rendering data
     this.refFrame = new THREE.Object3D();
@@ -378,9 +386,13 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, assistFlag, wall2d;
     if (sceneData === null) {
         this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
+        this.wallThick = REAL3D.InnerSpaceDesignState.WALLTHICK;
+        this.wallHeight = REAL3D.InnerSpaceDesignState.WALLHEIGHT;
         this.userPointTree = new REAL3D.Wall.UserPointTree();
     } else {
         this.cameraOrthoPosition = sceneData.cameraOrthoPosition;
+        this.wallThick = sceneData.wallThick;
+        this.wallHeight = sceneData.wallHeight;
         this.userPointTree = sceneData.userPointTree;
     }
     console.log(" userPointTree:", this.userPointTree);
@@ -404,14 +416,14 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
         neiLen = neighbors.length;
         for (nid = 0; nid < neiLen; nid++) {
             if (assistFlag[neighbors[nid].assistId] === 1) {
-                wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], 10, this.refFrame);
+                wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], this.wallThick, this.refFrame);
             }
         }
         assistFlag[pid] = -1;
     }
     for (pid = 0; pid < userPointLen; pid++) {
         userPoints[pid].publish("updateSubscriber");
-        userPoints[pid].publish("move");
+        userPoints[pid].publish("updateMesh");
     }
 };
 
@@ -485,17 +497,21 @@ function backToHome() {
 
 $(document).ready(function () {
     console.log("document is ready...");
-    $('<button class="button" onclick = "newWorkSpace()">新建</button>').appendTo('#leftContainer');
-    $('<button class="button" onclick = "saveWorkSpace()">保存</button>').appendTo('#leftContainer');
-    $('<button class="button" onclick = "renameWorkSpace()">改名</button>').appendTo('#leftContainer');
-    $('<button class="button" onclick = "backToHome()">返回</button>').appendTo('#leftContainer');
+    //init ui data
+    $('#newDesign').click(newWorkSpace);
+    $('#saveDesign').click(saveWorkSpace);
+    $('#return').click(backToHome);
     $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
+
+    //init state
     REAL3D.Framework.init();
     REAL3D.Framework.run();
     enterInnerSpaceDesignState("designspace");
     var designState, designName;
     designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
-    designName = $('#designName').text();
+
+    //load user data
+    designName = $('#designName').val();
     if (designName !== '') {
         console.log("designName is ", designName);
         designState.designName = designName;
@@ -503,4 +519,8 @@ $(document).ready(function () {
     } else {
         console.log("designName is space");
     }
+
+    //update ui data
+    $('wallThick').val(designState.sceneData.wallThick);
+    $('wallHeight').val(designState.sceneData.wallHeight);
 });
