@@ -8,8 +8,6 @@ REAL3D.Wall.SELECTRADIUS = 200;
 REAL3D.Wall.UserPoint = function (posX, posY) {
     "use strict";
     REAL3D.Publisher.call(this);
-    //this.posX = posX;
-    //this.posY = posY;
     this.pos = new REAL3D.Vector2(posX, posY);
     this.neighbors = [];
     this.assistId = null;
@@ -207,6 +205,8 @@ REAL3D.Wall.Wall2D = function (point1, point2, thick, parent) {
     this.point2.subscribe("updateSubscriber", this, this.updateSubscriber);
 };
 
+REAL3D.Wall.Wall2D.prototype = Object.create(REAL3D.Publisher.prototype);
+
 REAL3D.Wall.Wall2D.prototype.generateWallVector = function (pos1, pos2, assistPos) {
     "use strict";
     var mainVec, assistVec, wallVec, wallVecLen, dirFlag;
@@ -323,7 +323,7 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
 REAL3D.Wall.Wall2D.prototype.move = function () {
     "use strict";
     this.generateMesh();
-    //this.publish("move");
+    this.publish("move");
 };
 
 REAL3D.Wall.Wall2D.prototype.updateSubscriber = function () {
