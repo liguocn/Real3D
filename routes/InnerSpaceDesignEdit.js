@@ -157,3 +157,22 @@ exports.load = function (req, res) {
         }
     });
 };
+
+exports.findName = function (req, res) {
+    "use strict";
+    var designId;
+    console.log("    --post innerspacedesign/load");
+    res.set({"Content-Type": "application/json"});
+    designId = generateDesignId(req.session.user, req.body.designName);
+    console.log("    --designId: ", designId);
+    InnerSpaceInfo.findByDesignId(designId, function (err, obj) {
+        if (err) {
+            console.log("error: ", err);
+            res.send({success: false});
+        } else if (obj) {
+            res.send({success: true});
+        } else {
+            res.send({success: false});
+        }
+    });
+};

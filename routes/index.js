@@ -6,7 +6,7 @@ var InnerSpaceDesign = require("./InnerSpaceDesign");
 var PersonalHomePage = require("./PersonalHomePage");
 
 /* GET home page. */
-router.get("/", function(req, res) {
+router.get("/", function (req, res) {
     "use strict";
     if (req.session.user !== undefined) {
         res.redirect("/personalhomepage");
@@ -25,7 +25,7 @@ router.post("/dologin", LogReg.doLogin);
 
 router.post("/dologout", LogReg.doLogout);
 
-router.get("/aboutus", function(req, res) {
+router.get("/aboutus", function (req, res) {
     "use strict";
     res.render('AboutUs');
 });
@@ -44,12 +44,14 @@ router.post("/innerspacedesign/edit/load", InnerSpaceDesignEdit.load);
 
 router.post("/innerspacedesign/edit/rename", InnerSpaceDesignEdit.rename);
 
+router.get("/innerspacedesign/edit/findName", InnerSpaceDesignEdit.findName);
+
 router.get("/furnituredesign", function(req, res) {
     "use strict";
     res.render('FurnitureDesign');
 });
 
-router.get("/designshow", function(req, res) {
+router.get("/designshow", function (req, res) {
     "use strict";
     res.render('DesignShow');
 });
