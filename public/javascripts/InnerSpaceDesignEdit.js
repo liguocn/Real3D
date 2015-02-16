@@ -17,7 +17,7 @@ REAL3D.InnerSpaceDesignState = function (winW, winH, canvasElement) {
     this.hitUserPointIndex = -1;
     this.lastCreatedPointIndex = -1;
 
-    this.designName = null;
+    this.designName = "";
     this.sceneData = new REAL3D.InnerSpaceDesignState.SceneData();
 
     var that = this;
@@ -291,11 +291,13 @@ REAL3D.InnerSpaceDesignState.prototype.connectUserPoint = function (index1, inde
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         this.sceneData.userPointTree.connectPoints(index1, index2);
-        var wall2d, point1, point2;
+        var wall2d, wall3d, point1, point2;
         point1 = this.sceneData.userPointTree.points[index1];
         point2 = this.sceneData.userPointTree.points[index2];
         wall2d = new REAL3D.Wall.Wall2D(point1, point2, this.sceneData.wallThick, this.sceneData.refFrame);
+        wall3d = new REAL3D.Wall.Wall3D(wall2d, this.sceneData.wallHeight, this.sceneData.refFrame);
         this.sceneData.wall2ds.push(wall2d);
+        this.sceneData.wall3ds.push(wall3d);
         point1.publish("updateSubscriber");
         point2.publish("updateSubscriber");
         point1.publish("updateMesh");
@@ -379,6 +381,7 @@ REAL3D.InnerSpaceDesignState.SceneData = function () {
     this.wallHeight = REAL3D.InnerSpaceDesignState.WALLHEIGHT;
     this.userPointTree = new REAL3D.Wall.UserPointTree();
     this.wall2ds = [];
+    this.wall3ds = [];
     //rendering data
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
@@ -386,7 +389,7 @@ REAL3D.InnerSpaceDesignState.SceneData = function () {
 
 REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     "use strict";
-    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, assistFlag, wall2d;
+    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, assistFlag, wall2d, wall3d;
     if (sceneData === null) {
         this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
         this.wallThick = REAL3D.InnerSpaceDesignState.WALLTHICK;
@@ -421,7 +424,9 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
         for (nid = 0; nid < neiLen; nid++) {
             if (assistFlag[neighbors[nid].assistId] === 1) {
                 wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], this.wallThick, this.refFrame);
+                wall3d = new REAL3D.Wall.Wall3D(wall2d, this.wallHeight, this.refFrame);
                 this.wall2ds.push(wall2d);
+                this.wall3ds.push(wall3d);
             }
         }
         assistFlag[pid] = -1;
@@ -432,7 +437,7 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.reInit = function (sceneData) {
     }
 };
 
-REAL3D.InnerSpaceDesignState.SceneData.prototype.updateWall2DThick = function (thick) {
+REAL3D.InnerSpaceDesignState.SceneData.prototype.updateWallThick = function (thick) {
     "use strict";
     var wallLen, wid;
     wallLen = this.wall2ds.length;
@@ -441,6 +446,17 @@ REAL3D.InnerSpaceDesignState.SceneData.prototype.updateWall2DThick = function (t
         this.wall2ds[wid].updateMesh();
     }
     this.wallThick = thick;
+};
+
+REAL3D.InnerSpaceDesignState.SceneData.prototype.updateWallHeight = function (height) {
+    "use strict";
+    var wallLen, wid;
+    wallLen = this.wall3ds.length;
+    for (wid = 0; wid < wallLen; wid++) {
+        this.wall3ds[wid].height = height;
+        this.wall3ds[wid].updateMesh();
+    }
+    this.wallHeight = height;
 };
 
 function enterInnerSpaceDesignState(containerId) {
@@ -457,12 +473,19 @@ function enterInnerSpaceDesignState(containerId) {
     REAL3D.StateManager.enterState(InnerSpaceDesignState);
 }
 
+function updateUIData() {
+    "use strict";
+    var designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
+    $('#designName').val(designState.designName);
+    $('#wallThick').val(designState.sceneData.wallThick);
+    $('#wallHeight').val(designState.sceneData.wallHeight);
+}
+
 function newWorkSpace() {
     "use strict";
-    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData(null, null);
+    REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME).initUserData("", null);
+    updateUIData();
     console.log("New Work Space");
-    // var userName = window.prompt("Input your name: ");
-    // console.log("userName: ", userName);
 }
 
 function saveWorkSpace() {
@@ -506,33 +529,6 @@ function saveWorkSpace() {
     console.log("Save Work Space");
 }
 
-// function renameWorkSpace() {
-//     "use strict";
-//     var newName, designState, postData;
-//     newName = window.prompt("请输入新的设计名字：");
-//     if (newName === null) {
-//         return;
-//     }
-//     console.log("newName: ", newName);
-//     //Need to verify newName, which will be done later.
-//     designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
-//     if (designState.designName === null) {
-//         designState.designName = newName;
-//     } else {
-//         postData = {
-//             originDesignName: designState.designName,
-//             newDesignName: newName
-//         };
-//         $.post("/innerspacedesign/edit/rename", $.param(postData, true), function (data) {
-//             console.log("  rename result:", data);
-//             if (data.success === 1) {
-//                 designState.designName = newName;
-//             }
-//         }, "json");
-//     }
-//     console.log("ReName Work Space");
-// }
-
 function backToHome() {
     "use strict";
     window.location.href = "/innerspacedesign";
@@ -542,19 +538,14 @@ function changeWallThick() {
     "use strict";
     console.log("changeWallThick: ", $('#wallThick').val());
     var designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
-    designState.sceneData.updateWall2DThick($('#wallThick').val());
+    designState.sceneData.updateWallThick($('#wallThick').val());
 }
 
 function changeWallHeight() {
     "use strict";
     console.log("changeWallHeight: ", $('#wallHeight').val());
-}
-
-function updateUIData() {
-    "use strict";
     var designState = REAL3D.StateManager.getState(REAL3D.InnerSpaceDesignState.STATENAME);
-    $('#wallThick').val(designState.sceneData.wallThick);
-    $('#wallHeight').val(designState.sceneData.wallHeight);
+    designState.sceneData.updateWallHeight($('#wallHeight').val());
 }
 
 $(document).ready(function () {

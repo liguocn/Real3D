@@ -196,6 +196,7 @@ REAL3D.Wall.Wall2D = function (point1, point2, thick, parent) {
     this.point1 = point1;
     this.point2 = point2;
     this.thick = thick;
+    this.wall2dPoints = [];
     this.parent = parent;
     this.mesh = null;
     //generate geometry
@@ -318,6 +319,8 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
     this.mesh = new THREE.Mesh(geometry, material);
     this.parent.add(this.mesh);
+
+    this.wall2dPoints = [wallPos1, wallPos2, wallPos3, wallPos4];
 };
 
 REAL3D.Wall.Wall2D.prototype.updateMesh = function () {
@@ -345,17 +348,45 @@ REAL3D.Wall.Wall2D.prototype.updateSubscriber = function () {
 
 REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
     "use strict";
-    this.wall2D = wall2d;
+    this.wall2d = wall2d;
     this.height = height;
     this.parent = parent;
-    this.geometry = null;
+    this.mesh = null;
     this.generateMesh();
     //registrate update callback
-    this.wall2D.subscribe("updateMesh", this, this.updateMesh);
+    this.wall2d.subscribe("updateMesh", this, this.updateMesh);
 };
 
 REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
     "use strict";
+    console.log("generate 3d mesh");
+    var wall2dPoints, wall2dLen, geometry, material, pid, fid;
+    wall2dPoints = this.wall2d.wall2dPoints;
+    wall2dLen = wall2dPoints.length;
+
+    this.parent.remove(this.mesh);
+    geometry = new THREE.Geometry();
+    for (pid = 0; pid < wall2dLen; pid++) {
+        geometry.vertices.push(new THREE.Vector3(wall2dPoints[pid].getX(), wall2dPoints[pid].getY(), 0));
+    }
+    for (pid = 0; pid < wall2dLen; pid++) {
+        geometry.vertices.push(new THREE.Vector3(wall2dPoints[pid].getX(), wall2dPoints[pid].getY(), this.height));
+    }
+    for (fid = 1; fid < wall2dLen - 1; fid++) {
+        geometry.faces.push(new THREE.Face3(0, fid, fid + 1));
+    }
+    for (fid = 1; fid < wall2dLen - 1; fid++) {
+        geometry.faces.push(new THREE.Face3(wall2dLen, fid + wall2dLen + 1, fid + wall2dLen));
+    }
+    for (pid = 0; pid < wall2dLen; pid++) {
+        geometry.faces.push(new THREE.Face3(pid, (pid + 1) % wall2dLen, pid + wall2dLen));
+        geometry.faces.push(new THREE.Face3((pid + 1) % wall2dLen, (pid + 1) % wall2dLen + wall2dLen, pid + wall2dLen));
+    }
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.parent.add(this.mesh);
 };
 
 REAL3D.Wall.Wall3D.prototype.updateMesh = function () {
