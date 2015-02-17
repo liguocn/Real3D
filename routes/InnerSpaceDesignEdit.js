@@ -22,6 +22,7 @@ function unPackSceneData(body) {
     var sceneData, userPointLen, curIndex, pid, userPoint, neiLen, nid;
     sceneData = {
         cameraOrthoPosition: [],
+        cameraPerspPosition: [],
         wallThick: parseFloat(body.wallThick),
         wallHeight: parseFloat(body.wallHeight),
         userPointTree: {
@@ -31,6 +32,9 @@ function unPackSceneData(body) {
     sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[0]));
     sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[1]));
     sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[2]));
+    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[0]));
+    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[1]));
+    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[2]));
     userPointLen = parseInt(body.userPointLen, 10);
     curIndex = 0;
     for (pid = 0; pid < userPointLen; pid++) {

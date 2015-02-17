@@ -16,6 +16,7 @@ var InnerSpaceInfoSchema = new Schema({
     creator: String,
     sceneData: {
         cameraOrthoPosition: [Number],
+        cameraPerspPosition: [Number],
         wallThick: Number,
         wallHeight: Number,
         userPointTree: {

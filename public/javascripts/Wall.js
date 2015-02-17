@@ -359,7 +359,7 @@ REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
 
 REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
     "use strict";
-    console.log("generate 3d mesh");
+    //console.log("generate 3d mesh");
     var wall2dPoints, wall2dLen, geometry, material, pid, fid;
     wall2dPoints = this.wall2d.wall2dPoints;
     wall2dLen = wall2dPoints.length;
