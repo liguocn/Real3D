@@ -69,9 +69,13 @@ REAL3D.InnerSpaceDesign.initUserData = function (sceneData) {
 
 REAL3D.InnerSpaceDesign.run = function () {
     "use strict";
-    REAL3D.RenderManager.update();
     var that = this;
-    requestAnimationFrame(function () {that.run(); });
+    function animateFunction(timestamp) {
+        REAL3D.RenderManager.update();
+        that.viewState.update(timestamp);
+        requestAnimationFrame(animateFunction);
+    }
+    requestAnimationFrame(animateFunction);
 };
 
 REAL3D.InnerSpaceDesign.mouseDown = function (e) {
@@ -315,6 +319,11 @@ REAL3D.InnerSpaceDesign.EditWallView.init = function (canvasOffset) {
     this.lastCreatedPointIndex = -1;
 };
 
+REAL3D.InnerSpaceDesign.EditWallView.update = function (timestamp) {
+    "use strict";
+    //console.log("update: timestamp = ", timestamp);
+};
+
 REAL3D.InnerSpaceDesign.EditWallView.mouseDown = function (e) {
     "use strict";
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
@@ -518,6 +527,10 @@ REAL3D.InnerSpaceDesign.FreeWalkView.init = function (canvasOffset, winW, winH) 
     this.winH = winH;
     this.isMouseDown = false;
     this.mouseMovePos = new THREE.Vector2(0, 0);
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.update = function (timestamp) {
+    "use strict";
 };
 
 REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
