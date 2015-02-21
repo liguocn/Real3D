@@ -306,19 +306,19 @@ REAL3D.Wall.Wall2D.prototype.generateMesh = function () {
     wallPos3 = wallPoints[0];
     wallPos4 = wallPoints[1];
 
-    this.parent.remove(this.mesh);
-    geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(wallPos1.getX(), wallPos1.getY(), 0),
-                           new THREE.Vector3(wallPos2.getX(), wallPos2.getY(), 0),
-                           new THREE.Vector3(wallPos3.getX(), wallPos3.getY(), 0),
-                           new THREE.Vector3(wallPos4.getX(), wallPos4.getY(), 0));
-    geometry.faces.push(new THREE.Face3(0, 2, 1),
-                        new THREE.Face3(0, 3, 2));
-    geometry.computeFaceNormals();
-    geometry.computeVertexNormals();
-    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.parent.add(this.mesh);
+    // this.parent.remove(this.mesh);
+    // geometry = new THREE.Geometry();
+    // geometry.vertices.push(new THREE.Vector3(wallPos1.getX(), wallPos1.getY(), 0),
+    //                        new THREE.Vector3(wallPos2.getX(), wallPos2.getY(), 0),
+    //                        new THREE.Vector3(wallPos3.getX(), wallPos3.getY(), 0),
+    //                        new THREE.Vector3(wallPos4.getX(), wallPos4.getY(), 0));
+    // geometry.faces.push(new THREE.Face3(0, 2, 1),
+    //                     new THREE.Face3(0, 3, 2));
+    // geometry.computeFaceNormals();
+    // geometry.computeVertexNormals();
+    // material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
+    // this.mesh = new THREE.Mesh(geometry, material);
+    // this.parent.add(this.mesh);
 
     this.wall2dPoints = [wallPos1, wallPos2, wallPos3, wallPos4];
 };
@@ -379,12 +379,12 @@ REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
         geometry.faces.push(new THREE.Face3(wall2dLen, fid + wall2dLen + 1, fid + wall2dLen));
     }
     for (pid = 0; pid < wall2dLen; pid++) {
-        geometry.faces.push(new THREE.Face3(pid, (pid + 1) % wall2dLen, pid + wall2dLen));
-        geometry.faces.push(new THREE.Face3((pid + 1) % wall2dLen, (pid + 1) % wall2dLen + wall2dLen, pid + wall2dLen));
+        geometry.faces.push(new THREE.Face3(pid, pid + wall2dLen, (pid + 1) % wall2dLen));
+        geometry.faces.push(new THREE.Face3((pid + 1) % wall2dLen, pid + wall2dLen, (pid + 1) % wall2dLen + wall2dLen));
     }
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
-    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10});
+    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10, wireframe: false});
     this.mesh = new THREE.Mesh(geometry, material);
     this.parent.add(this.mesh);
 };
