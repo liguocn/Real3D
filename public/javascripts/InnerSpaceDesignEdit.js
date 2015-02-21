@@ -60,6 +60,7 @@ REAL3D.InnerSpaceDesign.initUserData = function (sceneData) {
     "use strict";
     //set up scene
     REAL3D.InnerSpaceDesign.EditWallView.init($(this.canvasElement).offset());
+    REAL3D.InnerSpaceDesign.FreeWalkView.init();
     REAL3D.InnerSpaceDesign.SceneData.init(sceneData);
     this.viewState = REAL3D.InnerSpaceDesign.EditWallView;
     this.setScene();
@@ -87,10 +88,9 @@ REAL3D.InnerSpaceDesign.mouseUp = function (e) {
     this.viewState.mouseUp(e);
 };
 
-REAL3D.InnerSpaceDesign.keypress = function (e) {
+REAL3D.InnerSpaceDesign.keyPress = function (e) {
     "use strict";
-    var keyCode = e.which;
-    //console.log("keyCode: ", keyCode);
+    this.viewState.keyPress(e);
 };
 
 REAL3D.InnerSpaceDesign.MouseState = {
@@ -417,6 +417,37 @@ REAL3D.InnerSpaceDesign.EditWallView.mouseUp = function (e) {
     //console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
+REAL3D.InnerSpaceDesign.EditWallView.keyPress = function (e) {
+    "use strict";
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView = {};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.init = function () {
+    "use strict";
+    console.log("FreeWalkView init");
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
+    "use strict";
+    console.log("FreeWalkView mouseDown");
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
+    "use strict";
+    console.log("FreeWalkView mouseMove");
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.mouseUp = function (e) {
+    "use strict";
+    console.log("FreeWalkView mouseUp");
+};
+
+REAL3D.InnerSpaceDesign.FreeWalkView.keyPress = function (e) {
+    "use strict";
+    console.log("FreeWalkView keypress: ", e.which);
+};
+
 REAL3D.InnerSpaceDesign.EditWallView.hitDetection = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
@@ -569,9 +600,11 @@ function viewSwitch() {
     if ($('#viewSwitch').text() === '3D') {
         $('#viewSwitch').text('2D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraOrthoName);
+        REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.EditWallView;
     } else {
         $('#viewSwitch').text('3D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraPerspName);
+        REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.FreeWalkView;
     }
 }
 
