@@ -548,9 +548,9 @@ REAL3D.InnerSpaceDesign.FreeWalkView.update = function (timestamp) {
         REAL3D.InnerSpaceDesign.cameraPersp.translateZ(this.moveSpeed * timeDelta);
     }
     if (this.turnState === REAL3D.InnerSpaceDesign.MouseState.TURNLEFT) {
-        REAL3D.InnerSpaceDesign.cameraPersp.rotateY(-1 * this.turnSpeed * timeDelta);
-    } else if (this.turnState === REAL3D.InnerSpaceDesign.MouseState.TURNRIGHT) {
         REAL3D.InnerSpaceDesign.cameraPersp.rotateY(this.turnSpeed * timeDelta);
+    } else if (this.turnState === REAL3D.InnerSpaceDesign.MouseState.TURNRIGHT) {
+        REAL3D.InnerSpaceDesign.cameraPersp.rotateY(-1 * this.turnSpeed * timeDelta);
     }
     this.timestamp = timestamp;
 };
@@ -585,9 +585,9 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
 
     curPosX = e.pageX - this.canvasOffset.left;
     xDir = curPosX / this.winW - 0.5;
-    if (xDir < -0.15) {
+    if (xDir < -0.1) {
         this.turnState = REAL3D.InnerSpaceDesign.MouseState.TURNLEFT;
-    } else if (xDir > 0.15) {
+    } else if (xDir > 0.1) {
         this.turnState = REAL3D.InnerSpaceDesign.MouseState.TURNRIGHT;
     } else {
         this.turnState = REAL3D.InnerSpaceDesign.MouseState.NONE;
