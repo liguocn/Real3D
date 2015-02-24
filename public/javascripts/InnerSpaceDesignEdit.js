@@ -148,9 +148,28 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     //render scene data
     //console.log("render scene data");
 
-    var light = new THREE.PointLight(0x197db1, 1, 5000);
-    light.position.set(0, 0, 300);
+    var light = new THREE.PointLight(0xa9a9a9, 1, 500);
+    light.position.set(0, 0, 200);
     this.refFrame.add(light);
+
+    var ambientLight = new THREE.AmbientLight(0x404040);
+    this.refFrame.add(ambientLight);
+
+    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight1.position.set(1, 1, 1);
+    this.refFrame.add(dirLight1);
+
+    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight2.position.set(-1, 1, 1);
+    //this.refFrame.add(dirLight2);
+
+    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight3.position.set(-1, -1, 1);
+    this.refFrame.add(dirLight3);
+
+    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight4.position.set(1, -1, 1);
+    //this.refFrame.add(dirLight4);
 
     this.wall2ds = [];
     userPoints = this.userPointTree.points;
@@ -518,7 +537,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView = {
     isMouseDown: false,
     mouseMovePos: new REAL3D.Vector2(0, 0),
     moveSpeed: 5,
-    turnSpeed: 0.0005
+    turnSpeed: 0.002
 };
 
 REAL3D.InnerSpaceDesign.FreeWalkView.init = function (canvasOffset, winW, winH) {
@@ -530,7 +549,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.init = function (canvasOffset, winW, winH) 
     this.isMouseDown = false;
     this.mouseMovePos = new REAL3D.Vector2(0, 0);
     this.moveSpeed = 5;
-    this.turnSpeed = 0.001;
+    this.turnSpeed = 0.002;
 };
 
 REAL3D.InnerSpaceDesign.FreeWalkView.update = function (timestamp) {

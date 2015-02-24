@@ -384,7 +384,7 @@ REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
     }
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
-    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10, wireframe: false});
+    material = new THREE.MeshPhongMaterial({color: 0xfefefe, specular: 0x101010, shininess: 10, wireframe: false, shading: THREE.FlatShading});
     this.mesh = new THREE.Mesh(geometry, material);
     this.parent.add(this.mesh);
 };
