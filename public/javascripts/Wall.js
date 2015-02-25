@@ -1,5 +1,5 @@
 /*jslint plusplus: true */
-/*global REAL3D, THREE */
+/*global REAL3D, THREE, console */
 
 REAL3D.Wall = {};
 
@@ -134,19 +134,57 @@ REAL3D.Wall.UserPointBall = function (point, parent) {
     geometry = new THREE.SphereGeometry(5, 32, 32);
     material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
     this.ball = new THREE.Mesh(geometry, material);
-    this.ball.position.set(point.pos.getX(), point.pos.getY(), 0);
+    this.ball.position.set(point.pos.getX(), point.pos.getY(), 900);
     this.parent = parent;
     this.parent.add(this.ball);
 };
 
 REAL3D.Wall.UserPointBall.prototype.updateMesh = function () {
     "use strict";
-    this.ball.position.set(this.point.pos.getX(), this.point.pos.getY(), 0);
+    this.ball.position.set(this.point.pos.getX(), this.point.pos.getY(), 900);
 };
 
 REAL3D.Wall.UserPointBall.prototype.remove = function () {
     "use strict";
     this.parent.remove(this.ball);
+    this.point.unsubscribe("updateMesh", this);
+    this.point.unsubscribe("remove", this);
+    this.parent = null;
+};
+
+REAL3D.Wall.UserPointBox = function (point, boxLength, parent) {
+    "use strict";
+    var geometry, material;
+    this.point = point;
+    this.point.subscribe("updateMesh", this, this.updateMesh);
+    this.point.subscribe("remove", this, this.remove);
+    geometry = new THREE.BoxGeometry(boxLength, boxLength, boxLength);
+    material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
+    this.box = new THREE.Mesh(geometry, material);
+    this.box.position.set(point.pos.getX(), point.pos.getY(), 900);
+    this.parent = parent;
+    this.parent.add(this.box);
+};
+
+REAL3D.Wall.UserPointBox.prototype.updateMesh = function () {
+    "use strict";
+    this.box.position.set(this.point.pos.getX(), this.point.pos.getY(), 900);
+};
+
+REAL3D.Wall.UserPointBox.prototype.updateBoxLength = function (boxLength) {
+    "use strict";
+    this.parent.remove(this.box);
+    var geometry, material;
+    geometry = new THREE.BoxGeometry(boxLength, boxLength, boxLength);
+    material = new THREE.MeshBasicMaterial({color: 0x0e0efe});
+    this.box = new THREE.Mesh(geometry, material);
+    this.box.position.set(this.point.pos.getX(), this.point.pos.getY(), 900);
+    this.parent.add(this.box);
+};
+
+REAL3D.Wall.UserPointBox.prototype.remove = function () {
+    "use strict";
+    this.parent.remove(this.box);
     this.point.unsubscribe("updateMesh", this);
     this.point.unsubscribe("remove", this);
     this.parent = null;

@@ -120,13 +120,14 @@ REAL3D.InnerSpaceDesign.SceneData = {
     wallHeight: 0,
     userPointTree: null,
     wall2ds: [],
+    wallBoxes: [],
     wall3ds: [],
     refFrame: null
 };
 
 REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     "use strict";
-    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBall, assistFlag, wall2d, wall3d;
+    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBox, assistFlag, wall2d, wall3d;
     if (sceneData === null) {
         this.designName = "";
         this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
@@ -172,10 +173,12 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     //this.refFrame.add(dirLight4);
 
     this.wall2ds = [];
+    this.wallBoxes = [];
     userPoints = this.userPointTree.points;
     userPointLen = userPoints.length;
     for (pid = 0; pid < userPointLen; pid++) {
-        userPointBall = new REAL3D.Wall.UserPointBall(userPoints[pid], this.refFrame);
+        userPointBox = new REAL3D.Wall.UserPointBox(userPoints[pid], this.wallThick * 2, this.refFrame);
+        this.wallBoxes.push(userPointBox);
     }
     this.userPointTree.updateAssistId();
     assistFlag = [];
@@ -297,11 +300,15 @@ REAL3D.InnerSpaceDesign.SceneData.loadUserData = function (callback) {
 
 REAL3D.InnerSpaceDesign.SceneData.updateWallThick = function (thick) {
     "use strict";
-    var wallLen, wid;
+    var wallLen, wid, boxLen, bid;
     wallLen = this.wall2ds.length;
     for (wid = 0; wid < wallLen; wid++) {
         this.wall2ds[wid].thick = thick;
         this.wall2ds[wid].updateMesh();
+    }
+    boxLen = this.wallBoxes.length;
+    for (bid = 0; bid < boxLen; bid++) {
+        this.wallBoxes[bid].updateBoxLength(thick * 2);
     }
     this.wallThick = thick;
 };
@@ -480,14 +487,15 @@ REAL3D.InnerSpaceDesign.EditWallView.connectUserPoint = function (index1, index2
 
 REAL3D.InnerSpaceDesign.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
-    var cameraPos, worldPosX, worldPosY, newId, userPointBall;
+    var cameraPos, worldPosX, worldPosY, newId, userPointBox;
     mousePosY = REAL3D.InnerSpaceDesign.winH - mousePosY;
     cameraPos = REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition;
     worldPosX = mousePosX - REAL3D.InnerSpaceDesign.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - REAL3D.InnerSpaceDesign.winH / 2 + cameraPos.y;
     newId = REAL3D.InnerSpaceDesign.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
-    userPointBall = new REAL3D.Wall.UserPointBall(REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[newId],
-        REAL3D.InnerSpaceDesign.SceneData.refFrame);
+    userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[newId],
+        REAL3D.InnerSpaceDesign.SceneData.wallThick * 2, REAL3D.InnerSpaceDesign.SceneData.refFrame);
+    REAL3D.InnerSpaceDesign.SceneData.wallBoxes.push(userPointBox);
     return newId;
 };
 
