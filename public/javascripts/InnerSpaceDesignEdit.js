@@ -621,8 +621,8 @@ function enterInnerSpaceDesign() {
 function updateUIData() {
     "use strict";
     $('#designName').val(REAL3D.InnerSpaceDesign.SceneData.designName);
-    $('#wallThick').val(REAL3D.InnerSpaceDesign.SceneData.wallThick);
-    $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
+    // $('#wallThick').val(REAL3D.InnerSpaceDesign.SceneData.wallThick);
+    // $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
 }
 
 function newWorkSpace() {
@@ -673,12 +673,12 @@ function saveWorkSpace() {
 
 function viewSwitch() {
     "use strict";
-    if ($('#viewSwitch').text() === '3D') {
-        $('#viewSwitch').text('2D');
+    if ($('#viewSwitch').text() === '2D') {
+        $('#viewSwitch').text('3D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraOrthoName);
         REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.EditWallView;
     } else {
-        $('#viewSwitch').text('3D');
+        $('#viewSwitch').text('2D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraPerspName);
         REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.FreeWalkView;
     }
@@ -691,13 +691,15 @@ function enterToolWall() {
     $('<div id="toolBar" class="wall"></div>').appendTo('#leftContainer');
     $('<div class="text">墙</div>').appendTo('#toolBar');
 
-    $('<div">墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" value="10" min="1" max="50"></div>').appendTo('#toolBar');
+    $('<div">墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" min="1" max="50"></div>').appendTo('#toolBar');
     $('#wallThick').get(0).addEventListener("input", changeWallThick, false);
+    $('#wallThick').val(REAL3D.InnerSpaceDesign.SceneData.wallThick);
     
-    $('<div>墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" value="200" min="100" max="500"></div>').appendTo('#toolBar');
+    $('<div>墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" min="100" max="500"></div>').appendTo('#toolBar');
     $('#wallHeight').get(0).addEventListener("input", changeWallHeight, false);
+    $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
     
-    $('<div>视角切换<button id="viewSwitch" class="button">2D</button></div>').appendTo('#toolBar');
+    $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
     $('#viewSwitch').click(viewSwitch);
     
     $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
