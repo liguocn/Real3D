@@ -155,19 +155,19 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     var ambientLight = new THREE.AmbientLight(0x404040);
     this.refFrame.add(ambientLight);
 
-    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.75);
     dirLight1.position.set(1, 1, 1);
     this.refFrame.add(dirLight1);
 
-    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.75);
     dirLight2.position.set(-1, 1, 1);
     //this.refFrame.add(dirLight2);
 
-    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
+    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.75);
     dirLight3.position.set(-1, -1, 1);
     this.refFrame.add(dirLight3);
 
-    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.5);
+    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.75);
     dirLight4.position.set(1, -1, 1);
     //this.refFrame.add(dirLight4);
 
@@ -607,7 +607,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.keyPress = function (e) {
 function enterInnerSpaceDesign() {
     "use strict";
     var canvasElement, canvContainer, winW, winH;
-    winW = $(window).width() - 128;
+    winW = $(window).width() - 240;
     winW = (winW < 1024) ? 1024 : winW;
     winH = $(window).height() - 55;
     winH = (winH < 640) ? 640 : winH;
@@ -684,6 +684,97 @@ function viewSwitch() {
     }
 }
 
+function enterToolWall() {
+    "use strict";
+    $('#toolBar').remove();
+
+    $('<div id="toolBar" class="wall"></div>').appendTo('#leftContainer');
+    $('<div class="text">墙</div>').appendTo('#toolBar');
+
+    $('<div">墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" value="10" min="1" max="50"></div>').appendTo('#toolBar');
+    $('#wallThick').get(0).addEventListener("input", changeWallThick, false);
+    
+    $('<div>墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" value="200" min="100" max="500"></div>').appendTo('#toolBar');
+    $('#wallHeight').get(0).addEventListener("input", changeWallHeight, false);
+    
+    $('<div>视角切换<button id="viewSwitch" class="button">2D</button></div>').appendTo('#toolBar');
+    $('#viewSwitch').click(viewSwitch);
+    
+    $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
+    $('#return').click(function () {
+        $('#toolBar').remove();
+        enterToolHome();
+    });
+}
+
+function enterToolFurniture() {
+    "use strict";
+    $('#toolBar').remove();
+
+    $('<div id="toolBar"></div>').appendTo('#leftContainer');
+    $('<div>家具</div>').appendTo('#toolBar');
+
+    $('<button id="return">返回</button>').appendTo('#toolBar');
+    $('#return').click(function () {
+        $('#toolBar').remove();
+        enterToolHome();
+    });
+}
+
+function enterToolLight() {
+    "use strict";
+    $('#toolBar').remove();
+
+    $('<div id="toolBar"></div>').appendTo('#leftContainer');
+    $('<div>灯光</div>').appendTo('#toolBar');
+
+    $('<button id="return">返回</button>').appendTo('#toolBar');
+    $('#return').click(function () {
+        $('#toolBar').remove();
+        enterToolHome();
+    });
+}
+
+function enterToolMaterial() {
+    "use strict";
+    $('#toolBar').remove();
+
+    $('<div id="toolBar"></div>').appendTo('#leftContainer');
+    $('<div>材质</div>').appendTo('#toolBar');
+
+    $('<button id="return">返回</button>').appendTo('#toolBar');
+    $('#return').click(function () {
+        $('#toolBar').remove();
+        enterToolHome();
+    });
+}
+
+function enterToolHome() {
+    "use strict";
+    $('<div id="toolBar"></div>').appendTo('#leftContainer');
+    $('<div class="text">工具栏</div>').appendTo('#toolBar');
+    
+    $('<button id="wallBut" class="button">墙</button>').appendTo('#toolBar');
+    $('#wallBut').click(enterToolWall);
+    $('<br>').appendTo('#toolBar');
+    
+    $('<button id="furnitureBut" class="button">家具</button>').appendTo('#toolBar');
+    $('#furnitureBut').click(enterToolFurniture);
+    $('<br>').appendTo('#toolBar');
+
+    $('<button id="lightBut" class="button">灯光</button>').appendTo('#toolBar');
+    $('#lightBut').click(enterToolLight);
+    $('<br>').appendTo('#toolBar');
+
+    $('<button id="materialBut" class="button">材质</button>').appendTo('#toolBar');
+    $('#materialBut').click(enterToolMaterial);
+    $('<br>').appendTo('#toolBar');
+    
+    $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
+    $('#return').click(backToHome);
+    $('<br>').appendTo('#toolBar');
+}
+
 function backToHome() {
     "use strict";
     window.location.href = "/innerspacedesign";
@@ -704,12 +795,9 @@ function changeWallHeight() {
 $(document).ready(function () {
     console.log("document is ready...");
     //init ui data
-    $('#wallThick').get(0).addEventListener("input", changeWallThick, false);
-    $('#wallHeight').get(0).addEventListener("input", changeWallHeight, false);
+    enterToolHome();
     $('#newDesign').click(newWorkSpace);
     $('#saveDesign').click(saveWorkSpace);
-    $('#viewSwitch').click(viewSwitch);
-    $('#return').click(backToHome);
     $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
 
     //init state
