@@ -153,7 +153,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, in
         var wall2d, wall3d, point1, point2;
         point1 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index1];
         point2 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index2];
-        wall2d = new REAL3D.Wall.Wall2D(point1, point2, REAL3D.InnerSpaceDesignEdit.SceneData.wallThick, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
+        wall2d = new REAL3D.Wall.Wall2D(point1, point2, REAL3D.InnerSpaceDesignEdit.SceneData.wallThick);
         wall3d = new REAL3D.Wall.Wall3D(wall2d, REAL3D.InnerSpaceDesignEdit.SceneData.wallHeight, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
         REAL3D.InnerSpaceDesignEdit.SceneData.wall2ds.push(wall2d);
         REAL3D.InnerSpaceDesignEdit.SceneData.wall3ds.push(wall3d);

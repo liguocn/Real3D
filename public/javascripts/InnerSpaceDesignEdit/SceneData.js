@@ -65,7 +65,7 @@ REAL3D.InnerSpaceDesignEdit.SceneData.drawCommonScene = function () {
         neiLen = neighbors.length;
         for (nid = 0; nid < neiLen; nid++) {
             if (assistFlag[neighbors[nid].assistId] === 1) {
-                wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], this.wallThick, this.refFrame);
+                wall2d = new REAL3D.Wall.Wall2D(userPoints[pid], neighbors[nid], this.wallThick);
                 wall3d = new REAL3D.Wall.Wall3D(wall2d, this.wallHeight, this.refFrame);
                 this.wall2ds.push(wall2d);
                 this.wall3ds.push(wall3d);
