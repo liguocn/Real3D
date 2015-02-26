@@ -43,11 +43,11 @@ REAL3D.Publisher.prototype.unsubscribe = function (parm_message, parm_subscriber
 
 REAL3D.Publisher.prototype.publish = function (parm_message) {
     "use strict";
-    var subscribers, ii, jj, args;
+    var subscribers, ii, jj, args, subscriberLen;
     subscribers = this.messageTypes[parm_message];
-
+    subscriberLen = subscribers.length;
     if (subscribers) {
-        for (ii = 0; ii < subscribers.length; ii++) {
+        for (ii = subscriberLen - 1; ii >= 0; ii--) {
             args = [];
             for (jj = 0; jj < arguments.length - 1; jj++) {
                 args.push(arguments[jj + 1]);

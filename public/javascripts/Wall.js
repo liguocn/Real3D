@@ -159,7 +159,7 @@ REAL3D.Wall.UserPointBox.prototype.remove = function () {
     "use strict";
     this.parent.remove(this.box);
     this.point.unsubscribe("updateMesh", this);
-    //this.point.unsubscribe("remove", this);
+    this.point.unsubscribe("remove", this);
     this.parent = null;
     this.point = null;
     this.box = null;
@@ -294,14 +294,14 @@ REAL3D.Wall.Wall2D.prototype.remove = function () {
 
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
     this.point1.unsubscribe("updateMesh", this, this.updateMesh);
-    //this.point1.unsubscribe("remove", this, this.remove);
+    this.point1.unsubscribe("remove", this, this.remove);
     neighbors1 = this.point1.neighbors;
     neigLen1 = neighbors1.length;
     for (nid = 0; nid < neigLen1; nid++) {
         neighbors1[nid].unsubscribe("updateMesh", this, this.updateMesh);
     }
     this.point2.unsubscribe("updateMesh", this, this.updateMesh);
-    //this.point2.unsubscribe("remove", this, this.remove);
+    this.point2.unsubscribe("remove", this, this.remove);
     neighbors2 = this.point2.neighbors;
     neigLen2 = neighbors2.length;
     for (nid = 0; nid < neigLen2; nid++) {
