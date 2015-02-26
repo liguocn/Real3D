@@ -87,7 +87,8 @@ REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent = function () {
     this.refFrame.remove(this.lightObject);
     this.lightObject = new THREE.Object3D();
     this.refFrame.add(this.lightObject);
-    var ambientLight = new THREE.AmbientLight(0xa77f77);
+    // var ambientLight = new THREE.AmbientLight(0xa77f77);
+    var ambientLight = new THREE.AmbientLight(0x002b2b);
     this.lightObject.add(ambientLight);
 };
 
