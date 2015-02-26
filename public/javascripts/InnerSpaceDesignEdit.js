@@ -1,7 +1,7 @@
 /*jslint plusplus: true */
 /*global REAL3D, THREE, console, alert, window, document, requestAnimationFrame, $ */
 
-REAL3D.InnerSpaceDesign = {
+REAL3D.InnerSpaceDesignEdit = {
     viewState: null,
     winW: 0,
     winH: 0,
@@ -12,7 +12,7 @@ REAL3D.InnerSpaceDesign = {
     canvasElement: null
 };
 
-REAL3D.InnerSpaceDesign.init = function (winW, winH, canvasElement) {
+REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     "use strict";
     this.winW = winW;
     this.winH = winH;
@@ -36,38 +36,38 @@ REAL3D.InnerSpaceDesign.init = function (winW, winH, canvasElement) {
     canvasElement.style.outline = "none";
 };
 
-REAL3D.InnerSpaceDesign.setScene = function () {
+REAL3D.InnerSpaceDesignEdit.setScene = function () {
     "use strict";
     if (REAL3D.RenderManager.getCamera(this.cameraOrthoName) === undefined) {
         var cameraOrthographic = new THREE.OrthographicCamera(this.winW / (-2), this.winW / 2, this.winH / 2, this.winH / (-2), 1, 2000);
-        cameraOrthographic.position.copy(REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition);
+        cameraOrthographic.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition);
         REAL3D.RenderManager.addCamera(this.cameraOrthoName, cameraOrthographic);
     }
     this.cameraOrtho = REAL3D.RenderManager.getCamera(this.cameraOrthoName);
-    this.cameraOrtho.position.copy(REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition);
+    this.cameraOrtho.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition);
     REAL3D.RenderManager.switchCamera(this.cameraOrthoName);
     if (REAL3D.RenderManager.getCamera(this.cameraPerspName) === undefined) {
         //console.log("Win size: ", this.winW, this.winH);
         var cameraPerspective = new THREE.PerspectiveCamera(45, this.winW / this.winH, 1, 2000);
-        cameraPerspective.position.copy(REAL3D.InnerSpaceDesign.SceneData.cameraPerspPosition);
+        cameraPerspective.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraPerspPosition);
         cameraPerspective.rotateX(1.570796326794897);
         REAL3D.RenderManager.addCamera(this.cameraPerspName, cameraPerspective);
     }
     this.cameraPersp = REAL3D.RenderManager.getCamera(this.cameraPerspName);
-    this.cameraPersp.position.copy(REAL3D.InnerSpaceDesign.SceneData.cameraPerspPosition);
+    this.cameraPersp.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraPerspPosition);
 };
 
-REAL3D.InnerSpaceDesign.initUserData = function (sceneData) {
+REAL3D.InnerSpaceDesignEdit.initUserData = function (sceneData) {
     "use strict";
     //set up scene
-    REAL3D.InnerSpaceDesign.EditWallView.init($(this.canvasElement).offset());
-    REAL3D.InnerSpaceDesign.FreeWalkView.init($(this.canvasElement).offset(), this.winW, this.winH);
-    REAL3D.InnerSpaceDesign.SceneData.init(sceneData);
-    this.viewState = REAL3D.InnerSpaceDesign.EditWallView;
+    REAL3D.InnerSpaceDesignEdit.EditWallView.init($(this.canvasElement).offset());
+    REAL3D.InnerSpaceDesignEdit.FreeWalkView.init($(this.canvasElement).offset(), this.winW, this.winH);
+    REAL3D.InnerSpaceDesignEdit.SceneData.init(sceneData);
+    this.viewState = REAL3D.InnerSpaceDesignEdit.EditWallView;
     this.setScene();
 };
 
-REAL3D.InnerSpaceDesign.run = function () {
+REAL3D.InnerSpaceDesignEdit.run = function () {
     "use strict";
     var that = this;
     function animateFunction(timestamp) {
@@ -78,27 +78,27 @@ REAL3D.InnerSpaceDesign.run = function () {
     requestAnimationFrame(animateFunction);
 };
 
-REAL3D.InnerSpaceDesign.mouseDown = function (e) {
+REAL3D.InnerSpaceDesignEdit.mouseDown = function (e) {
     "use strict";
     this.viewState.mouseDown(e);
 };
 
-REAL3D.InnerSpaceDesign.mouseMove = function (e) {
+REAL3D.InnerSpaceDesignEdit.mouseMove = function (e) {
     "use strict";
     this.viewState.mouseMove(e);
 };
 
-REAL3D.InnerSpaceDesign.mouseUp = function (e) {
+REAL3D.InnerSpaceDesignEdit.mouseUp = function (e) {
     "use strict";
     this.viewState.mouseUp(e);
 };
 
-REAL3D.InnerSpaceDesign.keyPress = function (e) {
+REAL3D.InnerSpaceDesignEdit.keyPress = function (e) {
     "use strict";
     this.viewState.keyPress(e);
 };
 
-REAL3D.InnerSpaceDesign.MouseState = {
+REAL3D.InnerSpaceDesignEdit.MouseState = {
     NONE: 0,
     CREATINGUSERPOINT: 1,
     DRAGGINGUSERPOINT: 2,
@@ -107,12 +107,12 @@ REAL3D.InnerSpaceDesign.MouseState = {
     HITCANVAS: 5
 };
 
-REAL3D.InnerSpaceDesign.HITRADIUS = 250;
-REAL3D.InnerSpaceDesign.MOVERADIUS = 100;
-REAL3D.InnerSpaceDesign.WALLTHICK = 10;
-REAL3D.InnerSpaceDesign.WALLHEIGHT = 200;
+REAL3D.InnerSpaceDesignEdit.HITRADIUS = 250;
+REAL3D.InnerSpaceDesignEdit.MOVERADIUS = 100;
+REAL3D.InnerSpaceDesignEdit.WALLTHICK = 10;
+REAL3D.InnerSpaceDesignEdit.WALLHEIGHT = 200;
 
-REAL3D.InnerSpaceDesign.SceneData = {
+REAL3D.InnerSpaceDesignEdit.SceneData = {
     designName: "",
     cameraOrthoPosition: null,
     cameraPerspPosition: null,
@@ -127,15 +127,15 @@ REAL3D.InnerSpaceDesign.SceneData = {
     lightObject: null,
 };
 
-REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
+REAL3D.InnerSpaceDesignEdit.SceneData.init = function (sceneData) {
     "use strict";
     var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBox, assistFlag, wall2d, wall3d;
     if (sceneData === null) {
         this.designName = "";
         this.cameraOrthoPosition = new THREE.Vector3(0, 0, 1000);
         this.cameraPerspPosition = new THREE.Vector3(0, 0, 100);
-        this.wallThick = REAL3D.InnerSpaceDesign.WALLTHICK;
-        this.wallHeight = REAL3D.InnerSpaceDesign.WALLHEIGHT;
+        this.wallThick = REAL3D.InnerSpaceDesignEdit.WALLTHICK;
+        this.wallHeight = REAL3D.InnerSpaceDesignEdit.WALLHEIGHT;
         this.userPointTree = new REAL3D.Wall.UserPointTree();
     } else {
         this.designName = sceneData.designName;
@@ -155,7 +155,7 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     this.switchTo2DContent();    
 };
 
-REAL3D.InnerSpaceDesign.SceneData.drawCommonScene = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.drawCommonScene = function () {
     "use strict";
     var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBox, assistFlag, wall2d, wall3d;
     this.wall2ds = [];
@@ -194,7 +194,7 @@ REAL3D.InnerSpaceDesign.SceneData.drawCommonScene = function () {
     this.displayRefObject();
 };
 
-REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent = function () {
     "use strict";
     this.refFrame.remove(this.lightObject);
     this.lightObject = new THREE.Object3D();
@@ -203,7 +203,7 @@ REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent = function () {
     this.lightObject.add(ambientLight);
 };
 
-REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.switchTo3DContent = function () {
     "use strict";
     this.refFrame.remove(this.lightObject);
     this.lightObject = new THREE.Object3D();
@@ -233,7 +233,7 @@ REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent = function () {
     }
 };
 
-REAL3D.InnerSpaceDesign.SceneData.displayRefObject = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.displayRefObject = function () {
     "use strict";
     this.refFrame.remove(this.refObject);
     this.refObject = new THREE.Object3D();
@@ -282,16 +282,16 @@ REAL3D.InnerSpaceDesign.SceneData.displayRefObject = function () {
     }
 };
 
-REAL3D.InnerSpaceDesign.SceneData.hideRefObject = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.hideRefObject = function () {
     "use strict";
     this.refFrame.remove(this.refObject);
 };
 
-REAL3D.InnerSpaceDesign.SceneData.saveUserData = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.saveUserData = function () {
     "use strict";
     var postData = this.packUserData();
     console.log("postData: ", postData);
-    $.post("/innerspacedesign/edit/save", $.param(postData, true), function (data) {
+    $.post("/InnerSpaceDesign/edit/save", $.param(postData, true), function (data) {
         console.log("  data return from server:", data);
         if (data.saved === -1) {
             window.location.href = "/DoLogin";
@@ -299,7 +299,7 @@ REAL3D.InnerSpaceDesign.SceneData.saveUserData = function () {
     }, "json");
 };
 
-REAL3D.InnerSpaceDesign.SceneData.packUserData = function () {
+REAL3D.InnerSpaceDesignEdit.SceneData.packUserData = function () {
     "use strict";
     var camOrthoPos, camPerspPos, postData, points, userPointLen, pid, userPoints, curPoint, neighborLen, nid;
     camOrthoPos = this.cameraOrthoPosition;
@@ -330,7 +330,7 @@ REAL3D.InnerSpaceDesign.SceneData.packUserData = function () {
     return postData;
 };
 
-REAL3D.InnerSpaceDesign.SceneData.unPackUserData = function (userData) {
+REAL3D.InnerSpaceDesignEdit.SceneData.unPackUserData = function (userData) {
     "use strict";
     var sceneData, camOrthoPos, camPerspPos, userPoints, userPointLen, pid, curPoint, neighbors, neiLen, nid, scenePoints;
     camOrthoPos = userData.cameraOrthoPosition;
@@ -361,25 +361,25 @@ REAL3D.InnerSpaceDesign.SceneData.unPackUserData = function (userData) {
     return sceneData;
 };
 
-REAL3D.InnerSpaceDesign.SceneData.loadUserData = function (callback) {
+REAL3D.InnerSpaceDesignEdit.SceneData.loadUserData = function (callback) {
     "use strict";
     var postData, curState, sceneData;
     postData = {
         designName: this.designName
     };
     curState = this;
-    $.post("/innerspacedesign/edit/load", $.param(postData, true), function (data) {
+    $.post("/InnerSpaceDesign/edit/load", $.param(postData, true), function (data) {
         console.log("  data return from server");
         if (data.success) {
             console.log("  loaded data: ", data);
             sceneData = curState.unPackUserData(data.sceneData);
-            REAL3D.InnerSpaceDesign.initUserData(sceneData);
+            REAL3D.InnerSpaceDesignEdit.initUserData(sceneData);
             callback();
         }
     }, "json");
 };
 
-REAL3D.InnerSpaceDesign.SceneData.updateWallThick = function (thick) {
+REAL3D.InnerSpaceDesignEdit.SceneData.updateWallThick = function (thick) {
     "use strict";
     var wallLen, wid, boxLen, bid;
     wallLen = this.wall2ds.length;
@@ -394,7 +394,7 @@ REAL3D.InnerSpaceDesign.SceneData.updateWallThick = function (thick) {
     this.wallThick = thick;
 };
 
-REAL3D.InnerSpaceDesign.SceneData.updateWallHeight = function (height) {
+REAL3D.InnerSpaceDesignEdit.SceneData.updateWallHeight = function (height) {
     "use strict";
     var wallLen, wid;
     wallLen = this.wall3ds.length;
@@ -405,8 +405,8 @@ REAL3D.InnerSpaceDesign.SceneData.updateWallHeight = function (height) {
     this.wallHeight = height;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView = {
-    mouseState: REAL3D.InnerSpaceDesign.MouseState.NONE,
+REAL3D.InnerSpaceDesignEdit.EditWallView = {
+    mouseState: REAL3D.InnerSpaceDesignEdit.MouseState.NONE,
     isMouseDown: false,
     mouseDownPos: new THREE.Vector2(0, 0),
     mouseMovePos: new THREE.Vector2(0, 0),
@@ -415,9 +415,9 @@ REAL3D.InnerSpaceDesign.EditWallView = {
     lastCreatedPointIndex: -1
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.init = function (canvasOffset) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset) {
     "use strict";
-    this.mouseState = REAL3D.InnerSpaceDesign.MouseState.NONE;
+    this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
     this.isMouseDown = false;
     this.mouseDownPos = new THREE.Vector2(0, 0);
     this.mouseMovePos = new THREE.Vector2(0, 0);
@@ -426,12 +426,12 @@ REAL3D.InnerSpaceDesign.EditWallView.init = function (canvasOffset) {
     this.lastCreatedPointIndex = -1;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.update = function (timestamp) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.update = function (timestamp) {
     "use strict";
     //console.log("update: timestamp = ", timestamp);
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.mouseDown = function (e) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.mouseDown = function (e) {
     "use strict";
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
     curPosX = e.pageX - this.canvasOffset.left;
@@ -439,21 +439,21 @@ REAL3D.InnerSpaceDesign.EditWallView.mouseDown = function (e) {
     //console.log("mousePos: ", this.mouseDownPos.x, this.mouseDownPos.y, curPosX, curPosY);
     mouseDownDist = (curPosX - this.mouseDownPos.x) * (curPosX - this.mouseDownPos.x) + (curPosY - this.mouseDownPos.y) * (curPosY - this.mouseDownPos.y);
     //console.log("mouseDownDist: ", mouseDownDist);
-    isHittingTheSamePos = (mouseDownDist < REAL3D.InnerSpaceDesign.HITRADIUS);
+    isHittingTheSamePos = (mouseDownDist < REAL3D.InnerSpaceDesignEdit.HITRADIUS);
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
     //console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
-    if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.NONE) {
+    if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.NONE) {
         if (this.hitUserPointIndex === -1) {
-            this.mouseState = REAL3D.InnerSpaceDesign.MouseState.HITCANVAS;
+            this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.HITCANVAS;
             //console.log("state: NONE -> HITCANVAS");
         } else {
-            this.mouseState = REAL3D.InnerSpaceDesign.MouseState.HITUSERPOINT;
+            this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.HITUSERPOINT;
             //console.log("state: NONE -> HITUSERPOINT");
         }
-    } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.CREATINGUSERPOINT) {
+    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.CREATINGUSERPOINT) {
         if (isHittingTheSamePos) {
             this.finishCreatingNewUserPoint();
-            this.mouseState = REAL3D.InnerSpaceDesign.MouseState.NONE;
+            this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
             //console.log("state: CREATINGUSERPOINT -> NONE, hit the same point, finishCreatingNewUserPoint");
         } else {
             if (this.hitUserPointIndex === -1) {
@@ -473,28 +473,28 @@ REAL3D.InnerSpaceDesign.EditWallView.mouseDown = function (e) {
     this.isMouseDown = true;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.mouseMove = function (e) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.mouseMove = function (e) {
     "use strict";
     var curPosX, curPosY;
     if (this.isMouseDown) {
         //console.log("---------------------------------------------mousemove: ", this.mouseState);
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.HITUSERPOINT) {
+        if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.HITUSERPOINT) {
             if (this.isMouseMoved(curPosX, curPosY)) {
-                this.mouseState = REAL3D.InnerSpaceDesign.MouseState.DRAGGINGUSERPOINT;
+                this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGUSERPOINT;
                 this.draggingUserPoint(curPosX, curPosY);
                 //console.log("state: HITUSERPOINT -> DRAGGINGUSERPOINT");
             }
-        } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.DRAGGINGUSERPOINT) {
+        } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGUSERPOINT) {
             this.draggingUserPoint(curPosX, curPosY);
-        } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.HITCANVAS) {
+        } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.HITCANVAS) {
             if (this.isMouseMoved(curPosX, curPosY)) {
-                this.mouseState = REAL3D.InnerSpaceDesign.MouseState.DRAGGINGCANVAS;
+                this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGCANVAS;
                 this.draggingCanvas(curPosX, curPosY);
                 //console.log("state: HITCANVAS -> DRAGGINGCANVAS");
             }
-        } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.DRAGGINGCANVAS) {
+        } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGCANVAS) {
             this.draggingCanvas(curPosX, curPosY);
         }
 
@@ -504,29 +504,29 @@ REAL3D.InnerSpaceDesign.EditWallView.mouseMove = function (e) {
     }
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.mouseUp = function (e) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.mouseUp = function (e) {
     "use strict";
     //console.log("---------------------------------------------mouseup: ", this.mouseState, "stateName: ", this.stateName);
     var curPosX, curPosY;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
-    if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.DRAGGINGUSERPOINT) {
+    if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGUSERPOINT) {
         this.draggingUserPoint(curPosX, curPosY);
-        this.mouseState = REAL3D.InnerSpaceDesign.MouseState.NONE;
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
         //console.log("state: DRAGGINGUSERPOINT -> NONE");
-    } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.DRAGGINGCANVAS) {
+    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.DRAGGINGCANVAS) {
         this.draggingCanvas(curPosX, curPosY);
-        this.mouseState = REAL3D.InnerSpaceDesign.MouseState.NONE;
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
         //console.log("state: DRAGGINGCANVAS -> NONE");
-    } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.HITUSERPOINT) {
+    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.HITUSERPOINT) {
         this.connectUserPoint(this.lastCreatedPointIndex, this.hitUserPointIndex);
         this.lastCreatedPointIndex = this.hitUserPointIndex;
-        this.mouseState = REAL3D.InnerSpaceDesign.MouseState.CREATINGUSERPOINT;
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.CREATINGUSERPOINT;
         //console.log("state: HITUSERPOINT -> CREATINGUSERPOINT, connectUserPoint to exist point");
-    } else if (this.mouseState === REAL3D.InnerSpaceDesign.MouseState.HITCANVAS) {
+    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.HITCANVAS) {
         //console.log("state: HITCANVAS -> CREATINGUSERPOINT, createNewUserPoint");
         this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
-        this.mouseState = REAL3D.InnerSpaceDesign.MouseState.CREATINGUSERPOINT;
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.CREATINGUSERPOINT;
         //console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
     }
     this.isMouseDown = false;
@@ -534,31 +534,31 @@ REAL3D.InnerSpaceDesign.EditWallView.mouseUp = function (e) {
     //console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.keyPress = function (e) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.keyPress = function (e) {
     "use strict";
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.hitDetection = function (mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.hitDetection = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
-    mousePosY = REAL3D.InnerSpaceDesign.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesign.winW / 2 + cameraPos.x;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesign.winH / 2 + cameraPos.y;
-    return REAL3D.InnerSpaceDesign.SceneData.userPointTree.selectPoint(worldPosX, worldPosY);
+    mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
+    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
+    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    return REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.selectPoint(worldPosX, worldPosY);
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.connectUserPoint = function (index1, index2) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, index2) {
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
-        REAL3D.InnerSpaceDesign.SceneData.userPointTree.connectPoints(index1, index2);
+        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.connectPoints(index1, index2);
         var wall2d, wall3d, point1, point2;
-        point1 = REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[index1];
-        point2 = REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[index2];
-        wall2d = new REAL3D.Wall.Wall2D(point1, point2, REAL3D.InnerSpaceDesign.SceneData.wallThick, REAL3D.InnerSpaceDesign.SceneData.refFrame);
-        wall3d = new REAL3D.Wall.Wall3D(wall2d, REAL3D.InnerSpaceDesign.SceneData.wallHeight, REAL3D.InnerSpaceDesign.SceneData.refFrame);
-        REAL3D.InnerSpaceDesign.SceneData.wall2ds.push(wall2d);
-        REAL3D.InnerSpaceDesign.SceneData.wall3ds.push(wall3d);
+        point1 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index1];
+        point2 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index2];
+        wall2d = new REAL3D.Wall.Wall2D(point1, point2, REAL3D.InnerSpaceDesignEdit.SceneData.wallThick, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
+        wall3d = new REAL3D.Wall.Wall3D(wall2d, REAL3D.InnerSpaceDesignEdit.SceneData.wallHeight, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
+        REAL3D.InnerSpaceDesignEdit.SceneData.wall2ds.push(wall2d);
+        REAL3D.InnerSpaceDesignEdit.SceneData.wall3ds.push(wall3d);
         point1.publish("updateSubscriber");
         point2.publish("updateSubscriber");
         point1.publish("updateMesh");
@@ -566,31 +566,31 @@ REAL3D.InnerSpaceDesign.EditWallView.connectUserPoint = function (index1, index2
     }
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY, newId, userPointBox;
-    mousePosY = REAL3D.InnerSpaceDesign.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesign.winW / 2 + cameraPos.x;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesign.winH / 2 + cameraPos.y;
-    newId = REAL3D.InnerSpaceDesign.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
-    userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[newId],
-        REAL3D.InnerSpaceDesign.SceneData.wallThick * 2, REAL3D.InnerSpaceDesign.SceneData.refFrame);
-    REAL3D.InnerSpaceDesign.SceneData.wallBoxes.push(userPointBox);
+    mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
+    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
+    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    newId = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
+    userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[newId],
+        REAL3D.InnerSpaceDesignEdit.SceneData.wallThick * 2, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
+    REAL3D.InnerSpaceDesignEdit.SceneData.wallBoxes.push(userPointBox);
     return newId;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.finishCreatingNewUserPoint = function () {
+REAL3D.InnerSpaceDesignEdit.EditWallView.finishCreatingNewUserPoint = function () {
     "use strict";
     this.lastCreatedPointIndex = -1;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.isMouseMoved = function (mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.isMouseMoved = function (mousePosX, mousePosY) {
     "use strict";
     var dist, isMoved;
     dist = (mousePosX - this.mouseDownPos.x) * (mousePosX - this.mouseDownPos.x) + (mousePosY - this.mouseDownPos.y) * (mousePosY - this.mouseDownPos.y);
     //console.log("isMouseMoved: dist = ", dist, mousePosX, mousePosY, this.mouseDownPos.x, this.mouseDownPos.y);
-    if (dist > REAL3D.InnerSpaceDesign.MOVERADIUS) {
+    if (dist > REAL3D.InnerSpaceDesignEdit.MOVERADIUS) {
         isMoved = true;
     } else {
         isMoved = false;
@@ -598,28 +598,28 @@ REAL3D.InnerSpaceDesign.EditWallView.isMouseMoved = function (mousePosX, mousePo
     return isMoved;
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.draggingUserPoint = function (mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.draggingUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
-    mousePosY = REAL3D.InnerSpaceDesign.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesign.winW / 2 + cameraPos.x;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesign.winH / 2 + cameraPos.y;
-    REAL3D.InnerSpaceDesign.SceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    REAL3D.InnerSpaceDesign.SceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
+    mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
+    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
+    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
+    REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
 };
 
-REAL3D.InnerSpaceDesign.EditWallView.draggingCanvas = function (mousePosX, mousePosY) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.draggingCanvas = function (mousePosX, mousePosY) {
     "use strict";
     var worldDifX, worldDifY;
     worldDifX = this.mouseMovePos.x - mousePosX;
     worldDifY = mousePosY - this.mouseMovePos.y;
-    REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition.x += worldDifX;
-    REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition.y += worldDifY;
-    REAL3D.InnerSpaceDesign.cameraOrtho.position.copy(REAL3D.InnerSpaceDesign.SceneData.cameraOrthoPosition);
+    REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.x += worldDifX;
+    REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.y += worldDifY;
+    REAL3D.InnerSpaceDesignEdit.cameraOrtho.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition);
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView = {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView = {
     canvasOffset: null,
     winW: null,
     winH: null,
@@ -629,7 +629,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView = {
     turnSpeed: 0.002
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.init = function (canvasOffset, winW, winH) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.init = function (canvasOffset, winW, winH) {
     "use strict";
     console.log("FreeWalkView init");
     this.canvasOffset = canvasOffset;
@@ -641,11 +641,11 @@ REAL3D.InnerSpaceDesign.FreeWalkView.init = function (canvasOffset, winW, winH) 
     this.turnSpeed = 0.002;
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.update = function (timestamp) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.update = function (timestamp) {
     "use strict";
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.mouseDown = function (e) {
     "use strict";
     //console.log("FreeWalkView mouseDown");
     var curPosX, curPosY;
@@ -655,7 +655,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
     this.isMouseDown = true;
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.mouseMove = function (e) {
     "use strict";
     //console.log("FreeWalkView mouseMove");
     var curPosX, curPosY, angle;
@@ -663,12 +663,12 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
     curPosY = e.pageY - this.canvasOffset.top;
     if (this.isMouseDown) {
         angle = this.mouseMovePos.x - curPosX;
-        REAL3D.InnerSpaceDesign.cameraPersp.rotateY(this.turnSpeed * angle);
+        REAL3D.InnerSpaceDesignEdit.cameraPersp.rotateY(this.turnSpeed * angle);
     }
     this.mouseMovePos.set(curPosX, curPosY);
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.mouseUp = function (e) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.mouseUp = function (e) {
     "use strict";
     //console.log("FreeWalkView mouseUp");
     var curPosX, curPosY;
@@ -678,237 +678,17 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseUp = function (e) {
     this.isMouseDown = false;
 };
 
-REAL3D.InnerSpaceDesign.FreeWalkView.keyPress = function (e) {
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.keyPress = function (e) {
     "use strict";
     console.log("FreeWalkView keypress: ", e.which);
     if (e.which === 119) {
-        REAL3D.InnerSpaceDesign.cameraPersp.translateZ(-1 * this.moveSpeed);
+        REAL3D.InnerSpaceDesignEdit.cameraPersp.translateZ(-1 * this.moveSpeed);
     } else if (e.which === 115) {
-        REAL3D.InnerSpaceDesign.cameraPersp.translateZ(this.moveSpeed);
+        REAL3D.InnerSpaceDesignEdit.cameraPersp.translateZ(this.moveSpeed);
     }
     if (e.which === 97) {
-        REAL3D.InnerSpaceDesign.cameraPersp.translateX(-1 * this.moveSpeed);
+        REAL3D.InnerSpaceDesignEdit.cameraPersp.translateX(-1 * this.moveSpeed);
     } else if (e.which === 100) {
-        REAL3D.InnerSpaceDesign.cameraPersp.translateX(this.moveSpeed);
+        REAL3D.InnerSpaceDesignEdit.cameraPersp.translateX(this.moveSpeed);
     }
 };
-
-function enterInnerSpaceDesign() {
-    "use strict";
-    var canvasElement, canvContainer, winW, winH;
-    winW = $(window).width() - 240;
-    winW = (winW < 1024) ? 1024 : winW;
-    winH = $(window).height() - 90;
-    winH = (winH < 640) ? 640 : winH;
-    canvasElement = REAL3D.RenderManager.init(winW, winH);
-    canvContainer = document.getElementById("designspace");
-    canvContainer.appendChild(canvasElement);
-    REAL3D.InnerSpaceDesign.init(winW, winH, canvasElement);
-    REAL3D.InnerSpaceDesign.run();
-}
-
-function updateUIData() {
-    "use strict";
-    $('#designName').val(REAL3D.InnerSpaceDesign.SceneData.designName);
-    // $('#wallThick').val(REAL3D.InnerSpaceDesign.SceneData.wallThick);
-    // $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
-}
-
-function newWorkSpace() {
-    "use strict";
-    REAL3D.InnerSpaceDesign.initUserData(null);
-    updateUIData();
-    //console.log("New Work Space");
-}
-
-function saveWorkSpace() {
-    "use strict";
-    var designName, postData;
-    designName = $("#designName").val();
-    if (designName === null || designName === '') {
-        alert("请输入设计名字");
-    } else if (designName === REAL3D.InnerSpaceDesign.SceneData.designName) {
-        REAL3D.InnerSpaceDesign.SceneData.saveUserData();
-    } else {
-        $.get("/innerspacedesign/edit/findName", {designName: designName}, function (data) {
-            console.log("  findName:", data);
-            if (data.success === 1) {
-                alert("设计", designName, "已经存在,不能覆盖");
-            } else {
-                //rename and save
-                if (REAL3D.InnerSpaceDesign.SceneData.designName === null || REAL3D.InnerSpaceDesign.SceneData.designName === '') {
-                    REAL3D.InnerSpaceDesign.SceneData.designName = designName;
-                    REAL3D.InnerSpaceDesign.SceneData.saveUserData();
-                } else {
-                    postData = {
-                        originDesignName: REAL3D.InnerSpaceDesign.SceneData.designName,
-                        newDesignName: designName
-                    };
-                    $.post("/innerspacedesign/edit/rename", $.param(postData, true), function (data) {
-                        console.log("  rename result:", data);
-                        if (data.success === 1) {
-                            REAL3D.InnerSpaceDesign.SceneData.designName = designName;
-                            REAL3D.InnerSpaceDesign.SceneData.saveUserData();
-                        } else {
-                            alert("保存失败");
-                        }
-                    }, "json");
-                }
-            }
-        }, "json");
-    }
-    console.log("Save Work Space");
-}
-
-function viewSwitch() {
-    "use strict";
-    if ($('#viewSwitch').text() === '2D') {
-        $('#viewSwitch').text('3D');
-        REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraOrthoName);
-        REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.EditWallView;
-        REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent();
-    } else {
-        $('#viewSwitch').text('2D');
-        REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraPerspName);
-        REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.FreeWalkView;
-        REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent();
-    }
-}
-
-function enterToolWall() {
-    "use strict";
-    $('#toolBar').remove();
-
-    $('<div id="toolBar" class="wall"></div>').appendTo('#leftContainer');
-    $('<div class="text">墙</div>').appendTo('#toolBar');
-    $('<hr />').appendTo('#toolBar');
-
-    $('<div">墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" min="1" max="50"></div>').appendTo('#toolBar');
-    $('#wallThick').get(0).addEventListener("input", changeWallThick, false);
-    $('#wallThick').val(REAL3D.InnerSpaceDesign.SceneData.wallThick);
-    
-    $('<div>墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" min="100" max="500"></div>').appendTo('#toolBar');
-    $('#wallHeight').get(0).addEventListener("input", changeWallHeight, false);
-    $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
-    $('<hr />').appendTo('#toolBar');
-    
-    $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
-    $('#viewSwitch').click(viewSwitch);
-    $('<hr />').appendTo('#toolBar');
-    
-    $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
-    $('#return').click(function () {
-        $('#toolBar').remove();
-        enterToolHome();
-    });
-}
-
-function enterToolFurniture() {
-    "use strict";
-    $('#toolBar').remove();
-
-    $('<div id="toolBar"></div>').appendTo('#leftContainer');
-    $('<div>家具</div>').appendTo('#toolBar');
-
-    $('<button id="return">返回</button>').appendTo('#toolBar');
-    $('#return').click(function () {
-        $('#toolBar').remove();
-        enterToolHome();
-    });
-}
-
-function enterToolLight() {
-    "use strict";
-    $('#toolBar').remove();
-
-    $('<div id="toolBar"></div>').appendTo('#leftContainer');
-    $('<div>灯光</div>').appendTo('#toolBar');
-
-    $('<button id="return">返回</button>').appendTo('#toolBar');
-    $('#return').click(function () {
-        $('#toolBar').remove();
-        enterToolHome();
-    });
-}
-
-function enterToolMaterial() {
-    "use strict";
-    $('#toolBar').remove();
-
-    $('<div id="toolBar"></div>').appendTo('#leftContainer');
-    $('<div>材质</div>').appendTo('#toolBar');
-
-    $('<button id="return">返回</button>').appendTo('#toolBar');
-    $('#return').click(function () {
-        $('#toolBar').remove();
-        enterToolHome();
-    });
-}
-
-function enterToolHome() {
-    "use strict";
-    $('<div id="toolBar"></div>').appendTo('#leftContainer');
-    $('<div class="text">工具栏</div>').appendTo('#toolBar');
-    $('<hr />').appendTo('#toolBar');
-    
-    $('<button id="wallBut" class="button">墙</button>').appendTo('#toolBar');
-    $('#wallBut').click(enterToolWall);
-    $('<br>').appendTo('#toolBar');
-    
-    $('<button id="furnitureBut" class="button">家具</button>').appendTo('#toolBar');
-    $('#furnitureBut').click(enterToolFurniture);
-    $('<br>').appendTo('#toolBar');
-
-    $('<button id="lightBut" class="button">灯光</button>').appendTo('#toolBar');
-    $('#lightBut').click(enterToolLight);
-    $('<br>').appendTo('#toolBar');
-
-    $('<button id="materialBut" class="button">材质</button>').appendTo('#toolBar');
-    $('#materialBut').click(enterToolMaterial);
-    $('<br>').appendTo('#toolBar');
-    
-    $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
-    $('#return').click(backToHome);
-    $('<br>').appendTo('#toolBar');
-}
-
-function backToHome() {
-    "use strict";
-    window.location.href = "/innerspacedesign";
-}
-
-function changeWallThick() {
-    "use strict";
-    //console.log("changeWallThick: ", $('#wallThick').val());
-    REAL3D.InnerSpaceDesign.SceneData.updateWallThick($('#wallThick').val());
-}
-
-function changeWallHeight() {
-    "use strict";
-    //console.log("changeWallHeight: ", $('#wallHeight').val());
-    REAL3D.InnerSpaceDesign.SceneData.updateWallHeight($('#wallHeight').val());
-}
-
-$(document).ready(function () {
-    console.log("document is ready...");
-    //init ui data
-    enterToolHome();
-    $('#newDesign').click(newWorkSpace);
-    $('#saveDesign').click(saveWorkSpace);
-    $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
-
-    //init state
-    enterInnerSpaceDesign();
-
-    //load user data
-    console.log("load user data");
-    var designName = $('#designName').val();
-    console.log("designName: ", designName);
-    if (designName !== '') {
-        console.log("designName is ", designName);
-        REAL3D.InnerSpaceDesign.SceneData.designName = designName;
-        REAL3D.InnerSpaceDesign.SceneData.loadUserData(updateUIData);
-    } else {
-        console.log("designName is space");
-    }
-});
