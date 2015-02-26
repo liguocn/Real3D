@@ -123,7 +123,8 @@ REAL3D.InnerSpaceDesign.SceneData = {
     wallBoxes: [],
     wall3ds: [],
     refFrame: null,
-    refObject: null
+    refObject: null,
+    lightObject: null,
 };
 
 REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
@@ -151,7 +152,7 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     //console.log("render scene data");
 
     this.drawCommonScene();
-    this.switchTo2DContent();
+    this.switchTo2DContent();    
 };
 
 REAL3D.InnerSpaceDesign.SceneData.drawCommonScene = function () {
@@ -189,40 +190,47 @@ REAL3D.InnerSpaceDesign.SceneData.drawCommonScene = function () {
         userPoints[pid].publish("updateSubscriber");
         //userPoints[pid].publish("updateMesh");
     }
-};
-
-REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent = function () {
-    "use strict";
-
-    var light = new THREE.PointLight(0xa9a9a9, 1, 500);
-    light.position.set(0, 0, 200);
-    this.refFrame.add(light);
-
-    var ambientLight = new THREE.AmbientLight(0x404040);
-    this.refFrame.add(ambientLight);
-
-    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight1.position.set(1, 1, 1);
-    this.refFrame.add(dirLight1);
-
-    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight2.position.set(-1, 1, 1);
-    //this.refFrame.add(dirLight2);
-
-    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight3.position.set(-1, -1, 1);
-    this.refFrame.add(dirLight3);
-
-    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight4.position.set(1, -1, 1);
-    //this.refFrame.add(dirLight4);
 
     this.displayRefObject();
 };
 
+REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent = function () {
+    "use strict";
+    this.refFrame.remove(this.lightObject);
+    this.lightObject = new THREE.Object3D();
+    this.refFrame.add(this.lightObject);
+    var ambientLight = new THREE.AmbientLight(0xa77f77);
+    this.lightObject.add(ambientLight);
+};
+
 REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent = function () {
     "use strict";
-    this.hideRefObject();
+    this.refFrame.remove(this.lightObject);
+    this.lightObject = new THREE.Object3D();
+    this.refFrame.add(this.lightObject);
+
+    var ambientLight, dirLight1, dirLight2, dirLight3;
+
+    ambientLight = new THREE.AmbientLight(0xb2b2b2);
+    this.lightObject.add(ambientLight);
+
+    dirLight1 = new THREE.DirectionalLight(0xffffff, 0.1);
+    dirLight1.position.set(1, 0, 1);
+    this.lightObject.add(dirLight1);
+
+    dirLight2 = new THREE.DirectionalLight(0xffffff, 0.1);
+    dirLight2.position.set(-1, 1.73, 1);
+    this.lightObject.add(dirLight2);
+
+    dirLight3 = new THREE.DirectionalLight(0xffffff, 0.1);
+    dirLight3.position.set(-1, -1.73, 1);
+    this.lightObject.add(dirLight3);
+
+    var wallLen, wid;
+    wallLen = this.wall2ds.length;
+    for (wid = 0; wid < wallLen; wid++) {
+        this.wall2ds[wid].updateMesh();
+    }
 };
 
 REAL3D.InnerSpaceDesign.SceneData.displayRefObject = function () {
@@ -639,7 +647,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.update = function (timestamp) {
 
 REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
     "use strict";
-    console.log("FreeWalkView mouseDown");
+    //console.log("FreeWalkView mouseDown");
     var curPosX, curPosY;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
@@ -649,7 +657,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseDown = function (e) {
 
 REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
     "use strict";
-    console.log("FreeWalkView mouseMove");
+    //console.log("FreeWalkView mouseMove");
     var curPosX, curPosY, angle;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
@@ -662,7 +670,7 @@ REAL3D.InnerSpaceDesign.FreeWalkView.mouseMove = function (e) {
 
 REAL3D.InnerSpaceDesign.FreeWalkView.mouseUp = function (e) {
     "use strict";
-    console.log("FreeWalkView mouseUp");
+    //console.log("FreeWalkView mouseUp");
     var curPosX, curPosY;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
@@ -690,7 +698,7 @@ function enterInnerSpaceDesign() {
     var canvasElement, canvContainer, winW, winH;
     winW = $(window).width() - 240;
     winW = (winW < 1024) ? 1024 : winW;
-    winH = $(window).height() - 55;
+    winH = $(window).height() - 90;
     winH = (winH < 640) ? 640 : winH;
     canvasElement = REAL3D.RenderManager.init(winW, winH);
     canvContainer = document.getElementById("designspace");
@@ -758,10 +766,12 @@ function viewSwitch() {
         $('#viewSwitch').text('3D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraOrthoName);
         REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.EditWallView;
+        REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent();
     } else {
         $('#viewSwitch').text('2D');
         REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesign.cameraPerspName);
         REAL3D.InnerSpaceDesign.viewState = REAL3D.InnerSpaceDesign.FreeWalkView;
+        REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent();
     }
 }
 
