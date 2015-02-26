@@ -124,6 +124,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.mouseUp = function (e) {
         this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.CREATINGUSERPOINT;
         //console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
+    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.REMOVEUSERPOINT) {
+        this.removeUserPoint(curPosX, curPosY);
     }
     this.isMouseDown = false;
     //console.log("Mouse state: ", this.mouseState);
@@ -213,4 +215,24 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.draggingCanvas = function (mousePosX, m
     REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.x += worldDifX;
     REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.y += worldDifY;
     REAL3D.InnerSpaceDesignEdit.cameraOrtho.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition);
+};
+
+REAL3D.InnerSpaceDesignEdit.EditWallView.removeUserPoint = function (mousePosX, mousePosY) {
+    "use strict";
+    var hitIndex;
+    hitIndex = this.hitDetection(mousePosX, mousePosY);
+    if (hitIndex !== -1) {
+        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[hitIndex].publish("remove");
+        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.deletePoint(hitIndex);
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.EditWallView.switchRemoveState = function (isRemove) {
+    "use strict";
+    if (isRemove) {
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.REMOVEUSERPOINT;
+        this.finishCreatingNewUserPoint();
+    } else {
+        REAL3D.InnerSpaceDesignEdit.EditWallView.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
+    }
 };

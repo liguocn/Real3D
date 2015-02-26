@@ -83,6 +83,18 @@ function viewSwitch() {
     }
 }
 
+function editModeSwitch() {
+    "use strict";
+    if ($('#editModeSwitch').text() === '删除') {
+        $('#editModeSwitch').text('编辑');
+        REAL3D.InnerSpaceDesignEdit.EditWallView.switchRemoveState(true);
+        console.log("remove mode");
+    } else {
+        $('#editModeSwitch').text('删除');
+        REAL3D.InnerSpaceDesignEdit.EditWallView.switchRemoveState(false);
+    }
+}
+
 function enterToolWall() {
     "use strict";
     $('#toolBar').remove();
@@ -103,6 +115,11 @@ function enterToolWall() {
     $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
     $('#viewSwitch').click(viewSwitch);
     $('<hr />').appendTo('#toolBar');
+
+    $('<div>模式切换<button id="editModeSwitch" class="button">删除</button></div>').appendTo('#toolBar');
+    $('#editModeSwitch').click(editModeSwitch);
+    $('<hr />').appendTo('#toolBar');
+
     
     $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
     $('#return').click(function () {

@@ -368,20 +368,54 @@ REAL3D.Wall.Wall2D.prototype.updateMesh = function () {
     this.publish("updateMesh");
 };
 
+REAL3D.Wall.Wall2D.prototype.remove = function () {
+    "use strict";
+    this.publish("remove");
+
+    var neighbors1, neigLen1, nid, neighbors2, neigLen2;
+    this.point1.unsubscribe("updateMesh", this, this.updateMesh);
+    this.point1.unsubscribe("remove", this, this.remove);
+    neighbors1 = this.point1.neighbors;
+    neigLen1 = neighbors1.length;
+    for (nid = 0; nid < neigLen1; nid++) {
+        neighbors1[nid].unsubscribe("updateMesh", this, this.updateMesh);
+        neighbors1[nid].unsubscribe("remove", this, this.remove);
+    }
+    this.point2.unsubscribe("updateMesh", this, this.updateMesh);
+    this.point2.unsubscribe("remove", this, this.remove);
+    neighbors2 = this.point2.neighbors;
+    neigLen2 = neighbors2.length;
+    for (nid = 0; nid < neigLen2; nid++) {
+        neighbors2[nid].unsubscribe("updateMesh", this, this.updateMesh);
+        neighbors2[nid].unsubscribe("remove", this, this.remove);
+    }
+
+    this.point1 = null;
+    this.point2 = null;
+    //this.parent.remove(this.mesh);
+    this.parent = null;
+    this.mesh = null;
+    this.wall2dPoints = null;
+};
+
 REAL3D.Wall.Wall2D.prototype.updateSubscriber = function () {
     "use strict";
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
     this.point1.subscribe("updateMesh", this, this.updateMesh);
+    this.point1.subscribe("remove", this, this.remove);
     neighbors1 = this.point1.neighbors;
     neigLen1 = neighbors1.length;
     for (nid = 0; nid < neigLen1; nid++) {
         neighbors1[nid].subscribe("updateMesh", this, this.updateMesh);
+        neighbors1[nid].subscribe("remove", this, this.remove);
     }
     this.point2.subscribe("updateMesh", this, this.updateMesh);
+    this.point2.subscribe("remove", this, this.remove);
     neighbors2 = this.point2.neighbors;
     neigLen2 = neighbors2.length;
     for (nid = 0; nid < neigLen2; nid++) {
         neighbors2[nid].subscribe("updateMesh", this, this.updateMesh);
+        neighbors2[nid].subscribe("remove", this, this.remove);
     }
 };
 
@@ -394,6 +428,7 @@ REAL3D.Wall.Wall3D = function (wall2d, height, parent) {
     this.generateMesh();
     //registrate update callback
     this.wall2d.subscribe("updateMesh", this, this.updateMesh);
+    this.wall2d.subscribe("remove", this, this.remove);
 };
 
 REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
@@ -431,4 +466,14 @@ REAL3D.Wall.Wall3D.prototype.generateMesh = function () {
 REAL3D.Wall.Wall3D.prototype.updateMesh = function () {
     "use strict";
     this.generateMesh();
+};
+
+REAL3D.Wall.Wall3D.prototype.remove = function() {
+    "use strict";
+    this.wall2d.unsubscribe("updateMesh", this, this.updateMesh);
+    this.wall2d.unsubscribe("remove", this, this.remove);
+    this.parent.remove(this.mesh);
+    this.parent = null;
+    this.mesh = null;
+    this.wall2d = null;
 };

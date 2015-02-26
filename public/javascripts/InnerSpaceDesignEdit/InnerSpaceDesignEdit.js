@@ -105,7 +105,8 @@ REAL3D.InnerSpaceDesignEdit.MouseState = {
     DRAGGINGUSERPOINT: 2,
     DRAGGINGCANVAS: 3,
     HITUSERPOINT: 4,
-    HITCANVAS: 5
+    HITCANVAS: 5,
+    REMOVEUSERPOINT: 6
 };
 
 REAL3D.InnerSpaceDesignEdit.HITRADIUS = 250;
