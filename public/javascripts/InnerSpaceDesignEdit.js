@@ -122,7 +122,8 @@ REAL3D.InnerSpaceDesign.SceneData = {
     wall2ds: [],
     wallBoxes: [],
     wall3ds: [],
-    refFrame: null
+    refFrame: null,
+    refObject: null
 };
 
 REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
@@ -149,29 +150,13 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
     //render scene data
     //console.log("render scene data");
 
-    var light = new THREE.PointLight(0xa9a9a9, 1, 500);
-    light.position.set(0, 0, 200);
-    this.refFrame.add(light);
+    this.drawCommonScene();
+    this.switchTo2DContent();
+};
 
-    var ambientLight = new THREE.AmbientLight(0x404040);
-    this.refFrame.add(ambientLight);
-
-    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight1.position.set(1, 1, 1);
-    this.refFrame.add(dirLight1);
-
-    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight2.position.set(-1, 1, 1);
-    //this.refFrame.add(dirLight2);
-
-    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight3.position.set(-1, -1, 1);
-    this.refFrame.add(dirLight3);
-
-    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.75);
-    dirLight4.position.set(1, -1, 1);
-    //this.refFrame.add(dirLight4);
-
+REAL3D.InnerSpaceDesign.SceneData.drawCommonScene = function () {
+    "use strict";
+    var userPoints, userPointLen, pid, neighbors, neiLen, nid, userPointBox, assistFlag, wall2d, wall3d;
     this.wall2ds = [];
     this.wallBoxes = [];
     userPoints = this.userPointTree.points;
@@ -204,6 +189,94 @@ REAL3D.InnerSpaceDesign.SceneData.init = function (sceneData) {
         userPoints[pid].publish("updateSubscriber");
         //userPoints[pid].publish("updateMesh");
     }
+};
+
+REAL3D.InnerSpaceDesign.SceneData.switchTo2DContent = function () {
+    "use strict";
+
+    var light = new THREE.PointLight(0xa9a9a9, 1, 500);
+    light.position.set(0, 0, 200);
+    this.refFrame.add(light);
+
+    var ambientLight = new THREE.AmbientLight(0x404040);
+    this.refFrame.add(ambientLight);
+
+    var dirLight1 = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight1.position.set(1, 1, 1);
+    this.refFrame.add(dirLight1);
+
+    var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight2.position.set(-1, 1, 1);
+    //this.refFrame.add(dirLight2);
+
+    var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight3.position.set(-1, -1, 1);
+    this.refFrame.add(dirLight3);
+
+    var dirLight4 = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight4.position.set(1, -1, 1);
+    //this.refFrame.add(dirLight4);
+
+    this.displayRefObject();
+};
+
+REAL3D.InnerSpaceDesign.SceneData.switchTo3DContent = function () {
+    "use strict";
+    this.hideRefObject();
+};
+
+REAL3D.InnerSpaceDesign.SceneData.displayRefObject = function () {
+    "use strict";
+    this.refFrame.remove(this.refObject);
+    this.refObject = new THREE.Object3D();
+    this.refFrame.add(this.refObject);
+
+    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord;
+    spaceDist = 100;
+    maxDist = 1000;
+    lineCount = maxDist / spaceDist;
+
+    material = new THREE.LineBasicMaterial({color: 0x000000});
+    
+    geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(-maxDist, 0, -1), new THREE.Vector3(maxDist, 0, -1));
+    line = new THREE.Line(geometry, material);
+    this.refObject.add(line);
+
+    geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(0, -maxDist, -1), new THREE.Vector3(0, maxDist, -1));
+    line = new THREE.Line(geometry, material);
+    this.refObject.add(line);
+
+    material = new THREE.LineBasicMaterial({color: 0xa0a0a0});
+    for (lid = 1; lid <= lineCount; lid++) {
+        coord = lid * spaceDist;
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(coord, -maxDist, -1), new THREE.Vector3(coord, maxDist, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-coord, -maxDist, -1), new THREE.Vector3(-coord, maxDist, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, coord, -1), new THREE.Vector3(maxDist, coord, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, -coord, -1), new THREE.Vector3(maxDist, -coord, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+    }
+};
+
+REAL3D.InnerSpaceDesign.SceneData.hideRefObject = function () {
+    "use strict";
+    this.refFrame.remove(this.refObject);
 };
 
 REAL3D.InnerSpaceDesign.SceneData.saveUserData = function () {
@@ -698,6 +771,7 @@ function enterToolWall() {
 
     $('<div id="toolBar" class="wall"></div>').appendTo('#leftContainer');
     $('<div class="text">墙</div>').appendTo('#toolBar');
+    $('<hr />').appendTo('#toolBar');
 
     $('<div">墙厚(cm)<input id="wallThick" class="parmNumCtl" type="number" min="1" max="50"></div>').appendTo('#toolBar');
     $('#wallThick').get(0).addEventListener("input", changeWallThick, false);
@@ -706,9 +780,11 @@ function enterToolWall() {
     $('<div>墙高(cm)<input id="wallHeight" class="parmNumCtl" type="number" min="100" max="500"></div>').appendTo('#toolBar');
     $('#wallHeight').get(0).addEventListener("input", changeWallHeight, false);
     $('#wallHeight').val(REAL3D.InnerSpaceDesign.SceneData.wallHeight);
+    $('<hr />').appendTo('#toolBar');
     
     $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
     $('#viewSwitch').click(viewSwitch);
+    $('<hr />').appendTo('#toolBar');
     
     $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
     $('#return').click(function () {
@@ -763,6 +839,7 @@ function enterToolHome() {
     "use strict";
     $('<div id="toolBar"></div>').appendTo('#leftContainer');
     $('<div class="text">工具栏</div>').appendTo('#toolBar');
+    $('<hr />').appendTo('#toolBar');
     
     $('<button id="wallBut" class="button">墙</button>').appendTo('#toolBar');
     $('#wallBut').click(enterToolWall);

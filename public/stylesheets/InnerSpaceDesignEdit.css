@@ -14,7 +14,7 @@
 
 body
 {
-    background-color: rgb(222, 222, 222);
+    background-color: rgb(220, 220, 220);
     /*display: block;*/
 }
 
@@ -23,7 +23,7 @@ body
     text-align: center;
     font-size: 16pt;
     color: rgb(25, 125, 177);
-    background-color: rgb(210, 210, 215);
+    /*background-color: rgb(210, 210, 215);*/
 }
 
 .info .parmStrCtl
@@ -48,7 +48,7 @@ body
 
 .info .button
 {
-    width: 64px;
+    width: 70px;
     height: 32px;
     text-align: center;
     font-size: 16pt;
@@ -86,7 +86,7 @@ body
 .leftContainer .button
 {
     margin-bottom: 10px;
-    width: 64px;
+    width: 70px;
     height: 64px;
     text-align: center;
     font-size: 16pt;
@@ -115,7 +115,7 @@ body
 
 .leftContainer .wall .button
 {
-    width: 64px;
+    width: 70px;
     height: 32px;
     text-align: center;
     font-size: 16pt;

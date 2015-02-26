@@ -18,7 +18,7 @@ REAL3D.RenderManager = {
         cameraDefault.position.set(0, 0, 10);
         this.camera[this.currentCameraName] = cameraDefault;
         this.renderer = new THREE.WebGLRenderer({antialias: true});
-        this.renderer.setClearColor(0xdadada, 1);
+        this.renderer.setClearColor(0xdcdcdc, 1);
         this.renderer.setSize(this.windowWidth, this.windowHeight);
         return this.renderer.domElement;
     },
