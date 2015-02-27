@@ -88,7 +88,7 @@ REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent = function () {
     this.lightObject = new THREE.Object3D();
     this.refFrame.add(this.lightObject);
     // var ambientLight = new THREE.AmbientLight(0xa77f77);
-    var ambientLight = new THREE.AmbientLight(0x002b2b);
+    var ambientLight = new THREE.AmbientLight(0x2b2b2b);
     this.lightObject.add(ambientLight);
 };
 
@@ -127,8 +127,10 @@ REAL3D.InnerSpaceDesignEdit.SceneData.displayRefObject = function () {
     this.refObject = new THREE.Object3D();
     this.refFrame.add(this.refObject);
 
-    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord;
+    var spaceDist, subCount, subSpaceDist, maxDist, lineCount, lid, material, geometry, line, coord, subLineCount;
     spaceDist = 100;
+    subCount = 5;
+    subSpaceDist = spaceDist / subCount;
     maxDist = 1000;
     lineCount = maxDist / spaceDist;
 
@@ -144,9 +146,38 @@ REAL3D.InnerSpaceDesignEdit.SceneData.displayRefObject = function () {
     line = new THREE.Line(geometry, material);
     this.refObject.add(line);
 
-    material = new THREE.LineBasicMaterial({color: 0xa0a0a0});
+    material = new THREE.LineBasicMaterial({color: 0x888888});
     for (lid = 1; lid <= lineCount; lid++) {
         coord = lid * spaceDist;
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(coord, -maxDist, -1), new THREE.Vector3(coord, maxDist, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-coord, -maxDist, -1), new THREE.Vector3(-coord, maxDist, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, coord, -1), new THREE.Vector3(maxDist, coord, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, -coord, -1), new THREE.Vector3(maxDist, -coord, -1));
+        line = new THREE.Line(geometry, material);
+        this.refObject.add(line);
+    }
+
+    subLineCount = maxDist / subSpaceDist;
+    material = new THREE.LineBasicMaterial({color: 0xbbbbbb});
+    for (lid = 1; lid <= subLineCount; lid++) {
+        if (lid % subCount === 0) {
+            continue;
+        }
+        coord = lid * subSpaceDist;
 
         geometry = new THREE.Geometry();
         geometry.vertices.push(new THREE.Vector3(coord, -maxDist, -1), new THREE.Vector3(coord, maxDist, -1));

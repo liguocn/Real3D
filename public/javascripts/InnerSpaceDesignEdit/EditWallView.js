@@ -3,6 +3,7 @@
 
 REAL3D.InnerSpaceDesignEdit.EditWallView = {
     mouseState: REAL3D.InnerSpaceDesignEdit.MouseState.NONE,
+    snapUnit: 20,
     isMouseDown: false,
     mouseDownPos: new THREE.Vector2(0, 0),
     mouseMovePos: new THREE.Vector2(0, 0),
@@ -14,6 +15,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView = {
 REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset) {
     "use strict";
     this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
+    this.snapUnit = 20;
     this.isMouseDown = false;
     this.mouseDownPos = new THREE.Vector2(0, 0);
     this.mouseMovePos = new THREE.Vector2(0, 0);
@@ -170,7 +172,9 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePos
     mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
     cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
     worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
     worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     newId = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
     userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[newId],
         REAL3D.InnerSpaceDesignEdit.SceneData.wallThick * 2, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
@@ -202,7 +206,9 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.draggingUserPoint = function (mousePosX
     mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
     cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
     worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
     worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
     REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
 };
