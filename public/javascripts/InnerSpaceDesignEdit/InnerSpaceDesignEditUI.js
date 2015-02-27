@@ -127,8 +127,12 @@ function enterToolWall() {
     $('#return').click(function () {
         $('#toolBar').remove();
         enterToolHome();
+        $('#viewSwitch').text('2D');
+        REAL3D.InnerSpaceDesignEdit.switchEditState(REAL3D.InnerSpaceDesignEdit.EditState.NONE);
+        REAL3D.InnerSpaceDesignEdit.switchControlState(null);
     });
 
+    $('#viewSwitch').text('编辑');
     REAL3D.InnerSpaceDesignEdit.switchEditState(REAL3D.InnerSpaceDesignEdit.EditState.WALLEDIT);
     REAL3D.InnerSpaceDesignEdit.switchControlState(null); 
 }

@@ -87,7 +87,7 @@ REAL3D.InnerSpaceDesignEdit.switchControlState = function (controlState) {
     "use strict";
     if (controlState === null) {
         if (this.editState === REAL3D.InnerSpaceDesignEdit.EditState.WALLEDIT) {
-            this.switchControlState(REAL3D.InnerSpaceDesignEdit.WALLEDIT);
+            this.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
         } else {
             this.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
         }
