@@ -79,7 +79,7 @@ function viewSwitch() {
         REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent();
         $('#viewSwitch').text('编辑');
     } else {
-        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
+        REAL3D.InnerSpaceDesignEdit.switchControlState(null);
         REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent();
         $('#viewSwitch').text('2D');
     }
@@ -128,6 +128,9 @@ function enterToolWall() {
         $('#toolBar').remove();
         enterToolHome();
     });
+
+    REAL3D.InnerSpaceDesignEdit.switchEditState(REAL3D.InnerSpaceDesignEdit.EditState.WALLEDIT);
+    REAL3D.InnerSpaceDesignEdit.switchControlState(null); 
 }
 
 function enterToolFurniture() {

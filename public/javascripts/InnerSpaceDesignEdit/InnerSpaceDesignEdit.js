@@ -3,6 +3,7 @@
 
 REAL3D.InnerSpaceDesignEdit = {
     controlState: null,
+    editState: null,
     winW: 0,
     winH: 0,
     canvasElement: null
@@ -27,6 +28,7 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     //init control state and user data
     REAL3D.InnerSpaceDesignEdit.OverheadView.init($(this.canvasElement).offset(), this.winW, this.winH);
     this.controlState = REAL3D.InnerSpaceDesignEdit.OverheadView;
+    this.editState = REAL3D.InnerSpaceDesignEdit.EditState.NONE;
     REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
 };
 
@@ -76,10 +78,23 @@ REAL3D.InnerSpaceDesignEdit.keyPress = function (e) {
     }
 };
 
+REAL3D.InnerSpaceDesignEdit.switchEditState = function (editState) {
+    "use strict";
+    this.editState = editState;
+};
+
 REAL3D.InnerSpaceDesignEdit.switchControlState = function (controlState) {
     "use strict";
-    this.controlState = controlState;
-    controlState.init($(this.canvasElement).offset(), this.winW, this.winH);
+    if (controlState === null) {
+        if (this.editState === REAL3D.InnerSpaceDesignEdit.EditState.WALLEDIT) {
+            this.switchControlState(REAL3D.InnerSpaceDesignEdit.WALLEDIT);
+        } else {
+            this.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
+        }
+    } else {
+        this.controlState = controlState;
+        controlState.init($(this.canvasElement).offset(), this.winW, this.winH);
+    }
 };
 
 REAL3D.InnerSpaceDesignEdit.MouseState = {
@@ -90,6 +105,11 @@ REAL3D.InnerSpaceDesignEdit.MouseState = {
     HITUSERPOINT: 4,
     HITCANVAS: 5,
     REMOVEUSERPOINT: 6
+};
+
+REAL3D.InnerSpaceDesignEdit.EditState = {
+    NONE: 0,
+    WALLEDIT: 1
 };
 
 REAL3D.InnerSpaceDesignEdit.HITRADIUS = 250;
