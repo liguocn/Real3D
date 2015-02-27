@@ -1,4 +1,4 @@
-/*jslint plusplus: true */
+/*jslint plusplus: true, continue: true */
 /*global REAL3D, THREE, console, alert, window, document, $ */
 
 REAL3D.InnerSpaceDesignEdit.EditWallView = {
@@ -9,24 +9,34 @@ REAL3D.InnerSpaceDesignEdit.EditWallView = {
     mouseMovePos: new THREE.Vector2(0, 0),
     canvasOffset: null,
     hitUserPointIndex: -1,
-    lastCreatedPointIndex: -1
+    lastCreatedPointIndex: -1,
+    winW: 0,
+    winH: 0,
+    camera: null
 };
 
-REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset) {
+REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset, winW, winH) {
     "use strict";
-    this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
-    this.snapUnit = 20;
-    this.isMouseDown = false;
-    this.mouseDownPos = new THREE.Vector2(0, 0);
-    this.mouseMovePos = new THREE.Vector2(0, 0);
-    this.canvasOffset = canvasOffset;
-    this.hitUserPointIndex = -1;
-    this.lastCreatedPointIndex = -1;
+    if (this.camera === null) {
+        this.camera = new THREE.OrthographicCamera(winW / (-2), winW / 2, winH / 2, winH / (-2), 1, 2000);
+        this.camera.position.set(0, 0, 1000);
+        //first time init
+        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
+        this.snapUnit = 20;
+        this.isMouseDown = false;
+        this.mouseDownPos = new THREE.Vector2(0, 0);
+        this.mouseMovePos = new THREE.Vector2(0, 0);
+        this.canvasOffset = canvasOffset;
+        this.hitUserPointIndex = -1;
+        this.lastCreatedPointIndex = -1;
+        this.winW = winW;
+        this.winH = winH;
+    }
+    REAL3D.RenderManager.switchCamera(this.camera);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.update = function (timestamp) {
     "use strict";
-    //console.log("update: timestamp = ", timestamp);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.mouseDown = function (e) {
@@ -142,9 +152,9 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.hitDetection = function (mousePosX, mou
     "use strict";
     var cameraPos, worldPosX, worldPosY;
     mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    cameraPos = this.camera.position;
+    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     return REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.selectPoint(worldPosX, worldPosY);
 };
 
@@ -169,11 +179,11 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, in
 REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY, newId, userPointBox;
-    mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    mousePosY = this.winH - mousePosY;
+    cameraPos = this.camera.position;
+    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     newId = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
     userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[newId],
@@ -203,11 +213,11 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.isMouseMoved = function (mousePosX, mou
 REAL3D.InnerSpaceDesignEdit.EditWallView.draggingUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     var cameraPos, worldPosX, worldPosY;
-    mousePosY = REAL3D.InnerSpaceDesignEdit.winH - mousePosY;
-    cameraPos = REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition;
-    worldPosX = mousePosX - REAL3D.InnerSpaceDesignEdit.winW / 2 + cameraPos.x;
+    mousePosY = this.winH - mousePosY;
+    cameraPos = this.camera.position;
+    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
-    worldPosY = mousePosY - REAL3D.InnerSpaceDesignEdit.winH / 2 + cameraPos.y;
+    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
     REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
@@ -218,9 +228,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.draggingCanvas = function (mousePosX, m
     var worldDifX, worldDifY;
     worldDifX = this.mouseMovePos.x - mousePosX;
     worldDifY = mousePosY - this.mouseMovePos.y;
-    REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.x += worldDifX;
-    REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition.y += worldDifY;
-    REAL3D.InnerSpaceDesignEdit.cameraOrtho.position.copy(REAL3D.InnerSpaceDesignEdit.SceneData.cameraOrthoPosition);
+    this.camera.position.x += worldDifX;
+    this.camera.position.y += worldDifY;
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.removeUserPoint = function (mousePosX, mousePosY) {

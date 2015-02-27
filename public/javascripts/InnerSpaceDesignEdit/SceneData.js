@@ -1,4 +1,4 @@
-/*jslint plusplus: true */
+/*jslint plusplus: true, continue: true */
 /*global REAL3D, THREE, console, document, window, $ */
 
 REAL3D.InnerSpaceDesignEdit.SceneData = {
@@ -36,11 +36,13 @@ REAL3D.InnerSpaceDesignEdit.SceneData.init = function (sceneData) {
     REAL3D.RenderManager.scene.remove(this.refFrame);
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
-    //render scene data
-    //console.log("render scene data");
+    this.displayRefObject();
 
-    this.drawCommonScene();
-    this.switchTo2DContent();
+    if (sceneData !== null) {
+        //render scene data
+        this.drawCommonScene();
+        this.switchTo2DContent();
+    }
 };
 
 REAL3D.InnerSpaceDesignEdit.SceneData.drawCommonScene = function () {
@@ -78,8 +80,6 @@ REAL3D.InnerSpaceDesignEdit.SceneData.drawCommonScene = function () {
         userPoints[pid].publish("updateSubscriber");
         //userPoints[pid].publish("updateMesh");
     }
-
-    this.displayRefObject();
 };
 
 REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent = function () {
@@ -292,7 +292,8 @@ REAL3D.InnerSpaceDesignEdit.SceneData.loadUserData = function (callback) {
         if (data.success) {
             console.log("  loaded data: ", data);
             sceneData = curState.unPackUserData(data.sceneData);
-            REAL3D.InnerSpaceDesignEdit.initUserData(sceneData);
+            //REAL3D.InnerSpaceDesignEdit.initUserData(sceneData);
+            curState.init(sceneData);
             callback();
         }
     }, "json");

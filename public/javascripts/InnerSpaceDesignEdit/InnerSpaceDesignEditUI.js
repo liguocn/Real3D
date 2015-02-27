@@ -71,15 +71,17 @@ function saveWorkSpace() {
 function viewSwitch() {
     "use strict";
     if ($('#viewSwitch').text() === '2D') {
-        $('#viewSwitch').text('3D');
-        REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesignEdit.cameraOrthoName);
-        REAL3D.InnerSpaceDesignEdit.viewState = REAL3D.InnerSpaceDesignEdit.EditWallView;
-        REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent();
-    } else {
-        $('#viewSwitch').text('2D');
-        REAL3D.RenderManager.switchCamera(REAL3D.InnerSpaceDesignEdit.cameraPerspName);
-        REAL3D.InnerSpaceDesignEdit.viewState = REAL3D.InnerSpaceDesignEdit.FreeWalkView;
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.FreeWalkView);
         REAL3D.InnerSpaceDesignEdit.SceneData.switchTo3DContent();
+        $('#viewSwitch').text('3D');
+    } else if ($('#viewSwitch').text() === '3D') {
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
+        REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent();
+        $('#viewSwitch').text('编辑');
+    } else {
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
+        REAL3D.InnerSpaceDesignEdit.SceneData.switchTo2DContent();
+        $('#viewSwitch').text('2D');
     }
 }
 
@@ -112,16 +114,16 @@ function enterToolWall() {
     $('#wallHeight').val(REAL3D.InnerSpaceDesignEdit.SceneData.wallHeight);
     $('<hr />').appendTo('#toolBar');
     
-    $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
-    $('#viewSwitch').click(viewSwitch);
-    $('<hr />').appendTo('#toolBar');
+    // $('<div>视角切换<button id="viewSwitch" class="button">3D</button></div>').appendTo('#toolBar');
+    // $('#viewSwitch').click(viewSwitch);
+    // $('<hr />').appendTo('#toolBar');
 
     $('<div>模式切换<button id="editModeSwitch" class="button">删除</button></div>').appendTo('#toolBar');
     $('#editModeSwitch').click(editModeSwitch);
     $('<hr />').appendTo('#toolBar');
 
     
-    $('<button id="return" class="button">返回</button>').appendTo('#toolBar');
+    $('<button id="return" class="button">首页</button>').appendTo('#toolBar');
     $('#return').click(function () {
         $('#toolBar').remove();
         enterToolHome();
@@ -220,6 +222,7 @@ $(document).ready(function () {
     enterToolHome();
     $('#newDesign').click(newWorkSpace);
     $('#saveDesign').click(saveWorkSpace);
+    $('#viewSwitch').click(viewSwitch);
     $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
 
     //init state

@@ -13,10 +13,11 @@ REAL3D.RenderManager = {
         this.scene = new THREE.Scene();
         this.windowWidth = winW;
         this.windowHeight = winH;
-        var cameraDefault;
-        cameraDefault = new THREE.PerspectiveCamera(75, this.windowWidth / this.windowHeight, 0.1, 1000);
-        cameraDefault.position.set(0, 0, 10);
-        this.camera[this.currentCameraName] = cameraDefault;
+        // var cameraDefault;
+        // cameraDefault = new THREE.PerspectiveCamera(75, this.windowWidth / this.windowHeight, 0.1, 1000);
+        // cameraDefault.position.set(0, 0, 10);
+        // this.camera[this.currentCameraName] = cameraDefault;
+        this.currentCamera = null;
         this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.setClearColor(0xdcdcdc, 1);
         this.renderer.setSize(this.windowWidth, this.windowHeight);
@@ -25,28 +26,30 @@ REAL3D.RenderManager = {
 
     update : function() {
         "use strict";
-        this.renderer.render(this.scene, this.camera[this.currentCameraName]);
-    },
-
-    switchCamera : function(cameraName) {
-        "use strict";
-        this.currentCameraName = cameraName;
-    },
-
-    addCamera : function(cameraName, camera) {
-        "use strict";
-        this.camera[cameraName] = camera;
-    },
-
-    deleteCamera : function(cameraName) {
-        "use strict";
-        if (this.camera[cameraName] !== undefined) {
-            delete this.camera[cameraName];
+        if (this.currentCamera !== null) {
+            this.renderer.render(this.scene, this.currentCamera);
         }
     },
 
-    getCamera : function(cameraName) {
+    switchCamera : function(camera) {
         "use strict";
-        return this.camera[cameraName];
+        this.currentCamera = camera;
     }
+
+    // addCamera : function(cameraName, camera) {
+    //     "use strict";
+    //     this.camera[cameraName] = camera;
+    // },
+
+    // deleteCamera : function(cameraName) {
+    //     "use strict";
+    //     if (this.camera[cameraName] !== undefined) {
+    //         delete this.camera[cameraName];
+    //     }
+    // },
+
+    // getCamera : function(cameraName) {
+    //     "use strict";
+    //     return this.camera[cameraName];
+    // }
 };
