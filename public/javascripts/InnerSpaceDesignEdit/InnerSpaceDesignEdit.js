@@ -25,8 +25,8 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.focus();
     canvasElement.style.outline = "none";
 
-    //init user data
-    //REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
+    //init user data: not done
+    REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
 };
 
 REAL3D.InnerSpaceDesignEdit.run = function () {

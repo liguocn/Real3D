@@ -2,7 +2,9 @@
 /*global REAL3D, THREE, console, alert, window, document, $ */
 
 REAL3D.InnerSpaceDesignEdit.FrameUI = {
-    canvasElement: null
+    canvasElement: null,
+    winW: null,
+    winH: null
 };
 
 REAL3D.InnerSpaceDesignEdit.FrameUI.init = function () {
@@ -14,14 +16,15 @@ REAL3D.InnerSpaceDesignEdit.FrameUI.init = function () {
     $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
     REAL3D.InnerSpaceDesignEdit.EditHomeUI.enter();
 
-    var canvContainer, winW, winH;
-    winW = $(window).width() - 240;
-    winW = (winW < 1024) ? 1024 : winW;
-    winH = $(window).height() - 90;
-    winH = (winH < 640) ? 640 : winH;
-    this.canvasElement = REAL3D.RenderManager.init(winW, winH);
+    var canvContainer;
+    this.winW = $(window).width() - 240;
+    this.winW = (this.winW < 1024) ? 1024 : this.winW;
+    this.winH = $(window).height() - 90;
+    this.winH = (this.winH < 640) ? 640 : this.winH;
+    this.canvasElement = REAL3D.RenderManager.init(this.winW, this.winH);
     canvContainer = document.getElementById("designspace");
     canvContainer.appendChild(this.canvasElement);
+    console.log("winW: ", this.winW, " winH: ", this.winH, " canvasElement: ", this.canvasElement);
 };
 
 REAL3D.InnerSpaceDesignEdit.FrameUI.updateFrameUIData = function () {
@@ -84,8 +87,11 @@ $(document).ready(function () {
 
     REAL3D.InnerSpaceDesignEdit.FrameUI.init();
 
-    // REAL3D.InnerSpaceDesignEdit.init(winW, winH, REAL3D.InnerSpaceDesignEdit.canvasElement);
-    // REAL3D.InnerSpaceDesignEdit.run();
+    REAL3D.InnerSpaceDesignEdit.init(REAL3D.InnerSpaceDesignEdit.FrameUI.winW, 
+        REAL3D.InnerSpaceDesignEdit.FrameUI.winH, 
+        REAL3D.InnerSpaceDesignEdit.FrameUI.canvasElement);
+    REAL3D.InnerSpaceDesignEdit.run();
+    REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditHomeState);
 
     //load user data
     // console.log("load user data");
