@@ -25,26 +25,21 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.focus();
     canvasElement.style.outline = "none";
 
-    //init control state and user data
-    REAL3D.InnerSpaceDesignEdit.OverheadView.init($(this.canvasElement).offset(), this.winW, this.winH);
-    this.controlState = REAL3D.InnerSpaceDesignEdit.OverheadView;
-    this.editState = REAL3D.InnerSpaceDesignEdit.EditState.NONE;
-    REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
+    //init user data
+    //REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
 };
-
-// REAL3D.InnerSpaceDesignEdit.initUserData = function (sceneData) {
-//     "use strict";
-//     //set up scene
-//     REAL3D.InnerSpaceDesignEdit.SceneData.init(sceneData);
-//     this.controlState = REAL3D.InnerSpaceDesignEdit.EditWallView;
-// };
 
 REAL3D.InnerSpaceDesignEdit.run = function () {
     "use strict";
     var that = this;
     function animateFunction(timestamp) {
         REAL3D.RenderManager.update();
-        that.controlState.update(timestamp);
+        if (that.controlState !== null) {
+            that.controlState.update(timestamp);
+        }
+        if (that.editState !== null) {
+            that.editState.update(timestamp);
+        }
         requestAnimationFrame(animateFunction);
     }
     requestAnimationFrame(animateFunction);
@@ -78,23 +73,19 @@ REAL3D.InnerSpaceDesignEdit.keyPress = function (e) {
     }
 };
 
-REAL3D.InnerSpaceDesignEdit.switchEditState = function (editState) {
+REAL3D.InnerSpaceDesignEdit.enterState = function (state) {
     "use strict";
-    this.editState = editState;
+    if (this.editState !== null) {
+        this.editState.exit();
+    }
+    this.editState = state;
+    this.editState.enter();
 };
 
 REAL3D.InnerSpaceDesignEdit.switchControlState = function (controlState) {
     "use strict";
-    if (controlState === null) {
-        if (this.editState === REAL3D.InnerSpaceDesignEdit.EditState.WALLEDIT) {
-            this.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
-        } else {
-            this.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
-        }
-    } else {
-        this.controlState = controlState;
-        controlState.init($(this.canvasElement).offset(), this.winW, this.winH);
-    }
+    this.controlState = controlState;
+    controlState.init($(this.canvasElement).offset(), this.winW, this.winH);
 };
 
 REAL3D.InnerSpaceDesignEdit.MouseState = {
@@ -105,11 +96,6 @@ REAL3D.InnerSpaceDesignEdit.MouseState = {
     HITUSERPOINT: 4,
     HITCANVAS: 5,
     REMOVEUSERPOINT: 6
-};
-
-REAL3D.InnerSpaceDesignEdit.EditState = {
-    NONE: 0,
-    WALLEDIT: 1
 };
 
 REAL3D.InnerSpaceDesignEdit.HITRADIUS = 250;
