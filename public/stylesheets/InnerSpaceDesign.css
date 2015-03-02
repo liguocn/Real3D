@@ -33,8 +33,6 @@ body
 {
     font-size: x-large;
     color: rgb(157, 41, 50);
-    /*margin: 20px 0.5%;*/
-    float: right;
     text-decoration: none;
     cursor: pointer;
 }
