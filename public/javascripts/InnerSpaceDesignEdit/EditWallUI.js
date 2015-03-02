@@ -15,6 +15,26 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.changeWallHeight = function () {
     REAL3D.InnerSpaceDesignEdit.WallData.updateWallHeight($('#wallHeight').val());
 };
 
+REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToCreate = function () {
+    "use strict";
+    console.log("checked: ", $('#create').get(0).checked);
+};
+
+REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToInsert = function () {
+    "use strict";
+    console.log("checked: ", $('#insert').get(0).checked);
+};
+
+REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToDelete = function () {
+    "use strict";
+    console.log("checked: ", $('#delete').get(0).checked);
+};
+
+REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToMerge = function () {
+    "use strict";
+    console.log("checked: ", $('#merge').get(0).checked);
+};
+
 REAL3D.InnerSpaceDesignEdit.EditWallUI.enter = function () {
     "use strict";
 
@@ -35,9 +55,21 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.enter = function () {
     $('#viewSwitch').click(function () { that.viewSwitch(); });
     $('<hr />').appendTo('#toolBar');
 
-    $('<div>模式切换<button id="editModeSwitch" class="button">删除</button></div>').appendTo('#toolBar');
-    $('#editModeSwitch').click(function () { that.editModeSwitch(); });
+    $('<div id="editMode">编辑模式</div>').appendTo('#toolBar');
+    $('<div><input type="radio" id="create">创建</div>').appendTo('#editMode');
+    //$('#create').get(0).checked = true;
+    $('#create').get(0).addEventListener("click", function () { that.switchEditModeToCreate(); });
+    $('<div><input type="radio" id="insert">插入</div>').appendTo('#editMode');
+    //$('#insert').get(0).checked = false;
+    $('#insert').get(0).addEventListener("click", function () { that.switchEditModeToInsert(); });
+    $('<div><input type="radio" id="delete">删除</div>').appendTo('#editMode');
+    //$('#delete').get(0).checked = false;
+    $('#delete').get(0).addEventListener("click", function () { that.switchEditModeToDelete(); });
+    $('<div><input type="radio" id="merge">合并</div>').appendTo('#editMode');
+    //$('#merge').get(0).checked = false;
+    $('#merge').get(0).addEventListener("click", function () { that.switchEditModeToMerge(); });
     $('<hr />').appendTo('#toolBar');
+    $('#create').get(0).checked = true;
 
     $('<button id="return" class="button">首页</button>').appendTo('#toolBar');
     $('#return').click(function () { that.enterEditHome(); });
@@ -53,21 +85,17 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.viewSwitch = function () {
     if ($('#viewSwitch').text() === '2D') {
         REAL3D.InnerSpaceDesignEdit.EditWallState.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallState.CONTROLSTATE.WALK);
         $('#viewSwitch').text('3D');
+        $('#create').get(0).disabled = true;
+        $('#insert').get(0).disabled = true;
+        $('#delete').get(0).disabled = true;
+        $('#merge').get(0).disabled = true;
     } else {
         REAL3D.InnerSpaceDesignEdit.EditWallState.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallState.CONTROLSTATE.EDIT);
         $('#viewSwitch').text('2D');
-    } 
-}
-
-REAL3D.InnerSpaceDesignEdit.EditWallUI.editModeSwitch = function () {
-    "use strict";
-    if ($('#editModeSwitch').text() === '删除') {
-        $('#editModeSwitch').text('编辑');
-        REAL3D.InnerSpaceDesignEdit.EditWallView.switchRemoveState(true);
-        console.log("remove mode");
-    } else {
-        $('#editModeSwitch').text('删除');
-        REAL3D.InnerSpaceDesignEdit.EditWallView.switchRemoveState(false);
+        $('#create').get(0).disabled = false;
+        $('#insert').get(0).disabled = false;
+        $('#delete').get(0).disabled = false;
+        $('#merge').get(0).disabled = false;
     }
 };
 

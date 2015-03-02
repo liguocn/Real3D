@@ -166,6 +166,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, in
         var wall3d, point1, point2;
         point1 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index1];
         point2 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index2];
+        point1.publish("updateSubscriber");
+        point2.publish("updateSubscriber");
         point1.publish("updateDraw");
         point2.publish("updateDraw");
         wall3d = new REAL3D.Wall.Wall3D(point1, point2,
