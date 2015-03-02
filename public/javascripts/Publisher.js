@@ -45,8 +45,8 @@ REAL3D.Publisher.prototype.publish = function (parm_message) {
     "use strict";
     var subscribers, ii, jj, args, subscriberLen;
     subscribers = this.messageTypes[parm_message];
-    subscriberLen = subscribers.length;
     if (subscribers) {
+        subscriberLen = subscribers.length;
         for (ii = subscriberLen - 1; ii >= 0; ii--) {
             args = [];
             for (jj = 0; jj < arguments.length - 1; jj++) {

@@ -94,14 +94,16 @@ $(document).ready(function () {
     REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditHomeState);
 
     //load user data
-    // console.log("load user data");
-    // var designName = $('#designName').val();
-    // console.log("designName: ", designName);
-    // if (designName !== '') {
-    //     console.log("designName is ", designName);
-    //     REAL3D.InnerSpaceDesignEdit.SceneData.designName = designName;
-    //     REAL3D.InnerSpaceDesignEdit.SceneData.loadUserData(updateUIData);
-    // } else {
-    //     console.log("designName is space");
-    // }
+    console.log("load user data");
+    var designName = $('#designName').val();
+    console.log("designName: ", designName);
+    if (designName !== '') {
+        REAL3D.InnerSpaceDesignEdit.designName = designName;
+        REAL3D.InnerSpaceDesignEdit.WallData.loadData();
+    } else {
+        console.log("This is a new design space");
+        REAL3D.InnerSpaceDesignEdit.EditHomeUI.exit();
+        REAL3D.InnerSpaceDesignEdit.EditWallUI.enter();
+        REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditWallState);
+    }
 });

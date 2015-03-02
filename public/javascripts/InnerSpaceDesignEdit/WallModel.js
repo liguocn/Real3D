@@ -4,6 +4,8 @@
 REAL3D.Wall = {
 };
 
+REAL3D.Wall.SELECTRADIUS = 200;
+
 REAL3D.Wall.UserPoint = function (posX, posY) {
     "use strict";
     REAL3D.Publisher.call(this);
@@ -20,7 +22,7 @@ REAL3D.Wall.UserPoint.prototype.updateNeighborOrder = function () {
     var neigLen, neighbors, neigVectors, curVector, nid, sortVectors;
     neigLen = this.neighbors.length;
     if (neigLen > 2) {
-        console.log("updateNeighborOrder: ", neigLen);
+        //console.log("updateNeighborOrder: ", neigLen);
         neighbors = this.neighbors;
         neigVectors = [];
         for (nid = 0; nid < neigLen; nid++) {
@@ -163,6 +165,7 @@ REAL3D.Wall.Stump.prototype.updateDraw = function () {
     material = new THREE.MeshBasicMaterial({color: 0x6b6b6b});
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.set(this.point.pos.getX(), this.point.pos.getY(), 900);
+    this.parent.add(this.mesh);
 };
 
 REAL3D.Wall.Wall3D = function (point1, point2, thick, height, parent, globalPublisher) {
@@ -201,6 +204,8 @@ REAL3D.Wall.Wall3D.prototype.remove = function () {
     for (nid = 0; nid < neigLen2; nid++) {
         neighbors2[nid].unsubscribe("updateDraw", this, this.updateDraw);
     }
+    this.globalPublisher.unsubscribe("updateDraw", this);
+    this.globalPublisher.unsubscribe("remove", this);
 
     this.point1 = null;
     this.point2 = null;

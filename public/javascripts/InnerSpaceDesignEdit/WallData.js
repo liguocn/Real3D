@@ -6,14 +6,14 @@ REAL3D.InnerSpaceDesignEdit.WallData = {
     wallThick: null,
     wallHeight: null,
     globalPublisher: null,
-    drawObjects: null
+    drawObject: null,
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.init = function (wallData) {
     "use strict";
     this.releaseData();
     this.globalPublisher = new REAL3D.Publisher();
-    this.drawObjects = new THREE.Object3D();
+    this.drawObject = null;
     this.wallThick = 10;
     this.wallHeight = 200;
     this.userPointTree = new REAL3D.Wall.UserPointTree();
@@ -28,13 +28,14 @@ REAL3D.InnerSpaceDesignEdit.WallData.init = function (wallData) {
 REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
     "use strict";
     this.releaseDraw();
-    this.drawObjects = new THREE.Object3D();
+    this.drawObject = new THREE.Object3D();
+    REAL3D.RenderManager.scene.add(this.drawObject);
     //draw objects
     var userPoints, userPointLen, pid, neighbors, neiLen, nid, stump, assistFlag, wall3d;
     userPoints = this.userPointTree.points;
     userPointLen = userPoints.length;
     for (pid = 0; pid < userPointLen; pid++) {
-        stump = new REAL3D.Wall.Stump(userPoints[pid], this.wallThick * 2, this.drawObjects, this.globalPublisher);
+        stump = new REAL3D.Wall.Stump(userPoints[pid], this.wallThick * 2, this.drawObject, this.globalPublisher);
     }
     this.userPointTree.updateAssistId();
     assistFlag = [];
@@ -48,14 +49,11 @@ REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
         for (nid = 0; nid < neiLen; nid++) {
             if (assistFlag[neighbors[nid].assistId] === 1) {
                 wall3d = new REAL3D.Wall.Wall3D(userPoints[pid], neighbors[nid], this.wallThick, this.wallHeight,
-                    this.drawObjects, this.globalPublisher);
+                    this.drawObject, this.globalPublisher);
             }
         }
         assistFlag[pid] = -1;
     }
-    // for (pid = 0; pid < userPointLen; pid++) {
-    //     userPoints[pid].publish("updateSubscriber");
-    // }
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.updateDraw = function () {
@@ -69,10 +67,11 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw = function () {
     "use strict";
     if (this.globalPublisher !== null) {
         this.globalPublisher.publish("remove");
+        console.log("globalPublisher: ", this.globalPublisher);
     }
-    if (this.drawObjects !== null) {
-        REAL3D.RenderManager.scene.remove(this.drawObjects);
-        this.drawObjects = null;
+    if (this.drawObject !== null) {
+        REAL3D.RenderManager.scene.remove(this.drawObject);
+        this.drawObject = null;
     }
 };
 
@@ -90,4 +89,16 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseData = function () {
 
 REAL3D.InnerSpaceDesignEdit.WallData.saveData = function () {
     "use strict";
+};
+
+REAL3D.InnerSpaceDesignEdit.WallData.updateWallThick = function (thick) {
+    "use strict";
+    this.wallThick = thick;
+    this.draw();
+};
+
+REAL3D.InnerSpaceDesignEdit.WallData.updateWallHeight = function (height) {
+    "use strict";
+    this.wallHeight = height;
+    this.draw();
 };

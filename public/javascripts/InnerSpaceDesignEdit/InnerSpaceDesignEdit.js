@@ -6,7 +6,8 @@ REAL3D.InnerSpaceDesignEdit = {
     editState: null,
     winW: 0,
     winH: 0,
-    canvasElement: null
+    canvasElement: null,
+    designName: ''
 };
 
 REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
@@ -26,7 +27,8 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.style.outline = "none";
 
     //init user data: not done
-    REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
+    REAL3D.InnerSpaceDesignEdit.WallData.init(null);
+    // REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
 };
 
 REAL3D.InnerSpaceDesignEdit.run = function () {

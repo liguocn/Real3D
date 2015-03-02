@@ -155,40 +155,41 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.hitDetection = function (mousePosX, mou
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    return REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.selectPoint(worldPosX, worldPosY);
+    //console.log("hitDetection: ", REAL3D.InnerSpaceDesignEdit.winH, mousePosY, cameraPos, worldPosX, worldPosY);
+    return REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.selectPoint(worldPosX, worldPosY);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, index2) {
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
-        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.connectPoints(index1, index2);
-        var wall2d, wall3d, point1, point2;
-        point1 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index1];
-        point2 = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[index2];
-        wall2d = new REAL3D.Wall.Wall2D(point1, point2, REAL3D.InnerSpaceDesignEdit.SceneData.wallThick);
-        wall3d = new REAL3D.Wall.Wall3D(wall2d, REAL3D.InnerSpaceDesignEdit.SceneData.wallHeight, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
-        REAL3D.InnerSpaceDesignEdit.SceneData.wall2ds.push(wall2d);
-        REAL3D.InnerSpaceDesignEdit.SceneData.wall3ds.push(wall3d);
-        point1.publish("updateSubscriber");
-        point2.publish("updateSubscriber");
-        point1.publish("updateMesh");
-        point2.publish("updateMesh");
+        REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.connectPoints(index1, index2);
+        var wall3d, point1, point2;
+        point1 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index1];
+        point2 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index2];
+        point1.publish("updateDraw");
+        point2.publish("updateDraw");
+        wall3d = new REAL3D.Wall.Wall3D(point1, point2,
+            REAL3D.InnerSpaceDesignEdit.WallData.wallThick,
+            REAL3D.InnerSpaceDesignEdit.WallData.wallHeight,
+            REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
+            REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
-    var cameraPos, worldPosX, worldPosY, newId, userPointBox;
+    var cameraPos, worldPosX, worldPosY, newId, stump;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
-    newId = REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.addPoint(worldPosX, worldPosY);
-    userPointBox = new REAL3D.Wall.UserPointBox(REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[newId],
-        REAL3D.InnerSpaceDesignEdit.SceneData.wallThick * 2, REAL3D.InnerSpaceDesignEdit.SceneData.refFrame);
-    REAL3D.InnerSpaceDesignEdit.SceneData.wallBoxes.push(userPointBox);
+    newId = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.addPoint(worldPosX, worldPosY);
+    stump = new REAL3D.Wall.Stump(REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[newId],
+        REAL3D.InnerSpaceDesignEdit.WallData.wallThick * 2,
+        REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
+        REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
     return newId;
 };
 
@@ -219,8 +220,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.draggingUserPoint = function (mousePosX
     worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
-    REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[this.hitUserPointIndex].publish("updateMesh");
+    REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
+    REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[this.hitUserPointIndex].publish("updateDraw");
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.draggingCanvas = function (mousePosX, mousePosY) {
@@ -237,8 +238,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.removeUserPoint = function (mousePosX, 
     var hitIndex;
     hitIndex = this.hitDetection(mousePosX, mousePosY);
     if (hitIndex !== -1) {
-        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.points[hitIndex].publish("remove");
-        REAL3D.InnerSpaceDesignEdit.SceneData.userPointTree.deletePoint(hitIndex);
+        REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[hitIndex].publish("remove");
+        REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.deletePoint(hitIndex);
     }
 };
 
