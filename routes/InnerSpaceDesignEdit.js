@@ -17,24 +17,16 @@ exports.enter = function (req, res) {
     res.render('InnerSpaceDesignEdit', {designName: req.query.designName});
 };
 
-function unPackSceneData(body) {
+function unPackWallData(body) {
     "use strict";
-    var sceneData, userPointLen, curIndex, pid, userPoint, neiLen, nid;
-    sceneData = {
-        cameraOrthoPosition: [],
-        cameraPerspPosition: [],
+    var wallData, userPointLen, curIndex, pid, userPoint, neiLen, nid;
+    wallData = {
         wallThick: parseFloat(body.wallThick),
         wallHeight: parseFloat(body.wallHeight),
         userPointTree: {
             points: []
         }
     };
-    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[0]));
-    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[1]));
-    sceneData.cameraOrthoPosition.push(parseFloat(body.cameraOrthoPosition[2]));
-    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[0]));
-    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[1]));
-    sceneData.cameraPerspPosition.push(parseFloat(body.cameraPerspPosition[2]));
     userPointLen = parseInt(body.userPointLen, 10);
     curIndex = 0;
     for (pid = 0; pid < userPointLen; pid++) {
@@ -49,14 +41,14 @@ function unPackSceneData(body) {
             userPoint.neighbors.push(parseInt(body.userPoints[curIndex + nid], 10));
         }
         curIndex += neiLen;
-        sceneData.userPointTree.points.push(userPoint);
+        wallData.userPointTree.points.push(userPoint);
     }
-    return sceneData;
+    return wallData;
 }
 
 exports.save = function (req, res) {
     "use strict";
-    var designId, sceneData, innerSpaceData;
+    var designId, wallData, innerSpaceData;
     console.log("    --post innerspacedesign/save");
     if (req.session.user === undefined) {
         res.send({saved: -1});
@@ -69,8 +61,8 @@ exports.save = function (req, res) {
         if (obj) {
             //update user data
             console.log("    --update user data");
-            sceneData = unPackSceneData(req.body);
-            InnerSpaceInfo.updateSceneData(designId, sceneData,
+            wallData = unPackWallData(req.body);
+            InnerSpaceInfo.updateWallData(designId, wallData,
                 function (err) {
                     if (err) {
                         console.log("error", err);
@@ -87,12 +79,12 @@ exports.save = function (req, res) {
             } else {
                 //create a new record and save it
                 console.log("    --create a new record and save it");
-                sceneData = unPackSceneData(req.body);
+                wallData = unPackWallData(req.body);
                 innerSpaceData = {
                     designId: designId,
                     designName: req.body.designName,
                     creator: req.session.user,
-                    sceneData: sceneData
+                    wallData: wallData
                 };
                 InnerSpaceInfo.save(innerSpaceData, function (err) {
                     if (err) {
@@ -154,7 +146,7 @@ exports.load = function (req, res) {
             res.send({success: false});
         } else if (obj) {
             console.log("    find obj");
-            res.send({success: true, sceneData: obj.sceneData});
+            res.send({success: true, wallData: obj.wallData});
         } else {
             console.log("    not find");
             res.send({success: false});

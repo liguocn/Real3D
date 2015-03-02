@@ -14,9 +14,7 @@ var InnerSpaceInfoSchema = new Schema({
     designId: String,
     designName: String,
     creator: String,
-    sceneData: {
-        cameraOrthoPosition: [Number],
-        cameraPerspPosition: [Number],
+    wallData: {
         wallThick: Number,
         wallHeight: Number,
         userPointTree: {
@@ -53,9 +51,9 @@ InnerSpaceInfoDAO.prototype.findByCreator = function (creator, callback) {
     });
 };
 
-InnerSpaceInfoDAO.prototype.updateSceneData = function (designId, sceneData, callback) {
+InnerSpaceInfoDAO.prototype.updateWallData = function (designId, wallData, callback) {
     "use strict";
-    InnerSpaceInfoModel.update({designId: designId}, {sceneData: sceneData},
+    InnerSpaceInfoModel.update({designId: designId}, {wallData: wallData},
         function (err, numberAffected, rawResponse) {
             callback(err);
         });
