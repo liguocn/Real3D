@@ -14,6 +14,7 @@ REAL3D.InnerSpaceDesignEdit.EditHomeState.enter = function () {
     this.setupLight();
 
     //update meshes
+    REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditHomeState.exit = function () {

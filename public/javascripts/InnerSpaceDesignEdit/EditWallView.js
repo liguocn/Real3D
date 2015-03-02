@@ -190,6 +190,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePos
         REAL3D.InnerSpaceDesignEdit.WallData.wallThick * 2,
         REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
         REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
+    //console.log("scene: ", REAL3D.RenderManager.scene);
     return newId;
 };
 

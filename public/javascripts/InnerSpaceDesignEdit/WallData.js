@@ -6,7 +6,7 @@ REAL3D.InnerSpaceDesignEdit.WallData = {
     wallThick: null,
     wallHeight: null,
     globalPublisher: null,
-    drawObject: null,
+    drawObject: null
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.init = function (wallData) {
@@ -67,7 +67,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw = function () {
     "use strict";
     if (this.globalPublisher !== null) {
         this.globalPublisher.publish("remove");
-        console.log("globalPublisher: ", this.globalPublisher);
+        //console.log("globalPublisher: ", this.globalPublisher);
     }
     if (this.drawObject !== null) {
         REAL3D.RenderManager.scene.remove(this.drawObject);
@@ -75,8 +75,53 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw = function () {
     }
 };
 
-REAL3D.InnerSpaceDesignEdit.WallData.loadData = function () {
+REAL3D.InnerSpaceDesignEdit.WallData.unPackServerData = function (userData) {
     "use strict";
+    var sceneData, camOrthoPos, camPerspPos, userPoints, userPointLen, pid, curPoint, neighbors, neiLen, nid, scenePoints;
+    camOrthoPos = userData.cameraOrthoPosition;
+    camPerspPos = userData.cameraPerspPosition;
+    sceneData = {};
+    sceneData.designName = this.designName;
+    sceneData.cameraOrthoPosition = new THREE.Vector3(camOrthoPos[0], camOrthoPos[1], camOrthoPos[2]);
+    sceneData.cameraPerspPosition = new THREE.Vector3(camPerspPos[0], camPerspPos[1], camPerspPos[2]);
+    sceneData.wallThick = userData.wallThick;
+    sceneData.wallHeight = userData.wallHeight;
+    sceneData.userPointTree = new REAL3D.Wall.UserPointTree();
+    userPoints = userData.userPointTree.points;
+    userPointLen = userPoints.length;
+    for (pid = 0; pid < userPointLen; pid++) {
+        curPoint = new REAL3D.Wall.UserPoint(userPoints[pid].posX, userPoints[pid].posY);
+        sceneData.userPointTree.points.push(curPoint);
+    }
+    scenePoints = sceneData.userPointTree.points;
+    for (pid = 0; pid < userPointLen; pid++) {
+        curPoint = scenePoints[pid];
+        neighbors = userPoints[pid].neighbors;
+        neiLen = neighbors.length;
+        curPoint.neighbors = [];
+        for (nid = 0; nid < neiLen; nid++) {
+            curPoint.neighbors.push(scenePoints[neighbors[nid]]);
+        }
+    }
+    return sceneData;
+};
+
+REAL3D.InnerSpaceDesignEdit.WallData.loadData = function (callback, caller) {
+    "use strict";
+    var postData, curState, sceneData;
+    postData = {
+        designName: REAL3D.InnerSpaceDesignEdit.designName
+    };
+    curState = this;
+    $.post("/InnerSpaceDesign/edit/load", $.param(postData, true), function (data) {
+        console.log("  data return from server");
+        if (data.success) {
+            console.log("  loaded data: ", data);
+            sceneData = curState.unPackServerData(data.sceneData);
+            curState.init(sceneData);
+            callback.apply(caller);
+        }
+    }, "json");
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.releaseData = function () {
@@ -87,8 +132,46 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseData = function () {
     this.userPointTree = null;
 };
 
+REAL3D.InnerSpaceDesignEdit.WallData.packUserData = function () {
+    "use strict";
+    var postData, points, userPointLen, pid, userPoints, curPoint, neighborLen, nid;
+    this.userPointTree.updateAssistId();
+    userPoints = [];
+    points = this.userPointTree.points;
+    userPointLen = points.length;
+    for (pid = 0; pid < userPointLen; pid++) {
+        curPoint = points[pid];
+        userPoints.push(curPoint.pos.getX());
+        userPoints.push(curPoint.pos.getY());
+        neighborLen = curPoint.neighbors.length;
+        userPoints.push(neighborLen);
+        for (nid = 0; nid < neighborLen; nid++) {
+            userPoints.push(curPoint.neighbors[nid].assistId);
+        }
+    }
+    postData = {
+        designName: REAL3D.InnerSpaceDesignEdit.designName,
+        cameraOrthoPosition: [0, 0, 1000],
+        cameraPerspPosition: [0, 0, 100],
+        wallThick: this.wallThick,
+        wallHeight: this.wallHeight,
+        userPointLen: userPointLen,
+        userPoints: userPoints
+    };
+    console.log("postData: ", postData);
+    return postData;
+};
+
 REAL3D.InnerSpaceDesignEdit.WallData.saveData = function () {
     "use strict";
+    var postData = this.packUserData();
+    console.log("postData: ", postData);
+    $.post("/InnerSpaceDesign/edit/save", $.param(postData, true), function (data) {
+        console.log("  data return from server:", data);
+        if (data.saved === -1) {
+            window.location.href = "/DoLogin";
+        }
+    }, "json");
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.updateWallThick = function (thick) {

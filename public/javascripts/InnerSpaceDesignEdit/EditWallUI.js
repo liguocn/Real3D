@@ -75,4 +75,5 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.enterEditHome = function () {
     "use strict";
     this.exit();
     REAL3D.InnerSpaceDesignEdit.EditHomeUI.enter();
+    REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditHomeState);
 };

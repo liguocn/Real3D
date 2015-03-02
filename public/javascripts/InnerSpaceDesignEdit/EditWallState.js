@@ -9,9 +9,10 @@ REAL3D.InnerSpaceDesignEdit.EditWallState = {
 REAL3D.InnerSpaceDesignEdit.EditWallState.enter = function () {
     "use strict";
     console.log("enter EditWallState");
+    console.log("scene: ", REAL3D.RenderManager.scene);
     REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
 
-    //setup lights
+    //setup light
     this.setupEditLight();
 
     //setup reference objects
@@ -19,14 +20,17 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.enter = function () {
 
     //update meshes
     REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
+    //console.log("scene: ", REAL3D.RenderManager.scene);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.exit = function () {
     "use strict";
     console.log("exit EditWallState");
-    //clean lights
+    //clean light
+    this.releaseLight();
 
-    //clean meshes
+    //clean reference objects
+    this.releaseReferenceObject();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.update = function (timestamp) {
@@ -45,32 +49,32 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.setupEditLight = function () {
 REAL3D.InnerSpaceDesignEdit.EditWallState.setupWalkLight = function () {
     "use strict";
     this.releaseLight();
-    this.lights = new THREE.Object3D();
-    REAL3D.RenderManager.scene.add(this.lights);
+    this.light = new THREE.Object3D();
+    REAL3D.RenderManager.scene.add(this.light);
 
     var ambientLight, dirLight1, dirLight2, dirLight3;
 
     ambientLight = new THREE.AmbientLight(0xb2b2b2);
-    this.lights.add(ambientLight);
+    this.light.add(ambientLight);
 
     dirLight1 = new THREE.DirectionalLight(0xffffff, 0.1);
     dirLight1.position.set(1, 0, 1);
-    this.lights.add(dirLight1);
+    this.light.add(dirLight1);
 
     dirLight2 = new THREE.DirectionalLight(0xffffff, 0.1);
     dirLight2.position.set(-1, 1.73, 1);
-    this.lights.add(dirLight2);
+    this.light.add(dirLight2);
 
     dirLight3 = new THREE.DirectionalLight(0xffffff, 0.1);
     dirLight3.position.set(-1, -1.73, 1);
-    this.lights.add(dirLight3);
+    this.light.add(dirLight3);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.releaseLight = function () {
     "use strict";
-    if (this.lights !== null) {
-        REAL3D.RenderManager.scene.remove(this.lights);
-        this.lights = null;
+    if (this.light !== null) {
+        REAL3D.RenderManager.scene.remove(this.light);
+        this.light = null;
     }
 };
 
@@ -168,10 +172,12 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.switchControlState = function (ctrlSta
         REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
         this.setupEditLight();
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
+        //console.log("scene: ", REAL3D.RenderManager.scene);
     } else if (ctrlState === REAL3D.InnerSpaceDesignEdit.EditWallState.CONTROLSTATE.WALK) {
         REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.FreeWalkView);
         this.setupWalkLight();
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
+        //console.log("scene: ", REAL3D.RenderManager.scene);
     }
 };
 
