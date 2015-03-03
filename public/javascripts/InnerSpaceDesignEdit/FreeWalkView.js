@@ -5,11 +5,14 @@ REAL3D.InnerSpaceDesignEdit.FreeWalkView = {
     canvasOffset: null,
     winW: null,
     winH: null,
-    isMouseDown: false,
-    mouseMovePos: new REAL3D.Vector2(0, 0),
-    moveSpeed: 5,
-    turnSpeed: 0.002,
-    camera: null
+    isMouseDown: null,
+    mouseMovePos: null,
+    moveSpeed: null,
+    turnSpeed: null,
+    camera: null,
+    hMoveState: null,
+    vMoveState: null,
+    timeStamp: null
 };
 
 REAL3D.InnerSpaceDesignEdit.FreeWalkView.init = function (canvasOffset, winW, winH) {
@@ -25,14 +28,29 @@ REAL3D.InnerSpaceDesignEdit.FreeWalkView.init = function (canvasOffset, winW, wi
         this.winH = winH;
         this.isMouseDown = false;
         this.mouseMovePos = new REAL3D.Vector2(0, 0);
-        this.moveSpeed = 5;
+        this.moveSpeed = 0.2;
         this.turnSpeed = 0.002;
     }
+    this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
+    this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
+    this.timeStamp = 0;
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
 REAL3D.InnerSpaceDesignEdit.FreeWalkView.update = function (timestamp) {
     "use strict";
+    var deltaTime = timestamp - this.timeStamp;
+    if (this.hMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.LEFT) {
+        this.camera.translateX(-1 * this.moveSpeed * deltaTime);
+    } else if (this.hMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.RIGHT) {
+        this.camera.translateX(this.moveSpeed * deltaTime);
+    }
+    if (this.vMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.FORWARD) {
+        this.camera.translateZ(-1 * this.moveSpeed * deltaTime);
+    } else if (this.vMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.BACK) {
+        this.camera.translateZ(this.moveSpeed * deltaTime);
+    }
+    this.timeStamp = timestamp;
 };
 
 REAL3D.InnerSpaceDesignEdit.FreeWalkView.mouseDown = function (e) {
@@ -68,17 +86,37 @@ REAL3D.InnerSpaceDesignEdit.FreeWalkView.mouseUp = function (e) {
     this.isMouseDown = false;
 };
 
-REAL3D.InnerSpaceDesignEdit.FreeWalkView.keyPress = function (e) {
+
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.keyDown = function (e) {
     "use strict";
-    console.log("FreeWalkView keypress: ", e.which);
-    if (e.which === 119) {
-        this.camera.translateZ(-1 * this.moveSpeed);
-    } else if (e.which === 115) {
-        this.camera.translateZ(this.moveSpeed);
+    if (e.which === 87) {
+        this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.FORWARD;
+    } else if (e.which === 83) {
+        this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.BACK;
+    } else if (e.which === 65) {
+        this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.LEFT;
+    } else if (e.which === 68) {
+        this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.RIGHT;
     }
-    if (e.which === 97) {
-        this.camera.translateX(-1 * this.moveSpeed);
-    } else if (e.which === 100) {
-        this.camera.translateX(this.moveSpeed);
+};
+
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.keyUp = function (e) {
+    "use strict";
+    if (e.which === 87 && this.vMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.FORWARD) {
+        this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
+    } else if (e.which === 83 && this.vMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.BACK) {
+        this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
+    } else if (e.which === 65 && this.hMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.LEFT) {
+        this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
+    } else if (e.which === 68 && this.hMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.RIGHT) {
+        this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
     }
+};
+
+REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState = {
+    NONE: 0,
+    LEFT: 1,
+    RIGHT: 2,
+    FORWARD: 3,
+    BACK: 4
 };

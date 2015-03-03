@@ -20,7 +20,7 @@ REAL3D.InnerSpaceDesignEdit.FrameUI.init = function () {
     this.winW = $(window).width() - 240;
     this.winW = (this.winW < 1024) ? 1024 : this.winW;
     this.winH = $(window).height() - 90;
-    this.winH = (this.winH < 640) ? 640 : this.winH;
+    this.winH = (this.winH < 600) ? 640 : this.winH;
     this.canvasElement = REAL3D.RenderManager.init(this.winW, this.winH);
     canvContainer = document.getElementById("designspace");
     canvContainer.appendChild(this.canvasElement);

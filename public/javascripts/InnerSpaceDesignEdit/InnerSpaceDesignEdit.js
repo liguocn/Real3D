@@ -22,6 +22,8 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.addEventListener("mouseup", function (e) { that.mouseUp(e); }, false);
     canvasElement.addEventListener("mousemove", function (e) { that.mouseMove(e); }, false);
     canvasElement.addEventListener("keypress", function (e) { that.keyPress(e); }, false);
+    canvasElement.addEventListener("keydown", function (e) { that.keyDown(e); }, false);
+    canvasElement.addEventListener("keyup", function (e) { that.keyUp(e); }, false);
     canvasElement.setAttribute("tabindex", 1);
     canvasElement.focus();
     canvasElement.style.outline = "none";
@@ -50,28 +52,54 @@ REAL3D.InnerSpaceDesignEdit.run = function () {
 REAL3D.InnerSpaceDesignEdit.mouseDown = function (e) {
     "use strict";
     if (this.controlState !== null) {
-        this.controlState.mouseDown(e);
+        if (this.controlState.mouseDown !== undefined) {
+            this.controlState.mouseDown(e);
+        }
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.mouseMove = function (e) {
     "use strict";
     if (this.controlState !== null) {
-        this.controlState.mouseMove(e);
+        if (this.controlState.mouseMove !== undefined) {
+            this.controlState.mouseMove(e);
+        }
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.mouseUp = function (e) {
     "use strict";
     if (this.controlState !== null) {
-        this.controlState.mouseUp(e);
+        if (this.controlState.mouseUp !== undefined) {
+            this.controlState.mouseUp(e);
+        }
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.keyPress = function (e) {
     "use strict";
     if (this.controlState !== null) {
-        this.controlState.keyPress(e);
+        if (this.controlState.keyPress !== undefined) {
+            this.controlState.keyPress(e);
+        }
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.keyDown = function (e) {
+    "use strict";
+    if (this.controlState !== null) {
+        if (this.controlState.keyDown !== undefined) {
+            this.controlState.keyDown(e);
+        }
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.keyUp = function (e) {
+    "use strict";
+    if (this.controlState !== null) {
+        if (this.controlState.keyUp !== undefined) {
+            this.controlState.keyUp(e);
+        }
     }
 };
 
