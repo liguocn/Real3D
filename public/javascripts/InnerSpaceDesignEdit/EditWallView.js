@@ -260,7 +260,9 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.insertUserPoint = function (mousePosX, 
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
+    worldPosX = Math.round(worldPosX / this.snapUnit) * this.snapUnit;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
+    worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw();
     REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
     REAL3D.InnerSpaceDesignEdit.WallData.draw();

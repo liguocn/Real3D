@@ -72,8 +72,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.enter = function () {
     $('#create').get(0).checked = true;
 
     $('<button id="return" class="button">首页</button>').appendTo('#toolBar');
-    //$('#return').click(function () { that.enterEditHome(); });
-    $('#return').click(function () { REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw(); });
+    $('#return').click(function () { that.enterEditHome(); });
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.exit = function () {
