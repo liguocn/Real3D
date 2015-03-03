@@ -230,6 +230,7 @@ REAL3D.Wall.Wall3D.prototype.remove = function () {
     }
 
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
+    this.point1.unsubscribe("updateSubscriber", this, this.updateSubscriber);
     this.point1.unsubscribe("updateDraw", this, this.updateDraw);
     this.point1.unsubscribe("remove", this, this.remove);
     neighbors1 = this.point1.neighbors;
@@ -237,6 +238,7 @@ REAL3D.Wall.Wall3D.prototype.remove = function () {
     for (nid = 0; nid < neigLen1; nid++) {
         neighbors1[nid].unsubscribe("updateDraw", this, this.updateDraw);
     }
+    this.point2.unsubscribe("updateSubscriber", this, this.updateSubscriber);
     this.point2.unsubscribe("updateDraw", this, this.updateDraw);
     this.point2.unsubscribe("remove", this, this.remove);
     neighbors2 = this.point2.neighbors;
@@ -288,6 +290,8 @@ REAL3D.Wall.Wall3D.prototype.updateDraw = function () {
 
 REAL3D.Wall.Wall3D.prototype.updateSubscriber = function () {
     "use strict";
+    console.log("point1", this.point1);
+    console.log("point2", this.point2);
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
     this.point1.subscribe("updateDraw", this, this.updateDraw);
     this.point1.subscribe("remove", this, this.remove);

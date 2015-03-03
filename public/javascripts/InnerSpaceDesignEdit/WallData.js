@@ -54,6 +54,9 @@ REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
         }
         assistFlag[pid] = -1;
     }
+    console.log("draw");
+    console.log("userPointTree", this.userPointTree);
+    console.log("globalPublisher: ", this.globalPublisher);
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.updateDraw = function () {
@@ -102,7 +105,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.unPackServerData = function (userData) {
     return wallData;
 };
 
-REAL3D.InnerSpaceDesignEdit.WallData.loadData = function (callback, caller) {
+REAL3D.InnerSpaceDesignEdit.WallData.loadData = function () {
     "use strict";
     var postData, curState, wallData;
     postData = {
@@ -115,7 +118,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.loadData = function (callback, caller) {
             console.log("  loaded data: ", data);
             wallData = curState.unPackServerData(data.wallData);
             curState.init(wallData);
-            callback.apply(caller);
+            //callback.apply(caller);
         }
     }, "json");
 };

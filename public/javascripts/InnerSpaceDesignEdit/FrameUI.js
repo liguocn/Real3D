@@ -105,7 +105,7 @@ $(document).ready(function () {
     console.log("designName: ", designName);
     if (designName !== '') {
         REAL3D.InnerSpaceDesignEdit.designName = designName;
-        REAL3D.InnerSpaceDesignEdit.WallData.loadData(REAL3D.InnerSpaceDesignEdit.WallData.draw, REAL3D.InnerSpaceDesignEdit.WallData);
+        REAL3D.InnerSpaceDesignEdit.WallData.loadData();
     } else {
         console.log("This is a new design space");
         REAL3D.InnerSpaceDesignEdit.EditHomeUI.exit();
