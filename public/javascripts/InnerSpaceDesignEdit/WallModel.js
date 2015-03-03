@@ -133,14 +133,11 @@ REAL3D.Wall.UserPointTree.prototype = {
 
     mergePoint: function (index) {
         "use strict";
-        var point, neighbors, neigLen, curPoints, curLen, cid, isConnected, res;
-        point = this.points[index];
+        var neighbors, neigLen, curPoints, curLen, cid, isConnected;
         neighbors = this.points[index].neighbors;
         neigLen = neighbors.length;
-        res = [];
         if (neigLen === 1) {
             this.deletePoint(index);
-            res.push(point);
         } else if (neigLen === 2) {
             this.deletePoint(index);
             isConnected = false;
@@ -157,14 +154,8 @@ REAL3D.Wall.UserPointTree.prototype = {
                 neighbors[1].neighbors.push(neighbors[0]);
                 neighbors[0].updateNeighborOrder();
                 neighbors[1].updateNeighborOrder();
-                res.push(point);
-                res.push(neighbors[0]);
-                res.push(neighbors[1]);
-            } else {
-                res.push(point);
             }
         }
-        return res;
     },
 
     insertPointOnEdge: function (worldPosX, worldPosY) {
@@ -194,7 +185,7 @@ REAL3D.Wall.UserPointTree.prototype = {
                     lineLen2 = REAL3D.Vector2.sub(neigPoint.pos, insertPos).length();
                     deltaLen = lineLen1 + lineLen2 - lineLen0;
                     if (deltaLen < REAL3D.Wall.INSERTRADIUS) {
-                        console.log("deltaLen: ", deltaLen);
+                        //console.log("deltaLen: ", deltaLen);
                         this.disConnectPoints(curPoint, neigPoint);
 
                         newUserPoint = new REAL3D.Wall.UserPoint(worldPosX, worldPosY);
@@ -276,6 +267,7 @@ REAL3D.Wall.Stump.prototype.updateDraw = function () {
 
 REAL3D.Wall.Wall3D = function (point1, point2, thick, height, parent, globalPublisher) {
     "use strict";
+    //console.log("New Wall3D, point1, ", point1, " point2, ", point2);
     this.point1 = point1;
     this.point2 = point2;
     this.thick = thick;

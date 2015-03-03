@@ -34,6 +34,8 @@ REAL3D.Publisher.prototype.unsubscribe = function (parm_message, parm_subscriber
             findIndex = this.findSubscriber(subscribers, parm_subscriber);
             if (findIndex !== -1) {
                 this.messageTypes[parm_message].splice(findIndex, 1);
+                //console.log("    unsubscribe: ", parm_message, parm_subscriber);
+                //console.log("               : ", this);
             }
         }
     } else {
@@ -47,11 +49,13 @@ REAL3D.Publisher.prototype.publish = function (parm_message) {
     subscribers = this.messageTypes[parm_message];
     if (subscribers) {
         subscriberLen = subscribers.length;
+        //console.log(" publish: ", parm_message, " length: ", subscriberLen);
         for (ii = subscriberLen - 1; ii >= 0; ii--) {
             args = [];
             for (jj = 0; jj < arguments.length - 1; jj++) {
                 args.push(arguments[jj + 1]);
             }
+            //console.log("  publish: ", subscribers[ii].subscriber, parm_message);
             subscribers[ii].callback.apply(subscribers[ii].subscriber, args);
         }
     }

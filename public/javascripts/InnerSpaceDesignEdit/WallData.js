@@ -76,6 +76,8 @@ REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw = function () {
         REAL3D.RenderManager.scene.remove(this.drawObject);
         this.drawObject = null;
     }
+    console.log("releaseDraw: ", this.userPointTree);
+    console.log("releaseDraw: ", this.globalPublisher);
 };
 
 REAL3D.InnerSpaceDesignEdit.WallData.unPackServerData = function (userData) {

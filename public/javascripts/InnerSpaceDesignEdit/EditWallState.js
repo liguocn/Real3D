@@ -9,7 +9,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallState = {
 REAL3D.InnerSpaceDesignEdit.EditWallState.enter = function () {
     "use strict";
     console.log("enter EditWallState");
-    console.log("scene: ", REAL3D.RenderManager.scene);
+    //console.log("scene: ", REAL3D.RenderManager.scene);
     REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditWallView);
 
     //setup light
