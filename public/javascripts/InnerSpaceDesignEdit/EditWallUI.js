@@ -17,22 +17,26 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.changeWallHeight = function () {
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToCreate = function () {
     "use strict";
-    console.log("checked: ", $('#create').get(0).checked);
+    console.log("switchEditModeToCreate: ", $('#create').get(0).checked);
+    REAL3D.InnerSpaceDesignEdit.EditWallState.switchEditState(REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.CREATE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToInsert = function () {
     "use strict";
-    console.log("checked: ", $('#insert').get(0).checked);
+    console.log("switchEditModeToInsert: ", $('#insert').get(0).checked);
+    REAL3D.InnerSpaceDesignEdit.EditWallState.switchEditState(REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.INSERT);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToDelete = function () {
     "use strict";
-    console.log("checked: ", $('#delete').get(0).checked);
+    console.log("switchEditModeToDelete: ", $('#delete').get(0).checked);
+    REAL3D.InnerSpaceDesignEdit.EditWallState.switchEditState(REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.DELETE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToMerge = function () {
     "use strict";
-    console.log("checked: ", $('#merge').get(0).checked);
+    console.log("switchEditModeToMerge: ", $('#merge').get(0).checked);
+    REAL3D.InnerSpaceDesignEdit.EditWallState.switchEditState(REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.MERGE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.enter = function () {
@@ -56,17 +60,13 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI.enter = function () {
     $('<hr />').appendTo('#toolBar');
 
     $('<div id="editMode">编辑模式</div>').appendTo('#toolBar');
-    $('<div><input type="radio" id="create">创建</div>').appendTo('#editMode');
-    //$('#create').get(0).checked = true;
+    $('<div><input type="radio" id="create" name="editRadio">创建</div>').appendTo('#editMode');
     $('#create').get(0).addEventListener("click", function () { that.switchEditModeToCreate(); });
-    $('<div><input type="radio" id="insert">插入</div>').appendTo('#editMode');
-    //$('#insert').get(0).checked = false;
+    $('<div><input type="radio" id="insert" name="editRadio">插入</div>').appendTo('#editMode');
     $('#insert').get(0).addEventListener("click", function () { that.switchEditModeToInsert(); });
-    $('<div><input type="radio" id="delete">删除</div>').appendTo('#editMode');
-    //$('#delete').get(0).checked = false;
+    $('<div><input type="radio" id="delete" name="editRadio">删除</div>').appendTo('#editMode');
     $('#delete').get(0).addEventListener("click", function () { that.switchEditModeToDelete(); });
-    $('<div><input type="radio" id="merge">合并</div>').appendTo('#editMode');
-    //$('#merge').get(0).checked = false;
+    $('<div><input type="radio" id="merge" name="editRadio">合并</div>').appendTo('#editMode');
     $('#merge').get(0).addEventListener("click", function () { that.switchEditModeToMerge(); });
     $('<hr />').appendTo('#toolBar');
     $('#create').get(0).checked = true;

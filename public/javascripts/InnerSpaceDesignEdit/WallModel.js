@@ -109,6 +109,46 @@ REAL3D.Wall.UserPointTree.prototype = {
         return -1;
     },
 
+    mergePoint: function (index) {
+        "use strict";
+        var point, neighbors, neigLen, curPoints, curLen, cid, isConnected, res;
+        point = this.points[index];
+        neighbors = this.points[index].neighbors;
+        neigLen = neighbors.length;
+        res = [];
+        if (neigLen === 1) {
+            this.deletePoint(index);
+            res.push(point);
+        } else if (neigLen === 2) {
+            this.deletePoint(index);
+            isConnected = false;
+            curPoints = neighbors[0].neighbors;
+            curLen = curPoints.length;
+            for (cid = 0; cid < curLen; cid++) {
+                if (neighbors[1] === curPoints[cid]) {
+                    isConnected = true;
+                    break;
+                }
+            }
+            if (isConnected === false) {
+                neighbors[0].neighbors.push(neighbors[1]);
+                neighbors[1].neighbors.push(neighbors[0]);
+                neighbors[0].updateNeighborOrder();
+                neighbors[1].updateNeighborOrder();
+                res.push(point);
+                res.push(neighbors[0]);
+                res.push(neighbors[1]);
+            } else {
+                res.push(point);
+            }
+        }
+        return res;
+    },
+
+    insertPointOnEdge: function (worldPosX, worldPosY) {
+        "use strict";
+    },
+
     setPosition : function (index, worldPosX, worldPosY) {
         "use strict";
         this.points[index].pos.set(worldPosX, worldPosY);

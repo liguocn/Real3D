@@ -183,17 +183,20 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.switchControlState = function (ctrlSta
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.switchEditState = function (editState) {
     "use strict";
+    var mouseState;
     if (editState === REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.CREATE) {
-
+        mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
     } else if (editState === REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.DELETE) {
-
+        mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.REMOVEUSERPOINT;
     } else if (editState === REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.INSERT) {
-
+        mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.INSERTUSERPOINT;
     } else if (editState === REAL3D.InnerSpaceDesignEdit.EditWallState.EDITSTATE.MERGE) {
-
+        mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.MERGEUSERPOINT;
     } else {
         console.log("error: editState: ", editState);
+        mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
     }
+    REAL3D.InnerSpaceDesignEdit.EditWallView.switchMouseState(mouseState);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.CONTROLSTATE = {
