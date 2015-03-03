@@ -5,6 +5,7 @@ REAL3D.Wall = {
 };
 
 REAL3D.Wall.SELECTRADIUS = 200;
+REAL3D.Wall.INSERTRADIUS = 0.6;
 
 REAL3D.Wall.UserPoint = function (posX, posY) {
     "use strict";
@@ -93,6 +94,27 @@ REAL3D.Wall.UserPointTree.prototype = {
         point2.updateNeighborOrder();
     },
 
+    disConnectPoints : function (point1, point2) {
+        "use strict";
+        var neighbors1, neigLen1, nid, neighbors2, neigLen2;
+        neighbors1 = point1.neighbors;
+        neigLen1 = neighbors1.length;
+        for (nid = 0; nid < neigLen1; nid++) {
+            if (point2 === neighbors1[nid]) {
+                point1.neighbors.splice(nid, 1);
+                break;
+            }
+        }
+        neighbors2 = point2.neighbors;
+        neigLen2 = neighbors2.length;
+        for (nid = 0; nid < neigLen2; nid++) {
+            if (point1 === neighbors2[nid]) {
+                point2.neighbors.splice(nid, 1);
+                break;
+            }
+        }
+    },
+
     selectPoint : function (worldPosX, worldPosY) {
         "use strict";
         var pid, dist, curPoint, pointLen;
@@ -147,13 +169,57 @@ REAL3D.Wall.UserPointTree.prototype = {
 
     insertPointOnEdge: function (worldPosX, worldPosY) {
         "use strict";
+        var userPointLen, assistFlag, pid, neighbors, neigLen, nid, curPoint, neigPoint, insertPos, lineLen0, lineLen1, lineLen2, deltaLen, breakFlag, newUserPoint;
+        insertPos = new REAL3D.Vector2(worldPosX, worldPosY);
+        userPointLen = this.points.length;
+        this.updateAssistId();
+        assistFlag = [];
+        for (pid = 0; pid < userPointLen; pid++) {
+            assistFlag[pid] = 1;
+            this.points[pid].updateNeighborOrder();
+        }
+        breakFlag = false;
+        for (pid = 0; pid < userPointLen; pid++) {
+            if (breakFlag) {
+                break;
+            }
+            curPoint = this.points[pid];
+            neighbors = this.points[pid].neighbors;
+            neigLen = neighbors.length;
+            for (nid = 0; nid < neigLen; nid++) {
+                if (assistFlag[neighbors[nid].assistId] === 1) {
+                    neigPoint = neighbors[nid];
+                    lineLen0 = REAL3D.Vector2.sub(curPoint.pos, neigPoint.pos).length();
+                    lineLen1 = REAL3D.Vector2.sub(curPoint.pos, insertPos).length();
+                    lineLen2 = REAL3D.Vector2.sub(neigPoint.pos, insertPos).length();
+                    deltaLen = lineLen1 + lineLen2 - lineLen0;
+                    if (deltaLen < REAL3D.Wall.INSERTRADIUS) {
+                        console.log("deltaLen: ", deltaLen);
+                        this.disConnectPoints(curPoint, neigPoint);
+
+                        newUserPoint = new REAL3D.Wall.UserPoint(worldPosX, worldPosY);
+                        this.points.push(newUserPoint);
+
+                        newUserPoint.neighbors.push(curPoint);
+                        curPoint.neighbors.push(newUserPoint);
+                        newUserPoint.neighbors.push(neigPoint);
+                        neigPoint.neighbors.push(newUserPoint);
+                        newUserPoint.updateNeighborOrder();
+                        curPoint.updateNeighborOrder();
+                        neigPoint.updateNeighborOrder();
+
+                        breakFlag = true;
+                        break;
+                    }
+                }
+            }
+            assistFlag[pid] = -1;
+        }
     },
 
     setPosition : function (index, worldPosX, worldPosY) {
         "use strict";
         this.points[index].pos.set(worldPosX, worldPosY);
-        //this.points[index].posX = worldPosX;
-        //this.points[index].posY = worldPosY;
     },
 
     updateAssistId : function () {
@@ -290,8 +356,8 @@ REAL3D.Wall.Wall3D.prototype.updateDraw = function () {
 
 REAL3D.Wall.Wall3D.prototype.updateSubscriber = function () {
     "use strict";
-    console.log("point1", this.point1);
-    console.log("point2", this.point2);
+    //console.log("point1", this.point1);
+    //console.log("point2", this.point2);
     var neighbors1, neigLen1, nid, neighbors2, neigLen2;
     this.point1.subscribe("updateDraw", this, this.updateDraw);
     this.point1.subscribe("remove", this, this.remove);

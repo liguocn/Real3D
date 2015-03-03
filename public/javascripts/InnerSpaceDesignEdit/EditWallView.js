@@ -165,21 +165,18 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.hitDetection = function (mousePosX, mou
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, index2) {
     "use strict";
-    console.log("index: ", index1, index2);
-    console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
-    console.log("globalPublisher: ", REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
+    // console.log("index: ", index1, index2);
+    // console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
+    // console.log("globalPublisher: ", REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
     if (index1 !== -1 && index2 !== -1) {
         REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.connectPoints(index1, index2);
         var wall3d, point1, point2;
         point1 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index1];
         point2 = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[index2];
-        console.log("point1 publish: ", point1);
         point1.publish("updateSubscriber");
-        console.log("point2 publish: ", point2);
         point2.publish("updateSubscriber");
         point1.publish("updateDraw");
         point2.publish("updateDraw");
-        console.log("construct wall3d");
         wall3d = new REAL3D.Wall.Wall3D(point1, point2,
             REAL3D.InnerSpaceDesignEdit.WallData.wallThick,
             REAL3D.InnerSpaceDesignEdit.WallData.wallHeight,
@@ -190,7 +187,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, in
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
-    console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
+    //console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
     var cameraPos, worldPosX, worldPosY, newId, stump;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
@@ -259,17 +256,19 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.removeUserPoint = function (mousePosX, 
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.insertUserPoint = function (mousePosX, mousePosY) {
     "use strict";
+    //console.log("REAL3D.InnerSpaceDesignEdit.EditWallView.insertUserPoint");
     var cameraPos, worldPosX, worldPosY;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
+    REAL3D.InnerSpaceDesignEdit.WallData.draw();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.mergeUserPoint = function (mousePosX, mousePosY) {
     "use strict";
-    var selectIndex, res, resLen;
+    var selectIndex, res, resLen, wall3d;
     selectIndex = this.hitDetection(mousePosX, mousePosY);
     res = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.mergePoint(selectIndex);
     resLen = res.length;
