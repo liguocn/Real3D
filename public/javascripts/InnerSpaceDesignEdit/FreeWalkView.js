@@ -29,7 +29,7 @@ REAL3D.InnerSpaceDesignEdit.FreeWalkView.init = function (canvasOffset, winW, wi
         this.isMouseDown = false;
         this.mouseMovePos = new REAL3D.Vector2(0, 0);
         this.moveSpeed = 0.2;
-        this.turnSpeed = 0.002;
+        this.turnSpeed = 0.003;
     }
     this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
     this.vMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;

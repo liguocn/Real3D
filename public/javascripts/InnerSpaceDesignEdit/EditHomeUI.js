@@ -16,7 +16,7 @@ REAL3D.InnerSpaceDesignEdit.EditHomeUI.enter = function () {
     $('<br>').appendTo('#toolBar');
 
     $('<button id="roamBut" class="button">漫游</button>').appendTo('#toolBar');
-    $('#furnitureBut').click(function () { that.enterEditRoam(); });
+    $('#roamBut').click(function () { that.enterEditRoam(); });
     $('<br>').appendTo('#toolBar');
 };
 
@@ -34,4 +34,7 @@ REAL3D.InnerSpaceDesignEdit.EditHomeUI.enterEditWall = function () {
 
 REAL3D.InnerSpaceDesignEdit.EditHomeUI.enterEditRoam = function () {
     "use strict";
+    this.exit();
+    REAL3D.InnerSpaceDesignEdit.EditRoamUI.enter();
+    REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditRoamState);
 };

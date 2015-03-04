@@ -123,6 +123,25 @@ body
     vertical-align: middle;
 }
 
+.leftContainer .roam
+{
+    font-size: 16pt;
+    color: rgb(0, 64, 64);
+    border-bottom: 10px;
+}
+
+.leftContainer .roam .button
+{
+    width: 70px;
+    height: 32px;
+    text-align: center;
+    font-size: 16pt;
+    border-radius: 8px;
+    color: rgb(0, 64, 64);
+    background-color: rgb(195, 195, 200); 
+    vertical-align: middle;
+}
+
 .mainContainer
 {
     float: right;

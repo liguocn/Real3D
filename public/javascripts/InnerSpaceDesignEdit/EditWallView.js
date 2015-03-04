@@ -272,9 +272,11 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.mergeUserPoint = function (mousePosX, m
     "use strict";
     var selectIndex;
     selectIndex = this.hitDetection(mousePosX, mousePosY);
-    REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw();
-    REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.mergePoint(selectIndex);
-    REAL3D.InnerSpaceDesignEdit.WallData.draw();
+    if (selectIndex !== -1) {
+        REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw();
+        REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.mergePoint(selectIndex);
+        REAL3D.InnerSpaceDesignEdit.WallData.draw();
+    }
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.switchMouseState = function (state) {
