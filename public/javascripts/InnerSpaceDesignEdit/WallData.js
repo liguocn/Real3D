@@ -16,7 +16,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.init = function (wallData) {
     this.drawObject = null;
     this.wallThick = 10;
     this.wallHeight = 200;
-    this.userPointTree = new REAL3D.Wall.UserPointTree();
+    this.userPointTree = new REAL3D.CommonModel.UserPointTree();
     if (wallData !== null) {
         this.wallThick = wallData.wallThick;
         this.wallHeight = wallData.wallHeight;
@@ -87,11 +87,11 @@ REAL3D.InnerSpaceDesignEdit.WallData.unPackServerData = function (userData) {
     wallData.designName = REAL3D.InnerSpaceDesignEdit.designName;
     wallData.wallThick = userData.wallThick;
     wallData.wallHeight = userData.wallHeight;
-    wallData.userPointTree = new REAL3D.Wall.UserPointTree();
+    wallData.userPointTree = new REAL3D.CommonModel.UserPointTree();
     userPoints = userData.userPointTree.points;
     userPointLen = userPoints.length;
     for (pid = 0; pid < userPointLen; pid++) {
-        curPoint = new REAL3D.Wall.UserPoint(userPoints[pid].posX, userPoints[pid].posY);
+        curPoint = new REAL3D.CommonModel.UserPoint(userPoints[pid].posX, userPoints[pid].posY);
         wallData.userPointTree.points.push(curPoint);
     }
     wallPoints = wallData.userPointTree.points;
