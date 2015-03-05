@@ -25,6 +25,8 @@ REAL3D.InnerSpaceDesignEdit.WallData.init = function (wallData) {
     this.draw();
 };
 
+//1.release draw objects
+//2.construt draw objects
 REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
     "use strict";
     this.releaseDraw();
@@ -59,6 +61,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
     console.log("globalPublisher: ", this.globalPublisher);
 };
 
+//update every draw object
 REAL3D.InnerSpaceDesignEdit.WallData.updateDraw = function () {
     "use strict";
     if (this.globalPublisher !== null) {
