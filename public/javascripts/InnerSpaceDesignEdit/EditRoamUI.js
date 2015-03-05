@@ -7,7 +7,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI = {
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.enter = function () {
     "use strict";
     $('<div id="toolBar" class="roam"></div>').appendTo('#leftContainer');
-    $('<div class="text">漫游</div>').appendTo('#toolBar');
+    $('<div id="title" class="text">漫游</div>').appendTo('#toolBar');
     $('<hr />').appendTo('#toolBar');
 
     var that = this;
@@ -15,16 +15,14 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.enter = function () {
     $('<div id="roamMode">漫游模式</div>').appendTo('#toolBar');
     $('<div><input type="radio" id="freeWalk" name="roamModeRadio">自由</div>').appendTo('#roamMode');
     $('#freeWalk').get(0).addEventListener("click", function () { that.switchToFreeWalkMode(); });
-    $('<div><input type="radio" id="2dWalk" name="roamModeRadio">2D</div>').appendTo('#roamMode');
-    $('#2dWalk').get(0).addEventListener("click", function () { that.switchTo2DWalkMode(); });
+    $('<div><input type="radio" id="overhead" name="roamModeRadio">俯视</div>').appendTo('#roamMode');
+    $('#overhead').get(0).addEventListener("click", function () { that.switchToOverheadWalkMode(); });
     $('<div><input type="radio" id="pathConstrainedWalk" name="roamModeRadio">路径约束</div>').appendTo('#roamMode');
     $('#pathConstrainedWalk').get(0).addEventListener("click", function () { that.switchToPathConstrainedWalkMode(); });
     $('<hr />').appendTo('#toolBar');
     $('#freeWalk').get(0).checked = true;
 
-
-    $('<button id="return" class="button">首页</button>').appendTo('#toolBar');
-    $('#return').click(function () { that.enterEditHome(); });
+    this.addReturnButton();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.exit = function () {
@@ -41,12 +39,58 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.enterEditHome = function () {
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToFreeWalkMode = function () {
     "use strict";
+    $('#pathEditTool').remove();
 };
 
-REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchTo2DWalkMode = function () {
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToOverheadWalkMode = function () {
     "use strict";
+    $('#pathEditTool').remove();
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.addReturnButton = function () {
+    "use strict";
+    var that = this;
+    $('<button id="return" class="button">首页</button>').appendTo('#toolBar');
+    $('#return').click(function () { that.enterEditHome(); });
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.removeReturnButton = function () {
+    "use strict";
+    $('#return').remove();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToPathConstrainedWalkMode = function () {
     "use strict";
+    this.removeReturnButton();
+    var that = this;
+    $('<div id="pathEditTool">路径编辑</div>').appendTo('#toolBar');
+    $('<div><input type="radio" id="create" name="pathEditRadio">创建</div>').appendTo('#pathEditTool');
+    $('#create').get(0).addEventListener("click", function () { that.switchToCreatePathTool(); });
+    $('<div><input type="radio" id="remove" name="pathEditRadio">删除</div>').appendTo('#pathEditTool');
+    $('#remove').get(0).addEventListener("click", function () { that.switchToRemovePathTool(); });
+    $('<div><input type="radio" id="insert" name="pathEditRadio">插入</div>').appendTo('#pathEditTool');
+    $('#insert').get(0).addEventListener("click", function () { that.switchToInsertPathTool(); });
+    $('<div><input type="radio" id="roamOnPath" name="pathEditRadio">漫游</div>').appendTo('#pathEditTool');
+    $('#roamOnPath').get(0).addEventListener("click", function () { that.switchToRoamOnPath(); });
+    $('<hr />').appendTo('#pathEditTool');
+    $('#create').get(0).checked = true;
+    this.addReturnButton();
 };
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToCreatePathTool = function () {
+    "use strict";
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToRemovePathTool = function () {
+    "use strict";
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToInsertPathTool = function () {
+    "use strict";
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToRoamOnPath = function () {
+    "use strict";
+};
+
+

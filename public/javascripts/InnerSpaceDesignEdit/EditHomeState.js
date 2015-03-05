@@ -8,7 +8,7 @@ REAL3D.InnerSpaceDesignEdit.EditHomeState = {
 REAL3D.InnerSpaceDesignEdit.EditHomeState.enter = function () {
     "use strict";
     console.log("enter EditHomeState");
-    REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
+    REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.TwoDView);
 
     //setup light
     this.setupLight();
