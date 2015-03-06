@@ -24,10 +24,10 @@ REAL3D.InnerSpaceDesignEdit.OverheadView.init = function (canvasOffset, winW, wi
         this.controlObject = new THREE.Object3D();
         this.controlObject.add(this.camera);
         REAL3D.RenderManager.scene.add(this.controlObject);
-        this.controlObject.position.set(0, -800, 800);
+        this.controlObject.position.set(0, -500, 800);
         this.controlObject.rotateX(1.570796326794897);
         this.camera.position.set(0, 0, 0);
-        this.camera.rotateX(-0.7853981633974485);
+        this.camera.rotateX(-1);//-0.7853981633974485);
 
         //first time init
         this.canvasOffset = canvasOffset;

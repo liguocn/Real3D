@@ -39,10 +39,14 @@ REAL3D.InnerSpaceDesignEdit.run = function () {
     function animateFunction(timestamp) {
         REAL3D.RenderManager.update();
         if (that.controlState !== null) {
-            that.controlState.update(timestamp);
+            if (that.controlState.update !== undefined) {
+                that.controlState.update(timestamp);
+            }
         }
         if (that.editState !== null) {
-            that.editState.update(timestamp);
+            if (that.editState.update !== undefined) {
+                that.editState.update(timestamp);
+            }
         }
         requestAnimationFrame(animateFunction);
     }

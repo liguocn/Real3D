@@ -35,10 +35,6 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset, winW, wi
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
-REAL3D.InnerSpaceDesignEdit.EditWallView.update = function (timestamp) {
-    "use strict";
-};
-
 REAL3D.InnerSpaceDesignEdit.EditWallView.mouseDown = function (e) {
     "use strict";
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;

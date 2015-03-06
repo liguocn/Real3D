@@ -77,22 +77,27 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToPathConstrainedWalkMode = functio
     $('<hr />').appendTo('#pathEditTool');
     $('#create').get(0).checked = true;
     this.addReturnButton();
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.PATHCONSTAINED);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToCreatePathTool = function () {
     "use strict";
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.CREATE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToRemovePathTool = function () {
     "use strict";
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.REMOVE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToInsertPathTool = function () {
     "use strict";
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.INSERT);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToRoamOnPath = function () {
     "use strict";
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.ROAM);
 };
 
 

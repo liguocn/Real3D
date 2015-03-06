@@ -23,10 +23,6 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.init = function (canvasOffset, winW
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
-REAL3D.InnerSpaceDesignEdit.EditRoamPathView.update = function (timestamp) {
-    "use strict";
-};
-
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.mouseDown = function (e) {
     "use strict";
 };

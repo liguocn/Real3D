@@ -33,10 +33,6 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.exit = function () {
     this.releaseReferenceObject();
 };
 
-REAL3D.InnerSpaceDesignEdit.EditWallState.update = function (timestamp) {
-    "use strict";
-};
-
 REAL3D.InnerSpaceDesignEdit.EditWallState.setupEditLight = function () {
     "use strict";
     this.releaseLight();

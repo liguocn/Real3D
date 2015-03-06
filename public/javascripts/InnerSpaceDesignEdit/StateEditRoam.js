@@ -3,7 +3,8 @@
 
 REAL3D.InnerSpaceDesignEdit.EditRoamState = {
     light: null,
-    refObject: null
+    refObject: null,
+    pathEditMode: null
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamState.enter = function () {
@@ -48,6 +49,15 @@ REAL3D.InnerSpaceDesignEdit.EditRoamState.setupRoamLight = function () {
     dirLight3 = new THREE.DirectionalLight(0xffffff, 0.1);
     dirLight3.position.set(-1, -1.73, 1);
     this.light.add(dirLight3);
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamState.setupEditPathLight = function () {
+    "use strict";
+    this.releaseLight();
+    this.light = new THREE.Object3D();
+    REAL3D.RenderManager.scene.add(this.light);
+    var ambientLight = new THREE.AmbientLight(0x2b2b2b);
+    this.light.add(ambientLight);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamState.releaseLight = function () {
@@ -159,12 +169,35 @@ REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode = function (roamMode) {
         this.setupReferenceObject();
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
     } else if (roamMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.PATHCONSTAINED) {
-
+        this.pathEditMode = REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.CREATE;
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditRoamPathView);
+        this.setupEditPathLight();
+        this.setupReferenceObject();
+        REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode = function (pathEditMode) {
     "use strict";
+    if (pathEditMode !== REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.ROAM && this.pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.ROAM) {
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditRoamPathView);
+        this.setupEditPathLight();
+        this.setupReferenceObject();
+        REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
+    }
+    this.pathEditMode = pathEditMode;
+    if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.CREATE) {
+
+    } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.REMOVE) {
+
+    } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.INSERT) {
+
+    } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.ROAM) {
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView);
+        this.setupRoamLight();
+        this.setupReferenceObject();
+        REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
+    }
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode = {
