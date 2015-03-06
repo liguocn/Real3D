@@ -40,11 +40,13 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.enterEditHome = function () {
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToFreeWalkMode = function () {
     "use strict";
     $('#pathEditTool').remove();
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.FREE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToOverheadWalkMode = function () {
     "use strict";
     $('#pathEditTool').remove();
+    REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.OVERHEAD);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.addReturnButton = function () {
