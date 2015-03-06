@@ -21,17 +21,17 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.init = function (canvasOffset, winW, wi
         this.camera = new THREE.OrthographicCamera(winW / (-2), winW / 2, winH / 2, winH / (-2), 1, 2000);
         this.camera.position.set(0, 0, 1000);
         //first time init
-        this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
-        this.snapUnit = 20;
-        this.isMouseDown = false;
-        this.mouseDownPos = new THREE.Vector2(0, 0);
-        this.mouseMovePos = new THREE.Vector2(0, 0);
         this.canvasOffset = canvasOffset;
-        this.hitUserPointIndex = -1;
-        this.lastCreatedPointIndex = -1;
         this.winW = winW;
         this.winH = winH;
+        this.snapUnit = 20;
     }
+    this.mouseState = REAL3D.InnerSpaceDesignEdit.MouseState.NONE;
+    this.isMouseDown = false;
+    this.mouseDownPos = new THREE.Vector2(0, 0);
+    this.mouseMovePos = new THREE.Vector2(0, 0);
+    this.hitUserPointIndex = -1;
+    this.lastCreatedPointIndex = -1;
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
@@ -142,10 +142,6 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.mouseUp = function (e) {
     this.isMouseDown = false;
     //console.log("Mouse state: ", this.mouseState);
     //console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-};
-
-REAL3D.InnerSpaceDesignEdit.EditWallView.keyPress = function (e) {
-    "use strict";
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallView.hitDetection = function (mousePosX, mousePosY) {

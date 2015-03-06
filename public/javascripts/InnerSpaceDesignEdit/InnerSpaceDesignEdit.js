@@ -30,7 +30,7 @@ REAL3D.InnerSpaceDesignEdit.init = function (winW, winH, canvasElement) {
 
     //init user data: not done
     REAL3D.InnerSpaceDesignEdit.WallData.init(null);
-    // REAL3D.InnerSpaceDesignEdit.SceneData.init(null);
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.init(null);
 };
 
 REAL3D.InnerSpaceDesignEdit.run = function () {
