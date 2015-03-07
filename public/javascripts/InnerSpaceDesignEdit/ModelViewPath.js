@@ -116,18 +116,22 @@ REAL3D.ViewPath.PathTree.prototype.updateDraw = function () {
     "use strict";
 };
 
-REAL3D.ViewPath.PathTree.prototype.addPathPoint = function (pathPoint) {
+REAL3D.ViewPath.PathTree.prototype.addPathPoint = function (userPoint, drawParent) {
+    "use strict";
+    var pathPoint = new REAL3D.ViewPath.PathPoint(userPoint, this, drawParent);
+    this.pathPoints.push(pathPoint);
+};
+
+REAL3D.ViewPath.PathTree.prototype.addPathEdge = function (index1, index2, drawParent) {
+    "use strict";
+    var pathEdge = new REAL3D.ViewPath.PathEdge(this.pathPoints[index1], this.pathPoints[index2], this, drawParent);
+    this.paehEdges.push(pathEdge);
+};
+
+REAL3D.ViewPath.PathTree.prototype.removePathPoint = function (index) {
     "use strict";
 };
 
-REAL3D.ViewPath.PathTree.prototype.addPathEdge = function (pathEdge) {
-    "use strict";
-};
-
-REAL3D.ViewPath.PathTree.prototype.removePathPoint = function (pathPoint) {
-    "use strict";
-};
-
-REAL3D.ViewPath.PathTree.prototype.removePathEdge = function (pathEdge) {
+REAL3D.ViewPath.PathTree.prototype.removePathEdge = function (index1, index2) {
     "use strict";
 };

@@ -154,7 +154,6 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
-        
         // var wall3d, point1, point2;
         // point1 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index1];
         // point2 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index2];
@@ -173,19 +172,14 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
     //console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
-    var cameraPos, worldPosX, worldPosY, newId, pathPoint;
+    var cameraPos, worldPosX, worldPosY, newId;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     newId = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.addPoint(worldPosX, worldPosY);
-    pathPoint = new REAL3D.ViewPath.PathPoint(REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[newId],
-        REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree, REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
-    // stump = new REAL3D.Wall.Stump(REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[newId],
-    //     REAL3D.InnerSpaceDesignEdit.WallData.wallThick * 2,
-    //     REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
-    //     REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
-
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathPoint(REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[newId],
+        REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
     return newId;
 };
 

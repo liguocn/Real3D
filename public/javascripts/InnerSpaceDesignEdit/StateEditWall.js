@@ -170,7 +170,8 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.switchControlState = function (ctrlSta
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
         //console.log("scene: ", REAL3D.RenderManager.scene);
     } else if (ctrlState === REAL3D.InnerSpaceDesignEdit.EditWallState.CONTROLSTATE.WALK) {
-        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.FreeWalkView);
+        //REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.FreeWalkView);
+        REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.OverheadView);
         this.setupWalkLight();
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
         //console.log("scene: ", REAL3D.RenderManager.scene);
