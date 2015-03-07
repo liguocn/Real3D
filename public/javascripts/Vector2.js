@@ -94,3 +94,9 @@ REAL3D.Vector2.scale = function (vec, scale) {
     res.multiply(scale);
     return res;
 };
+
+REAL3D.Vector2.dotProduct = function (vec1, vec2) {
+    "use strict";
+    var res = vec1.getX() * vec2.getX() + vec1.getY() * vec2.getY();
+    return res;
+};
