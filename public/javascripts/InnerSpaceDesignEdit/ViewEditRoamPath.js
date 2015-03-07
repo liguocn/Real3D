@@ -154,24 +154,13 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
-        // var wall3d, point1, point2;
-        // point1 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index1];
-        // point2 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index2];
-        // point1.publish("updateSubscriber");
-        // point2.publish("updateSubscriber");
-        // point1.publish("updateDraw");
-        // point2.publish("updateDraw");
-        // wall3d = new REAL3D.Wall.Wall3D(point1, point2,
-        //     REAL3D.InnerSpaceDesignEdit.WallData.wallThick,
-        //     REAL3D.InnerSpaceDesignEdit.WallData.wallHeight,
-        //     REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
-        //     REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);
+        REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathEdge(index1, index2,
+            REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.createNewUserPoint = function (mousePosX, mousePosY) {
     "use strict";
-    //console.log("userPointTree: ", REAL3D.InnerSpaceDesignEdit.WallData.userPointTree);
     var cameraPos, worldPosX, worldPosY, newId;
     mousePosY = this.winH - mousePosY;
     cameraPos = this.camera.position;
@@ -208,7 +197,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.draggingUserPoint = function (mouse
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    //REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[this.hitUserPointIndex].publish("updateDraw");
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[this.hitUserPointIndex].publish("updateDraw");
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.draggingCanvas = function (mousePosX, mousePosY) {
@@ -225,7 +214,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.removeUserPoint = function (mousePo
     var hitIndex;
     hitIndex = this.hitDetection(mousePosX, mousePosY);
     if (hitIndex !== -1) {
-        //REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[hitIndex].publish("remove");
+        REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[hitIndex].publish("remove");
         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.deletePoint(hitIndex);
     }
 };
@@ -237,8 +226,12 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.insertUserPoint = function (mousePo
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    //REAL3D.InnerSpaceDesignEdit.WallData.releaseDraw();
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseDraw();
     REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
-    //REAL3D.InnerSpaceDesignEdit.WallData.draw();
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
 };
 
+REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState = function (mouseState) {
+    "use strict";
+    this.mouseState = mouseState;
+};

@@ -23,10 +23,6 @@ REAL3D.InnerSpaceDesignEdit.EditRoamState.exit = function () {
     this.releaseReferenceObject();
 };
 
-REAL3D.InnerSpaceDesignEdit.EditRoamState.update = function (timestamp) {
-    "use strict";
-};
-
 REAL3D.InnerSpaceDesignEdit.EditRoamState.setupRoamLight = function () {
     "use strict";
     this.releaseLight();
@@ -171,6 +167,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode = function (roamMode) {
     } else if (roamMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.PATHCONSTAINED) {
         this.pathEditMode = REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.CREATE;
         REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.EditRoamPathView);
+        REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState(REAL3D.InnerSpaceDesignEdit.MouseState.NONE);
         this.setupEditPathLight();
         this.setupReferenceObject();
         REAL3D.InnerSpaceDesignEdit.WallData.updateDraw();
@@ -187,11 +184,11 @@ REAL3D.InnerSpaceDesignEdit.EditRoamState.switchPathEditMode = function (pathEdi
     }
     this.pathEditMode = pathEditMode;
     if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.CREATE) {
-
+        REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState(REAL3D.InnerSpaceDesignEdit.MouseState.NONE);
     } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.REMOVE) {
-
+        REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState(REAL3D.InnerSpaceDesignEdit.MouseState.REMOVEUSERPOINT);
     } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.INSERT) {
-
+        REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState(REAL3D.InnerSpaceDesignEdit.MouseState.INSERTUSERPOINT);
     } else if (pathEditMode === REAL3D.InnerSpaceDesignEdit.EditRoamState.PathEditMode.ROAM) {
         REAL3D.InnerSpaceDesignEdit.switchControlState(REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView);
         this.setupRoamLight();
