@@ -140,7 +140,9 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveCamera = function (camer
             console.log("move on");
             this.moveCamera(cameraDir, moveLen);
         } else if (nextEdgeLen > 2) {
-
+            console.log("nextEdgeLen: ", nextEdgeLen);
+        } else {
+            console.log("error: ", nextEdgeLen);
         }
     }
 };
