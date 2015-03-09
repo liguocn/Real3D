@@ -92,6 +92,9 @@ REAL3D.ViewPath.PathEdge.prototype.remove = function () {
     this.pathTree.unsubscribe("update", this);
     this.pathTree.unsubscribe("remove", this);
     this.pathTree.removePathEdge(this);
+    //remove pathEdge from its pathPoints
+    //not done
+    //
     this.pathPoints = null;
     this.edgeLength = null;
     this.pathTree = null;
@@ -134,6 +137,8 @@ REAL3D.ViewPath.PathTree.prototype.addPathEdge = function (index1, index2, drawP
     "use strict";
     var pathEdge = new REAL3D.ViewPath.PathEdge(this.pathPoints[index1], this.pathPoints[index2], this, drawParent);
     this.pathEdges.push(pathEdge);
+    this.pathPoints[index1].addPathEdge(pathEdge);
+    this.pathPoints[index2].addPathEdge(pathEdge);
     //console.log("addPathEdge: pathEdges length: ", this.pathEdges.length);
 };
 
