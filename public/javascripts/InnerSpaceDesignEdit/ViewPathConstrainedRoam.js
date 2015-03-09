@@ -6,31 +6,41 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView = {
     winW: null,
     winH: null,
     camera: null,
+    controlObject: null,
+    controlObjectHeight: null,
     moveSpeed: null,
     turnSpeed: null,
     timeStamp: null,
     isMouseDown: null,
     mouseMovePos: null,
     vMoveState: null,
-    pathEdge: null
+    pathEdge: null,
+    startPathPoint: null
 };
 
 REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.init = function (canvasOffset, winW, winH) {
     "use strict";
     if (this.camera === null) {
         this.camera = new THREE.PerspectiveCamera(45, winW / winH, 1, 2000);
-        this.camera.position.set(0, 0, 100);
-        this.camera.rotateX(1.570796326794897);
-        this.camera.up = new THREE.Vector3(0, 0, 1);
+        this.controlObject = new THREE.Object3D();
+        this.controlObjectHeight = 100;
+        this.controlObject.add(this.camera);
+        REAL3D.RenderManager.scene.add(this.controlObject);
+
+        this.startPathPoint = REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.pathPoints[0];
+        this.controlObject.position.set(this.startPathPoint.userPoint.pos.getX(), this.startPathPoint.userPoint.pos.getY(), this.controlObjectHeight);
+        this.controlObject.rotateX(1.570796326794897);
+        this.controlObject.up = new THREE.Vector3(0, 0, 1);
+
         //first time init
         this.canvasOffset = canvasOffset;
         this.winW = winW;
         this.winH = winH;
         this.moveSpeed = 0.2;
         this.turnSpeed = 0.003;
-        this.pathEdge = REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.pathEdges[0];
-        this.camera.position.set(this.pathEdge.pathPoints[0].userPoint.pos.getX(),
-            this.pathEdge.pathPoints[0].userPoint.pos.getY(), 100);
+        this.pathEdge = this.startPathPoint.edges[0];
+
+        this.moveControlObject(0);
     }
     this.timeStamp = 0;
     this.isMouseDown = false;
@@ -41,17 +51,14 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.init = function (canvasOffse
 
 REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.update = function (timestamp) {
     "use strict";
-    var deltaTime, cameraDir, moveDir, moveLen;
     if (this.vMoveState !== REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.NONE) {
+        var deltaTime, moveLen;
         deltaTime = timestamp - this.timeStamp;
-        cameraDir = this.camera.getWorldDirection();
-        if (this.vMoveState === REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.BACK) {
-            cameraDir.multiplyScalar(-1);
-            console.log("move back");
-        }
-        moveDir = new REAL3D.Vector2(cameraDir.x, cameraDir.y);
         moveLen = this.moveSpeed * deltaTime;
-        this.moveCamera(moveDir, moveLen);
+        if (this.vMoveState === REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.BACK) {
+            moveLen = moveLen * (-1);
+        }
+        this.moveControlObject(moveLen);
     }
     this.timeStamp = timestamp;
 };
@@ -101,6 +108,55 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.keyUp = function (e) {
         this.vMoveState = REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.NONE;
     } else if (e.which === 83 && this.vMoveState === REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.BACK) {
         this.vMoveState = REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.NONE;
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.calControlDir = function () {
+    "use strict";
+    var endPathPoint, controlDir;
+    if (this.pathEdge.pathPoints[0] === this.startPathPoint) {
+        endPathPoint = this.pathEdge.pathPoints[1];
+    } else {
+        endPathPoint = this.pathEdge.pathPoints[0];
+    }
+    controlDir = new REAL3D.Vector2.sub(endPathPoint.userPoint.pos, this.startPathPoint.userPoint.pos);
+    controlDir.unify();
+    return controlDir;
+};
+
+REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveControlObject = function (moveLen) {
+    "use strict";
+    // var controlDir = this.calControlDir();
+    // var lookatPos = new THREE.Vector3(this.controlObject.position.x, this.controlObject.position.y, this.controlObject.position.z);
+    // lookatPos.sub(new THREE.Vector3(controlDir.getX(), controlDir.getY(), 0));
+    // this.controlObject.lookAt(lookatPos);
+    var endPathPoint, controlPos, pathLeftLen, moveDir, newControlPos, lookatPos;
+    if (this.pathEdge.pathPoints[0] === this.startPathPoint) {
+        endPathPoint = this.pathEdge.pathPoints[1];
+    } else {
+        endPathPoint = this.pathEdge.pathPoints[0];
+    }
+    controlPos = new REAL3D.Vector2(this.controlObject.position.x, this.controlObject.position.y);
+    if (moveLen >= 0) {
+        pathLeftLen = REAL3D.Vector2.sub(endPathPoint.userPoint.pos, controlPos).length();
+        console.log("pathLeftLen: ", pathLeftLen);
+        if (moveLen < pathLeftLen) {
+            moveDir = new REAL3D.Vector2.sub(endPathPoint.userPoint.pos, this.startPathPoint.userPoint.pos);
+            moveDir.unify();
+            console.log("moveDir: ", moveDir.getX(), moveDir.getY());
+            newControlPos = REAL3D.Vector2.add(controlPos, moveDir.multiply(moveLen));
+            console.log("newControlPos: ", newControlPos.getX(), newControlPos.getY());
+            lookatPos = new THREE.Vector3(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
+            console.log("lookatPos: ", lookatPos.x, lookatPos.y, lookatPos.z);
+            lookatPos.sub(new THREE.Vector3(moveDir.getX(), moveDir.getY(), 0));
+            console.log("lookatPos: ", lookatPos.x, lookatPos.y, lookatPos.z);
+            this.controlObject.position.set(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
+            this.controlObject.lookAt(lookatPos);
+        } else {
+
+        }
+    } else {
+
     }
 };
 
@@ -157,7 +213,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveCamera = function (camer
         } else if (nextEdgeLen > 2) {
             console.log("nextEdgeLen: ", nextEdgeLen);
         } else {
-            console.log("error: ", nextEdgeLen);
+            //console.log("error: ", nextEdgeLen);
         }
     }
 };

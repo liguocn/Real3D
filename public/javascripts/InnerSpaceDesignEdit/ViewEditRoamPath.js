@@ -153,9 +153,14 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.hitDetection = function (mousePosX,
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1, index2) {
     "use strict";
     if (index1 !== -1 && index2 !== -1) {
-        REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
-        REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathEdge(index1, index2,
-            REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
+        var userPoint1, userPoint2;
+        userPoint1 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index1];
+        userPoint2 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index2];
+        if (userPoint1.neighbors.length < 2 && userPoint2.neighbors.length < 2) {
+            REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
+            REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathEdge(index1, index2,
+                REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
+        }
     }
 };
 
