@@ -22,8 +22,10 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.init = function (canvasOffse
     "use strict";
     if (this.camera === null) {
         this.camera = new THREE.PerspectiveCamera(45, winW / winH, 1, 2000);
+        //this.camera.rotateX(-0.5);
         this.controlObject = new THREE.Object3D();
         this.controlObjectHeight = 100;
+        //this.controlObjectHeight = 300;
         this.controlObject.add(this.camera);
         REAL3D.RenderManager.scene.add(this.controlObject);
 
@@ -37,7 +39,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.init = function (canvasOffse
         this.canvasOffset = canvasOffset;
         this.winW = winW;
         this.winH = winH;
-        this.moveSpeed = 0.1;
+        this.moveSpeed = 0.15;
         this.turnSpeed = 0.003;
         this.pathEdge = this.startPathPoint.edges[0];
 
@@ -60,6 +62,8 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.update = function (timestamp
             moveLen = moveLen * (-1);
         }
         this.moveControlObject(moveLen);
+        // this.frameTime += deltaTime;
+        // this.frameCount++;
     }
     this.timeStamp = timestamp;
 };
@@ -107,6 +111,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.keyUp = function (e) {
     "use strict";
     if (e.which === 87 && this.vMoveState === REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.FORWARD) {
         this.vMoveState = REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.NONE;
+        //console.log("frame rate: ", this.frameCount / this.frameTime, " count: ", this.frameCount, " time:", this.frameTime);
     } else if (e.which === 83 && this.vMoveState === REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.BACK) {
         this.vMoveState = REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.MoveState.NONE;
     }

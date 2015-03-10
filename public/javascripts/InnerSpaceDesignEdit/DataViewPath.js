@@ -83,7 +83,7 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree = function () {
     var minAngThres, maxAngThres;
     this.releaseSmoothPathTree();
     this.smoothUserPointTree = this.userPointTree.copyTo();
-    minAngThres = 10 * 0.0174532925;
+    minAngThres = 5 * 0.0174532925;
     maxAngThres = 150 * 0.0174532925;
     this.subdivideLineSegments(this.smoothUserPointTree, minAngThres, maxAngThres);
 
@@ -117,7 +117,7 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree = function () {
 REAL3D.InnerSpaceDesignEdit.ViewPathData.subdivideLineSegments = function (tree, minAngThres, maxAngThres) {
     "use strict";
     var smoothRatio, minCosAngle, maxCosAngle, subdContinue, userPoints, pointLen, pid, curPos, nextPos, prePos, preDir, nextDir, cosAngle, preInsertPos, preInsertId, nextInsertPos, nextInsertId;
-    smoothRatio = 0.3;
+    smoothRatio = 0.1;
     minCosAngle = Math.cos(maxAngThres);
     maxCosAngle = Math.cos(minAngThres);
     subdContinue = true;
