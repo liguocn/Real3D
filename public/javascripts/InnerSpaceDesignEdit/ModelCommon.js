@@ -219,5 +219,31 @@ REAL3D.CommonModel.UserPointTree.prototype = {
         for (pid = 0; pid < pointLen; pid++) {
             this.points[pid].assistId = pid;
         }
+    },
+
+    copyTo : function () {
+        "use strict";
+        var tree, pointLen, pid, nid, neighbors, neiLen, assistFlag;
+        tree = new REAL3D.CommonModel.UserPointTree();
+        this.updateAssistId();
+        pointLen = this.points.length;
+        for (pid = 0; pid < pointLen; pid++) {
+            tree.addPoint(this.points[pid].pos.getX(), this.points[pid].pos.getY());
+        }
+        assistFlag = [];
+        for (pid = 0; pid < pointLen; pid++) {
+            assistFlag[pid] = 1;
+        }
+        for (pid = 0; pid < pointLen; pid++) {
+            neighbors = this.points[pid].neighbors;
+            neiLen = neighbors.length;
+            for (nid = 0; nid < neiLen; nid++) {
+                if (assistFlag[neighbors[nid].assistId] === 1) {
+                    tree.connectPoints(pid, neighbors[nid].assistId);
+                }
+            }
+            assistFlag[pid] = -1;
+        }
+        return tree;
     }
 };

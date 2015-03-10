@@ -27,7 +27,8 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.init = function (canvasOffse
         this.controlObject.add(this.camera);
         REAL3D.RenderManager.scene.add(this.controlObject);
 
-        this.startPathPoint = REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.pathPoints[0];
+        //this.startPathPoint = REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.pathPoints[0];
+        this.startPathPoint = REAL3D.InnerSpaceDesignEdit.ViewPathData.smoothPathTree.pathPoints[0];
         this.controlObject.position.set(this.startPathPoint.userPoint.pos.getX(), this.startPathPoint.userPoint.pos.getY(), this.controlObjectHeight);
         this.controlObject.rotateX(1.570796326794897);
         this.controlObject.up = new THREE.Vector3(0, 0, 1);

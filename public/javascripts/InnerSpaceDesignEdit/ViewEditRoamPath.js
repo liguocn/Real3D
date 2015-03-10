@@ -162,6 +162,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1
                 REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
         }
     }
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.createNewUserPoint = function (mousePosX, mousePosY) {
