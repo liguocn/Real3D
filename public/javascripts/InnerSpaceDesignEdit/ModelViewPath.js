@@ -37,15 +37,17 @@ REAL3D.ViewPath.PathPoint.prototype.remove = function () {
 
 REAL3D.ViewPath.PathPoint.prototype.updateDraw = function () {
     "use strict";
-    var geometry, material;
-    if (this.drawObject !== null) {
-        this.drawParent.remove(this.drawObject);
+    if (this.drawParent !== null) {
+        var geometry, material;
+        if (this.drawObject !== null) {
+            this.drawParent.remove(this.drawObject);
+        }
+        geometry = new THREE.SphereGeometry(5, 5, 5);
+        material = new THREE.MeshBasicMaterial({color: 0x6b6b6b});
+        this.drawObject = new THREE.Mesh(geometry, material);
+        this.drawObject.position.set(this.userPoint.pos.getX(), this.userPoint.pos.getY(), 0);
+        this.drawParent.add(this.drawObject);
     }
-    geometry = new THREE.SphereGeometry(5, 5, 5);
-    material = new THREE.MeshBasicMaterial({color: 0x6b6b6b});
-    this.drawObject = new THREE.Mesh(geometry, material);
-    this.drawObject.position.set(this.userPoint.pos.getX(), this.userPoint.pos.getY(), 0);
-    this.drawParent.add(this.drawObject);
 };
 
 REAL3D.ViewPath.PathPoint.prototype.addPathEdge = function (pathEdge) {
@@ -105,16 +107,18 @@ REAL3D.ViewPath.PathEdge.prototype.remove = function () {
 REAL3D.ViewPath.PathEdge.prototype.updateDraw = function () {
     "use strict";
     this.edgeLength = REAL3D.Vector2.sub(this.pathPoints[0].userPoint.pos, this.pathPoints[1].userPoint.pos).length();
-    var geometry, material;
-    if (this.drawObject !== null) {
-        this.drawParent.remove(this.drawObject);
+    if (this.drawParent !== null) {
+        var geometry, material;
+        if (this.drawObject !== null) {
+            this.drawParent.remove(this.drawObject);
+        }
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(this.pathPoints[0].userPoint.pos.getX(), this.pathPoints[0].userPoint.pos.getY(), 1),
+            new THREE.Vector3(this.pathPoints[1].userPoint.pos.getX(), this.pathPoints[1].userPoint.pos.getY(), 1));
+        material = new THREE.LineBasicMaterial({color: 0x000000});
+        this.drawObject = new THREE.Line(geometry, material);
+        this.drawParent.add(this.drawObject);
     }
-    geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(this.pathPoints[0].userPoint.pos.getX(), this.pathPoints[0].userPoint.pos.getY(), 1),
-        new THREE.Vector3(this.pathPoints[1].userPoint.pos.getX(), this.pathPoints[1].userPoint.pos.getY(), 1));
-    material = new THREE.LineBasicMaterial({color: 0x000000});
-    this.drawObject = new THREE.Line(geometry, material);
-    this.drawParent.add(this.drawObject);
 };
 
 REAL3D.ViewPath.PathTree = function () {

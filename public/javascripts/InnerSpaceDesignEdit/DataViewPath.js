@@ -83,7 +83,7 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree = function () {
     var minAngThres, maxAngThres;
     this.releaseSmoothPathTree();
     this.smoothUserPointTree = this.userPointTree.copyTo();
-    minAngThres = 5 * 0.0174532925;
+    minAngThres = 10 * 0.0174532925;
     maxAngThres = 150 * 0.0174532925;
     this.subdivideLineSegments(this.smoothUserPointTree, minAngThres, maxAngThres);
 
@@ -95,7 +95,8 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree = function () {
     userPoints = this.smoothUserPointTree.points;
     userPointLen = userPoints.length;
     for (pid = 0; pid < userPointLen; pid++) {
-        this.smoothPathTree.addPathPoint(userPoints[pid], this.smoothPathDrawObject);
+        //this.smoothPathTree.addPathPoint(userPoints[pid], this.smoothPathDrawObject);
+        this.smoothPathTree.addPathPoint(userPoints[pid], null);
     }
     this.smoothUserPointTree.updateAssistId();
     assistFlag = [];

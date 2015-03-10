@@ -13,7 +13,9 @@ REAL3D.InnerSpaceDesignEdit.OverheadView = {
     vMoveState: null,
     timeStamp: null,
     controlObject: null,
-    camera: null
+    camera: null,
+    cameraHeight: null,
+    cameraAngle: null
 };
 
 REAL3D.InnerSpaceDesignEdit.OverheadView.init = function (canvasOffset, winW, winH) {
@@ -24,10 +26,13 @@ REAL3D.InnerSpaceDesignEdit.OverheadView.init = function (canvasOffset, winW, wi
         this.controlObject = new THREE.Object3D();
         this.controlObject.add(this.camera);
         REAL3D.RenderManager.scene.add(this.controlObject);
-        this.controlObject.position.set(0, -500, 800);
+        this.cameraHeight = 800;
+        this.cameraAngle = 0.0174532925 * 57;
+        //this.controlObject.position.set(0, -500, 800);
+        this.controlObject.position.set(0, -500, this.cameraHeight);
         this.controlObject.rotateX(1.570796326794897);
         this.camera.position.set(0, 0, 0);
-        this.camera.rotateX(-1);
+        this.camera.rotateX(-1 * this.cameraAngle);
 
         //first time init
         this.canvasOffset = canvasOffset;
@@ -114,6 +119,20 @@ REAL3D.InnerSpaceDesignEdit.OverheadView.keyUp = function (e) {
     } else if (e.which === 68 && this.hMoveState === REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.RIGHT) {
         this.hMoveState = REAL3D.InnerSpaceDesignEdit.FreeWalkView.MoveState.NONE;
     }
+};
+
+REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraHeight = function (cameraHeight) {
+    "use strict";
+    var deltaHeight = cameraHeight - this.cameraHeight;
+    this.controlObject.translateY(deltaHeight);
+    this.cameraHeight = cameraHeight;
+};
+
+REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraAngle = function (cameraAngle) {
+    "use strict";
+    this.camera.rotateX(this.cameraAngle);
+    this.cameraAngle = cameraAngle;
+    this.camera.rotateX(-1 * this.cameraAngle);
 };
 
 REAL3D.InnerSpaceDesignEdit.OverheadView.MoveState = {

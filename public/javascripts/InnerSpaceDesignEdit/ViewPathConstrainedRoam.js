@@ -152,7 +152,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveControlObject = function
             lookatPos = new THREE.Vector3(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
             lookatPos.sub(new THREE.Vector3(moveDir.getX(), moveDir.getY(), 0));
             this.controlObject.position.set(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
-            this.controlObject.lookAt(lookatPos);
+            //this.controlObject.lookAt(lookatPos);
         } else {
             moveLen = moveLen - pathLeftLen;
             this.controlObject.position.set(endPathPoint.userPoint.pos.getX(), endPathPoint.userPoint.pos.getY(), this.controlObjectHeight);
@@ -161,7 +161,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveControlObject = function
                 moveDir.unify();
                 lookatPos = new THREE.Vector3(this.controlObject.position.x, this.controlObject.position.y, this.controlObjectHeight);
                 lookatPos.sub(new THREE.Vector3(moveDir.getX(), moveDir.getY(), 0));
-                this.controlObject.lookAt(lookatPos);
+                //this.controlObject.lookAt(lookatPos);
             } else if (endPathPoint.edges.length === 2) {
                 this.startPathPoint = endPathPoint;
                 if (endPathPoint.edges[0] === this.pathEdge) {
@@ -184,7 +184,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveControlObject = function
             lookatPos = new THREE.Vector3(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
             lookatPos.add(new THREE.Vector3(moveDir.getX(), moveDir.getY(), 0));
             this.controlObject.position.set(newControlPos.getX(), newControlPos.getY(), this.controlObjectHeight);
-            this.controlObject.lookAt(lookatPos);
+            //this.controlObject.lookAt(lookatPos);
         } else {
             moveLen = moveLen - pathLeftLen;
             this.controlObject.position.set(this.startPathPoint.userPoint.pos.getX(), this.startPathPoint.userPoint.pos.getY(), this.controlObjectHeight);
@@ -193,7 +193,7 @@ REAL3D.InnerSpaceDesignEdit.PathConstrainedRoamView.moveControlObject = function
                 moveDir.unify();
                 lookatPos = new THREE.Vector3(this.controlObject.position.x, this.controlObject.position.y, this.controlObjectHeight);
                 lookatPos.add(new THREE.Vector3(moveDir.getX(), moveDir.getY(), 0));
-                this.controlObject.lookAt(lookatPos);
+                //this.controlObject.lookAt(lookatPos);
             } else if (this.startPathPoint.edges.length === 2) {
                 if (this.startPathPoint.edges[0] === this.pathEdge) {
                     this.pathEdge = this.startPathPoint.edges[1];

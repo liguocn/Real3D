@@ -142,6 +142,17 @@ body
     vertical-align: middle;
 }
 
+.leftContainer .roam .parmNumCtl
+{
+    width: 45px;
+    height: 16px;
+    background-color: rgb(222, 222, 222);
+    color: rgb(0, 64, 64);
+    vertical-align: middle;
+    margin-left: 3px;
+    border-bottom: 10px;
+}
+
 .mainContainer
 {
     float: right;

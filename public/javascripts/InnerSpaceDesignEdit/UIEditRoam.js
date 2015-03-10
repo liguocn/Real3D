@@ -40,13 +40,37 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.enterEditHome = function () {
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToFreeWalkMode = function () {
     "use strict";
     $('#pathEditTool').remove();
+    $('#overheadWalkTool').remove();
     REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.FREE);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToOverheadWalkMode = function () {
     "use strict";
     $('#pathEditTool').remove();
+    this.removeReturnButton();
+    var that = this;
+    $('<div id="overheadWalkTool"></div>').appendTo('#toolBar');
+    $('<div">相机高度(cm)<input id="cameraHeight" class="parmNumCtl" type="number" min="100" max="1000" step="10"></div>').appendTo('#overheadWalkTool');
+    $('#cameraHeight').get(0).addEventListener("input", function () { that.changeOverheadCameraHeight(); }, false);
+    $('#cameraHeight').val(800);
+    $('<div>相机角度(cm)<input id="cameraAngle" class="parmNumCtl" type="number" min="0" max="90"></div>').appendTo('#overheadWalkTool');
+    $('#cameraAngle').get(0).addEventListener("input", function () { that.changeOverheadCameraAngle(); }, false);
+    $('#cameraAngle').val(57);
+    $('<hr />').appendTo('#overheadWalkTool');
+    this.addReturnButton();
     REAL3D.InnerSpaceDesignEdit.EditRoamState.switchRoamMode(REAL3D.InnerSpaceDesignEdit.EditRoamState.RoamMode.OVERHEAD);
+    this.changeOverheadCameraHeight();
+    this.changeOverheadCameraAngle();
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.changeOverheadCameraHeight = function () {
+    "use strict";
+    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraHeight($('#cameraHeight').val());
+};
+
+REAL3D.InnerSpaceDesignEdit.EditRoamUI.changeOverheadCameraAngle = function () {
+    "use strict";
+    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraAngle(0.0174532925 * $('#cameraAngle').val());
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.addReturnButton = function () {
@@ -63,6 +87,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.removeReturnButton = function () {
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToPathConstrainedWalkMode = function () {
     "use strict";
+    $('#overheadWalkTool').remove();
     this.removeReturnButton();
     var that = this;
     $('<div id="pathEditTool">路径编辑</div>').appendTo('#toolBar');
