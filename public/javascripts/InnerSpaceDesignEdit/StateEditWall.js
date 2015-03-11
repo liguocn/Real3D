@@ -48,22 +48,9 @@ REAL3D.InnerSpaceDesignEdit.EditWallState.setupWalkLight = function () {
     this.light = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.light);
 
-    var ambientLight, dirLight1, dirLight2, dirLight3;
-
-    ambientLight = new THREE.AmbientLight(0xb2b2b2);
-    this.light.add(ambientLight);
-
-    dirLight1 = new THREE.DirectionalLight(0xffffff, 0.1);
-    dirLight1.position.set(1, 0, 1);
-    this.light.add(dirLight1);
-
-    dirLight2 = new THREE.DirectionalLight(0xffffff, 0.1);
-    dirLight2.position.set(-1, 1.73, 1);
-    this.light.add(dirLight2);
-
-    dirLight3 = new THREE.DirectionalLight(0xffffff, 0.1);
-    dirLight3.position.set(-1, -1.73, 1);
-    this.light.add(dirLight3);
+    var hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
+    hemisphereLight.position.set(0, 0, 1000);
+    this.light.add(hemisphereLight);
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallState.releaseLight = function () {
