@@ -28,8 +28,8 @@ REAL3D.InnerSpaceDesignEdit.EditHomeUI.exit = function () {
 REAL3D.InnerSpaceDesignEdit.EditHomeUI.enterEditWall = function () {
     "use strict";
     this.exit();
-    REAL3D.InnerSpaceDesignEdit.EditWallUI.enter();
     REAL3D.InnerSpaceDesignEdit.enterState(REAL3D.InnerSpaceDesignEdit.EditWallState);
+    REAL3D.InnerSpaceDesignEdit.EditWallUI.enter();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditHomeUI.enterEditRoam = function () {

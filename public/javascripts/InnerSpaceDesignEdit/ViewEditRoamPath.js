@@ -132,8 +132,6 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.mouseUp = function (e) {
         //console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
     } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.REMOVEUSERPOINT) {
         this.removeUserPoint(curPosX, curPosY);
-    } else if (this.mouseState === REAL3D.InnerSpaceDesignEdit.MouseState.INSERTUSERPOINT) {
-        this.insertUserPoint(curPosX, curPosY);
     }
     this.isMouseDown = false;
     //console.log("Mouse state: ", this.mouseState);
@@ -158,12 +156,9 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.connectUserPoint = function (index1
         userPoint2 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index2];
         if (userPoint1.neighbors.length < 2 && userPoint2.neighbors.length < 2) {
             REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
-            // REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathEdge(index1, index2,
-            //     REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
-            REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathEdge(index1, index2, null);
+            REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
         }
     }
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.createNewUserPoint = function (mousePosX, mousePosY) {
@@ -204,8 +199,7 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.draggingUserPoint = function (mouse
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[this.hitUserPointIndex].publish("updateDraw");
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree();
+    REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.draggingCanvas = function (mousePosX, mousePosY) {
@@ -224,21 +218,8 @@ REAL3D.InnerSpaceDesignEdit.EditRoamPathView.removeUserPoint = function (mousePo
     if (hitIndex !== -1) {
         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[hitIndex].publish("remove");
         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.deletePoint(hitIndex);
-        REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree();
+        REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
     }
-};
-
-REAL3D.InnerSpaceDesignEdit.EditRoamPathView.insertUserPoint = function (mousePosX, mousePosY) {
-    "use strict";
-    var cameraPos, worldPosX, worldPosY;
-    mousePosY = this.winH - mousePosY;
-    cameraPos = this.camera.position;
-    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
-    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseDraw();
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
-    REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree();
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamPathView.switchMouseState = function (mouseState) {

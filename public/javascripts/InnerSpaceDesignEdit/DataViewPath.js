@@ -6,8 +6,7 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData = {
     smoothUserPointTree: null,
     pathTree: null,
     smoothPathTree: null,
-    drawObject: null,
-    smoothPathDrawObject: null
+    drawObject: null
 };
 
 REAL3D.InnerSpaceDesignEdit.ViewPathData.init = function (viewPathData) {
@@ -26,32 +25,18 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.draw = function () {
     this.releaseDraw();
     this.drawObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.drawObject);
-    //construct pathTree from userPointTree
-    var userPoints, userPointLen, pid, neighbors, neiLen, nid, assistFlag;
-    userPoints = this.userPointTree.points;
-    userPointLen = userPoints.length;
-    for (pid = 0; pid < userPointLen; pid++) {
-        this.pathTree.addPathPoint(userPoints[pid], this.drawObject);
-    }
-    this.userPointTree.updateAssistId();
-    assistFlag = [];
-    for (pid = 0; pid < userPointLen; pid++) {
-        assistFlag[pid] = 1;
-    }
-    for (pid = 0; pid < userPointLen; pid++) {
-        neighbors = userPoints[pid].neighbors;
-        neiLen = neighbors.length;
-        for (nid = 0; nid < neiLen; nid++) {
-            if (assistFlag[neighbors[nid].assistId] === 1) {
-                this.pathTree.addPathEdge(pid, neighbors[nid].assistId, this.drawObject);
-            }
-        }
-        assistFlag[pid] = -1;
-    }
+    this.constructPathTree();
+    this.constructSmoothPathTree();
 };
 
-REAL3D.InnerSpaceDesignEdit.ViewPathData.updateDraw = function () {
+REAL3D.InnerSpaceDesignEdit.ViewPathData.hideDraw = function () {
     "use strict";
+    if (this.pathTree !== null) {
+        this.pathTree.publish("hideDraw");
+    }
+    if (this.smoothPathTree !== null) {
+        this.smoothPathTree.publish("hideDraw");
+    }
 };
 
 REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseDraw = function () {
@@ -59,6 +44,10 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseDraw = function () {
     if (this.pathTree !== null) {
         this.pathTree.publish("remove");
         this.pathTree = new REAL3D.ViewPath.PathTree();
+    }
+    if (this.smoothPathTree !== null) {
+        this.smoothPathTree.publish("remove");
+        this.smoothPathTree = null;
     }
     if (this.drawObject !== null) {
         REAL3D.RenderManager.scene.remove(this.drawObject);
@@ -72,53 +61,75 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.loadData = function () {
 
 REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseData = function () {
     "use strict";
+    this.releaseDraw();
+    this.userPointTree = null;
+    this.smoothUserPointTree = null;
+    this.pathTree = null;
+    this.smoothPathTree = null;
+    this.drawObject = null;
 };
 
 REAL3D.InnerSpaceDesignEdit.ViewPathData.saveData = function () {
     "use strict";
 };
 
+REAL3D.InnerSpaceDesignEdit.ViewPathData.constructPathTree = function () {
+    "use strict";
+    if (this.userPointTree !== null) {
+        var userPoints, userPointLen, pid; //, neighbors, neiLen, nid, assistFlag;
+        if (this.pathTree !== null) {
+            this.pathTree.publish("remove");
+        }
+        this.pathTree = new REAL3D.ViewPath.PathTree();
+        userPoints = this.userPointTree.points;
+        userPointLen = userPoints.length;
+        for (pid = 0; pid < userPointLen; pid++) {
+            this.pathTree.addPathPoint(userPoints[pid], this.drawObject);
+        }
+    }
+};
+
 REAL3D.InnerSpaceDesignEdit.ViewPathData.constructSmoothPathTree = function () {
     "use strict";
-    var minAngThres, maxAngThres;
-    this.releaseSmoothPathTree();
-    this.smoothUserPointTree = this.userPointTree.copyTo();
-    minAngThres = 10 * 0.0174532925;
-    maxAngThres = 150 * 0.0174532925;
-    this.subdivideLineSegments(this.smoothUserPointTree, minAngThres, maxAngThres);
-
-    //construct pathTree from userPointTree
-    this.smoothPathDrawObject = new THREE.Object3D();
-    REAL3D.RenderManager.scene.add(this.smoothPathDrawObject);
-    var userPoints, userPointLen, pid, neighbors, neiLen, nid, assistFlag;
-    this.smoothPathTree = new REAL3D.ViewPath.PathTree();
-    userPoints = this.smoothUserPointTree.points;
-    userPointLen = userPoints.length;
-    for (pid = 0; pid < userPointLen; pid++) {
-        //this.smoothPathTree.addPathPoint(userPoints[pid], this.smoothPathDrawObject);
-        this.smoothPathTree.addPathPoint(userPoints[pid], null);
-    }
-    this.smoothUserPointTree.updateAssistId();
-    assistFlag = [];
-    for (pid = 0; pid < userPointLen; pid++) {
-        assistFlag[pid] = 1;
-    }
-    for (pid = 0; pid < userPointLen; pid++) {
-        neighbors = userPoints[pid].neighbors;
-        neiLen = neighbors.length;
-        for (nid = 0; nid < neiLen; nid++) {
-            if (assistFlag[neighbors[nid].assistId] === 1) {
-                this.smoothPathTree.addPathEdge(pid, neighbors[nid].assistId, this.smoothPathDrawObject);
-            }
+    if (this.userPointTree !== null) {
+        var minAngThres, maxAngThres, userPoints, userPointLen, pid, neighbors, neiLen, nid, assistFlag;
+        minAngThres = 15 * 0.0174532925;
+        maxAngThres = 135 * 0.0174532925;
+        if (this.smoothPathTree !== null) {
+            this.smoothPathTree.publish("remove");
         }
-        assistFlag[pid] = -1;
+        this.smoothPathTree = new REAL3D.ViewPath.PathTree();
+        this.smoothUserPointTree = this.userPointTree.copyTo();
+        this.subdivideLineSegments(this.smoothUserPointTree, minAngThres, maxAngThres);
+
+        //construct smoothPathTree
+        userPoints = this.smoothUserPointTree.points;
+        userPointLen = userPoints.length;
+        for (pid = 0; pid < userPointLen; pid++) {
+            this.smoothPathTree.addPathPoint(userPoints[pid], null);
+        }
+        this.smoothUserPointTree.updateAssistId();
+        assistFlag = [];
+        for (pid = 0; pid < userPointLen; pid++) {
+            assistFlag[pid] = 1;
+        }
+        for (pid = 0; pid < userPointLen; pid++) {
+            neighbors = userPoints[pid].neighbors;
+            neiLen = neighbors.length;
+            for (nid = 0; nid < neiLen; nid++) {
+                if (assistFlag[neighbors[nid].assistId] === 1) {
+                    this.smoothPathTree.addPathEdge(pid, neighbors[nid].assistId, this.drawObject);
+                }
+            }
+            assistFlag[pid] = -1;
+        }
     }
 };
 
 REAL3D.InnerSpaceDesignEdit.ViewPathData.subdivideLineSegments = function (tree, minAngThres, maxAngThres) {
     "use strict";
     var smoothRatio, minCosAngle, maxCosAngle, subdContinue, userPoints, pointLen, pid, curPos, nextPos, prePos, preDir, nextDir, cosAngle, preInsertPos, preInsertId, nextInsertPos, nextInsertId;
-    smoothRatio = 0.1;
+    smoothRatio = 0.25;
     minCosAngle = Math.cos(maxAngThres);
     maxCosAngle = Math.cos(minAngThres);
     subdContinue = true;
@@ -152,18 +163,5 @@ REAL3D.InnerSpaceDesignEdit.ViewPathData.subdivideLineSegments = function (tree,
             }
         }
     }
-    console.log("minCosAngle: ", minCosAngle, " maxCosAngle: ", maxCosAngle, " point count: ", tree.points.length);
-};
-
-REAL3D.InnerSpaceDesignEdit.ViewPathData.releaseSmoothPathTree = function () {
-    "use strict";
-    if (this.smoothPathTree !== null) {
-        this.smoothPathTree.publish("remove");
-        this.smoothPathTree = null;
-    }
-    this.smoothUserPointTree = null;
-    if (this.smoothPathDrawObject !== null) {
-        REAL3D.RenderManager.scene.remove(this.smoothPathDrawObject);
-        this.smoothPathDrawObject = null;
-    }
+    //console.log("minCosAngle: ", minCosAngle, " maxCosAngle: ", maxCosAngle, " point count: ", tree.points.length);
 };
