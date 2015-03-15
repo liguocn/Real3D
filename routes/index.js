@@ -4,6 +4,8 @@ var LogReg = require("./LogReg");
 var InnerSpaceDesignEdit = require("./InnerSpaceDesignEdit");
 var InnerSpaceDesign = require("./InnerSpaceDesign");
 var PersonalHomePage = require("./PersonalHomePage");
+var GeneralDesign = require("./GeneralDesign");
+var GeneralDesignEdit = require("./GeneralDesignEdit");
 
 /* GET home page. */
 router.get("/", function (req, res) {
@@ -45,6 +47,10 @@ router.post("/innerspacedesign/edit/load", InnerSpaceDesignEdit.load);
 router.post("/innerspacedesign/edit/rename", InnerSpaceDesignEdit.rename);
 
 router.get("/innerspacedesign/edit/findName", InnerSpaceDesignEdit.findName);
+
+router.get("/generaldesign", GeneralDesign.enter);
+
+router.get("/generaldesign/edit", GeneralDesignEdit.enter);
 
 router.get("/furnituredesign", function(req, res) {
     "use strict";
