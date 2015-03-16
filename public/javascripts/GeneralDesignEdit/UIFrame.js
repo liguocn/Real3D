@@ -14,7 +14,7 @@ REAL3D.GeneralDesignEdit.FrameUI.init = function () {
     $('#saveDesign').click(REAL3D.GeneralDesignEdit.FrameUI.saveWorkSpace);
     $('#back').click(REAL3D.GeneralDesignEdit.FrameUI.back);
     $('<div id = "designspace" onselectstart="return false"></div>').appendTo('#mainContainer');
-    //REAL3D.InnerSpaceDesignEdit.EditHomeUI.enter();
+    REAL3D.GeneralDesignEdit.EditHomeUI.enter();
 
     var canvContainer;
     this.winW = $(window).width() - 240;
@@ -50,5 +50,5 @@ $(document).ready(function () {
         REAL3D.GeneralDesignEdit.FrameUI.winH,
         REAL3D.GeneralDesignEdit.FrameUI.canvasElement);
     REAL3D.GeneralDesignEdit.run();
-    REAL3D.GeneralDesignEdit.enterState(REAL3D.GeneralDesignEdit.EditCurveState);
+    REAL3D.GeneralDesignEdit.enterState(REAL3D.GeneralDesignEdit.EditHomeState);
 });
