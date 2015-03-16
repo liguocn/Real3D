@@ -50,4 +50,5 @@ $(document).ready(function () {
         REAL3D.GeneralDesignEdit.FrameUI.winH,
         REAL3D.GeneralDesignEdit.FrameUI.canvasElement);
     REAL3D.GeneralDesignEdit.run();
+    REAL3D.GeneralDesignEdit.enterState(REAL3D.GeneralDesignEdit.EditCurveState);
 });
