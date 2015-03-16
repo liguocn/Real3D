@@ -169,7 +169,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.connectUserPoint = function (index1, in
         point2.publish("updateSubscriber");
         point1.publish("updateDraw");
         point2.publish("updateDraw");
-        wall3d = new REAL3D.Wall.Wall3D(point1, point2,
+        wall3d = new REAL3D.WallModel.Wall3D(point1, point2,
             REAL3D.InnerSpaceDesignEdit.WallData.wallThick,
             REAL3D.InnerSpaceDesignEdit.WallData.wallHeight,
             REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
@@ -188,7 +188,7 @@ REAL3D.InnerSpaceDesignEdit.EditWallView.createNewUserPoint = function (mousePos
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     worldPosY = Math.round(worldPosY / this.snapUnit) * this.snapUnit;
     newId = REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.addPoint(worldPosX, worldPosY);
-    stump = new REAL3D.Wall.Stump(REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[newId],
+    stump = new REAL3D.WallModel.Stump(REAL3D.InnerSpaceDesignEdit.WallData.userPointTree.points[newId],
         REAL3D.InnerSpaceDesignEdit.WallData.wallThick * 2,
         REAL3D.InnerSpaceDesignEdit.WallData.drawObject,
         REAL3D.InnerSpaceDesignEdit.WallData.globalPublisher);

@@ -1,10 +1,10 @@
 /*jslint plusplus: true */
 /*global REAL3D, THREE, console */
 
-REAL3D.ViewPath = {
+REAL3D.ViewPathModel = {
 };
 
-REAL3D.ViewPath.PathPoint = function (userPoint, pathTree, drawParent) {
+REAL3D.ViewPathModel.PathPoint = function (userPoint, pathTree, drawParent) {
     "use strict";
     this.userPoint = userPoint;
     this.edges = [];
@@ -19,7 +19,7 @@ REAL3D.ViewPath.PathPoint = function (userPoint, pathTree, drawParent) {
     this.updateDraw();
 };
 
-REAL3D.ViewPath.PathPoint.prototype.remove = function () {
+REAL3D.ViewPathModel.PathPoint.prototype.remove = function () {
     "use strict";
     if (this.drawObject !== null) {
         this.drawParent.remove(this.drawObject);
@@ -37,7 +37,7 @@ REAL3D.ViewPath.PathPoint.prototype.remove = function () {
     this.drawObject = null;
 };
 
-REAL3D.ViewPath.PathPoint.prototype.updateDraw = function () {
+REAL3D.ViewPathModel.PathPoint.prototype.updateDraw = function () {
     "use strict";
     if (this.drawParent !== null) {
         var geometry, material;
@@ -52,7 +52,7 @@ REAL3D.ViewPath.PathPoint.prototype.updateDraw = function () {
     }
 };
 
-REAL3D.ViewPath.PathPoint.prototype.hideDraw = function () {
+REAL3D.ViewPathModel.PathPoint.prototype.hideDraw = function () {
     "use strict";
     if (this.drawParent !== null && this.drawObject !== null) {
         this.drawParent.remove(this.drawObject);
@@ -60,7 +60,7 @@ REAL3D.ViewPath.PathPoint.prototype.hideDraw = function () {
     }
 };
 
-REAL3D.ViewPath.PathPoint.prototype.addPathEdge = function (pathEdge) {
+REAL3D.ViewPathModel.PathPoint.prototype.addPathEdge = function (pathEdge) {
     "use strict";
     var edgeCount, found, eid;
     found = false;
@@ -76,7 +76,7 @@ REAL3D.ViewPath.PathPoint.prototype.addPathEdge = function (pathEdge) {
     }
 };
 
-REAL3D.ViewPath.PathEdge = function (pathPoint0, pathPoint1, pathTree, drawParent) {
+REAL3D.ViewPathModel.PathEdge = function (pathPoint0, pathPoint1, pathTree, drawParent) {
     "use strict";
     this.pathPoints = [pathPoint0, pathPoint1];
     this.pathTree = pathTree;
@@ -92,7 +92,7 @@ REAL3D.ViewPath.PathEdge = function (pathPoint0, pathPoint1, pathTree, drawParen
     this.updateDraw();
 };
 
-REAL3D.ViewPath.PathEdge.prototype.remove = function () {
+REAL3D.ViewPathModel.PathEdge.prototype.remove = function () {
     "use strict";
     if (this.drawObject !== null) {
         this.drawParent.remove(this.drawObject);
@@ -112,7 +112,7 @@ REAL3D.ViewPath.PathEdge.prototype.remove = function () {
     this.drawObject = null;
 };
 
-REAL3D.ViewPath.PathEdge.prototype.updateDraw = function () {
+REAL3D.ViewPathModel.PathEdge.prototype.updateDraw = function () {
     "use strict";
     if (this.drawParent !== null) {
         var geometry, material;
@@ -128,7 +128,7 @@ REAL3D.ViewPath.PathEdge.prototype.updateDraw = function () {
     }
 };
 
-REAL3D.ViewPath.PathEdge.prototype.hideDraw = function () {
+REAL3D.ViewPathModel.PathEdge.prototype.hideDraw = function () {
     "use strict";
     if (this.drawParent !== null && this.drawObject !== null) {
         this.drawParent.remove(this.drawObject);
@@ -136,32 +136,32 @@ REAL3D.ViewPath.PathEdge.prototype.hideDraw = function () {
     }
 };
 
-REAL3D.ViewPath.PathTree = function () {
+REAL3D.ViewPathModel.PathTree = function () {
     "use strict";
     REAL3D.Publisher.call(this);
     this.pathPoints = [];
     this.pathEdges = [];
 };
 
-REAL3D.ViewPath.PathTree.prototype = Object.create(REAL3D.Publisher.prototype);
+REAL3D.ViewPathModel.PathTree.prototype = Object.create(REAL3D.Publisher.prototype);
 
-REAL3D.ViewPath.PathTree.prototype.addPathPoint = function (userPoint, drawParent) {
+REAL3D.ViewPathModel.PathTree.prototype.addPathPoint = function (userPoint, drawParent) {
     "use strict";
-    var pathPoint = new REAL3D.ViewPath.PathPoint(userPoint, this, drawParent);
+    var pathPoint = new REAL3D.ViewPathModel.PathPoint(userPoint, this, drawParent);
     this.pathPoints.push(pathPoint);
     //console.log("addPathPoint: pathPoints length: ", this.pathPoints.length);
 };
 
-REAL3D.ViewPath.PathTree.prototype.addPathEdge = function (index1, index2, drawParent) {
+REAL3D.ViewPathModel.PathTree.prototype.addPathEdge = function (index1, index2, drawParent) {
     "use strict";
-    var pathEdge = new REAL3D.ViewPath.PathEdge(this.pathPoints[index1], this.pathPoints[index2], this, drawParent);
+    var pathEdge = new REAL3D.ViewPathModel.PathEdge(this.pathPoints[index1], this.pathPoints[index2], this, drawParent);
     this.pathEdges.push(pathEdge);
     this.pathPoints[index1].addPathEdge(pathEdge);
     this.pathPoints[index2].addPathEdge(pathEdge);
     //console.log("addPathEdge: pathEdges length: ", this.pathEdges.length);
 };
 
-REAL3D.ViewPath.PathTree.prototype.removePathPoint = function (pathPoint) {
+REAL3D.ViewPathModel.PathTree.prototype.removePathPoint = function (pathPoint) {
     "use strict";
     var pid;
     for (pid = 0; pid < this.pathPoints.length; pid++) {
@@ -173,7 +173,7 @@ REAL3D.ViewPath.PathTree.prototype.removePathPoint = function (pathPoint) {
     //console.log("removePathPoint: pathPoints length: ", this.pathPoints.length);
 };
 
-REAL3D.ViewPath.PathTree.prototype.removePathEdge = function (pathEdge) {
+REAL3D.ViewPathModel.PathTree.prototype.removePathEdge = function (pathEdge) {
     "use strict";
     var eid;
     for (eid = 0; eid < this.pathEdges.length; eid++) {

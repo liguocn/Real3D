@@ -1,5 +1,5 @@
 /*jslint plusplus: true */
-/*global REAL3D, THREE, console */
+/*global REAL3D, console */
 REAL3D.CommonModel = {
 };
 

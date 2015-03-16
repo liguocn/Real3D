@@ -37,7 +37,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
     userPoints = this.userPointTree.points;
     userPointLen = userPoints.length;
     for (pid = 0; pid < userPointLen; pid++) {
-        stump = new REAL3D.Wall.Stump(userPoints[pid], this.wallThick * 2, this.drawObject, this.globalPublisher);
+        stump = new REAL3D.WallModel.Stump(userPoints[pid], this.wallThick * 2, this.drawObject, this.globalPublisher);
     }
     this.userPointTree.updateAssistId();
     assistFlag = [];
@@ -50,7 +50,7 @@ REAL3D.InnerSpaceDesignEdit.WallData.draw = function () {
         neiLen = neighbors.length;
         for (nid = 0; nid < neiLen; nid++) {
             if (assistFlag[neighbors[nid].assistId] === 1) {
-                wall3d = new REAL3D.Wall.Wall3D(userPoints[pid], neighbors[nid], this.wallThick, this.wallHeight,
+                wall3d = new REAL3D.WallModel.Wall3D(userPoints[pid], neighbors[nid], this.wallThick, this.wallHeight,
                     this.drawObject, this.globalPublisher);
             }
         }

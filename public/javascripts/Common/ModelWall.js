@@ -1,10 +1,10 @@
 /*jslint plusplus: true */
 /*global REAL3D, THREE, console */
 
-REAL3D.Wall = {
+REAL3D.WallModel = {
 };
 
-REAL3D.Wall.Stump = function (userPoint, stumpSize, parent, globalPublisher) {
+REAL3D.WallModel.Stump = function (userPoint, stumpSize, parent, globalPublisher) {
     "use strict";
     this.point = userPoint;
     this.point.subscribe("updateDraw", this, this.updateDraw);
@@ -18,7 +18,7 @@ REAL3D.Wall.Stump = function (userPoint, stumpSize, parent, globalPublisher) {
     this.updateDraw();
 };
 
-REAL3D.Wall.Stump.prototype.remove = function () {
+REAL3D.WallModel.Stump.prototype.remove = function () {
     "use strict";
     if (this.mesh !== null) {
         this.parent.remove(this.mesh);
@@ -33,7 +33,7 @@ REAL3D.Wall.Stump.prototype.remove = function () {
     this.mesh = null;
 };
 
-REAL3D.Wall.Stump.prototype.updateDraw = function () {
+REAL3D.WallModel.Stump.prototype.updateDraw = function () {
     "use strict";
     var geometry, material;
     if (this.mesh !== null) {
@@ -46,7 +46,7 @@ REAL3D.Wall.Stump.prototype.updateDraw = function () {
     this.parent.add(this.mesh);
 };
 
-REAL3D.Wall.Wall3D = function (point1, point2, thick, height, parent, globalPublisher) {
+REAL3D.WallModel.Wall3D = function (point1, point2, thick, height, parent, globalPublisher) {
     "use strict";
     //console.log("New Wall3D, point1, ", point1, " point2, ", point2);
     this.point1 = point1;
@@ -62,7 +62,7 @@ REAL3D.Wall.Wall3D = function (point1, point2, thick, height, parent, globalPubl
     this.updateDraw();
 };
 
-REAL3D.Wall.Wall3D.prototype.remove = function () {
+REAL3D.WallModel.Wall3D.prototype.remove = function () {
     "use strict";
     if (this.mesh !== null) {
         this.parent.remove(this.mesh);
@@ -94,7 +94,7 @@ REAL3D.Wall.Wall3D.prototype.remove = function () {
     this.parent = null;
 };
 
-REAL3D.Wall.Wall3D.prototype.updateDraw = function () {
+REAL3D.WallModel.Wall3D.prototype.updateDraw = function () {
     "use strict";
     if (this.mesh !== null) {
         this.parent.remove(this.mesh);
@@ -127,7 +127,7 @@ REAL3D.Wall.Wall3D.prototype.updateDraw = function () {
     this.parent.add(this.mesh);
 };
 
-REAL3D.Wall.Wall3D.prototype.updateSubscriber = function () {
+REAL3D.WallModel.Wall3D.prototype.updateSubscriber = function () {
     "use strict";
     //console.log("point1", this.point1);
     //console.log("point2", this.point2);
@@ -150,7 +150,7 @@ REAL3D.Wall.Wall3D.prototype.updateSubscriber = function () {
     this.globalPublisher.subscribe("remove", this, this.remove);
 };
 
-REAL3D.Wall.Wall3D.prototype.generateGeometry = function () {
+REAL3D.WallModel.Wall3D.prototype.generateGeometry = function () {
     "use strict";
     var wallPoints, wallPos1, wallPos2, wallPos3, wallPos4;
     wallPoints = this.generateWallPoint(this.point1, this.point2);
@@ -164,7 +164,7 @@ REAL3D.Wall.Wall3D.prototype.generateGeometry = function () {
     return [wallPos1, wallPos2, wallPos3, wallPos4];
 };
 
-REAL3D.Wall.Wall3D.prototype.generateWallVector = function (pos1, pos2, assistPos) {
+REAL3D.WallModel.Wall3D.prototype.generateWallVector = function (pos1, pos2, assistPos) {
     "use strict";
     var mainVec, assistVec, wallVec, wallVecLen, dirFlag;
     mainVec = REAL3D.Vector2.sub(pos2, pos1);
@@ -183,7 +183,7 @@ REAL3D.Wall.Wall3D.prototype.generateWallVector = function (pos1, pos2, assistPo
     return wallVec;
 };
 
-REAL3D.Wall.Wall3D.prototype.generateWallPoint = function (point1, point2) {
+REAL3D.WallModel.Wall3D.prototype.generateWallPoint = function (point1, point2) {
     "use strict";
     var wallPoints, neighbors1, neigLen1, mainVec, wallVec, assistPos, wallPos1, wallPos2, nid, cosTheta, extrudLen;
     neighbors1 = point1.neighbors;
@@ -250,4 +250,3 @@ REAL3D.Wall.Wall3D.prototype.generateWallPoint = function (point1, point2) {
     wallPoints = [wallPos1, wallPos2];
     return wallPoints;
 };
-
