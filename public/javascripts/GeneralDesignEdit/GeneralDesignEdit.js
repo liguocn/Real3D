@@ -30,6 +30,7 @@ REAL3D.GeneralDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.style.outline = "none";
 
     //init user data: not done
+    REAL3D.GeneralDesignEdit.CurveData.init(null);
 };
 
 REAL3D.GeneralDesignEdit.run = function () {

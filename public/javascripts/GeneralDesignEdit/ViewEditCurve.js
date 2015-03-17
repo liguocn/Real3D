@@ -151,15 +151,6 @@ REAL3D.GeneralDesignEdit.EditCurveView.connectUserPoint = function (index1, inde
     if (REAL3D.GeneralDesignEdit.CurveData.connectUserPoint(index1, index2)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
     }
-    // if (index1 !== -1 && index2 !== -1) {
-    //     var userPoint1, userPoint2;
-    //     userPoint1 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index1];
-    //     userPoint2 = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[index2];
-    //     if (userPoint1.neighbors.length < 2 && userPoint2.neighbors.length < 2) {
-    //         REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.connectPoints(index1, index2);
-    //         REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
-    //     }
-    // }
 };
 
 REAL3D.GeneralDesignEdit.EditCurveView.createNewUserPoint = function (mousePosX, mousePosY) {
@@ -171,11 +162,6 @@ REAL3D.GeneralDesignEdit.EditCurveView.createNewUserPoint = function (mousePosX,
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
     newId = REAL3D.GeneralDesignEdit.CurveData.createUserPoint(worldPosX, worldPosY, REAL3D.GeneralDesignEdit.currentSmoothValue);
     return newId;
-
-    // newId = REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.addPoint(worldPosX, worldPosY);
-    // REAL3D.InnerSpaceDesignEdit.ViewPathData.pathTree.addPathPoint(REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[newId],
-    //     REAL3D.InnerSpaceDesignEdit.ViewPathData.drawObject);
-    // return newId;
 };
 
 REAL3D.GeneralDesignEdit.EditCurveView.finishCreatingNewUserPoint = function () {
@@ -205,8 +191,6 @@ REAL3D.GeneralDesignEdit.EditCurveView.draggingUserPoint = function (mousePosX, 
     if (REAL3D.GeneralDesignEdit.CurveData.dragUserPoint(this.hitUserPointIndex, worldPosX, worldPosY)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
     }
-    // REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.setPosition(this.hitUserPointIndex, worldPosX, worldPosY);
-    // REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
 };
 
 REAL3D.GeneralDesignEdit.EditCurveView.draggingCanvas = function (mousePosX, mousePosY) {
@@ -225,9 +209,4 @@ REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (mousePosX, mo
     if (REAL3D.GeneralDesignEdit.CurveData.removeUserPoint(hitIndex)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
     }
-    // if (hitIndex !== -1) {
-    //     REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.points[hitIndex].publish("remove");
-    //     REAL3D.InnerSpaceDesignEdit.ViewPathData.userPointTree.deletePoint(hitIndex);
-    //     REAL3D.InnerSpaceDesignEdit.ViewPathData.draw();
-    // }
 };
