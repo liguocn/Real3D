@@ -13,7 +13,7 @@ REAL3D.GeneralDesignEdit.EditCurveUI.enter = function () {
     var that = this;
     $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#toolBar');
     $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
-    $('#smoothValue').val(0);
+    $('#smoothValue').val(REAL3D.GeneralDesignEdit.currentSmoothValue);
     $('<hr />').appendTo('#toolBar');
 
     $('<div id="editMode">编辑模式</div>').appendTo('#toolBar');
