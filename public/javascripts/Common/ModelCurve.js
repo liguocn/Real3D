@@ -43,7 +43,7 @@ REAL3D.CurveModel.CurveVertex.prototype.updateDraw = function () {
         if (this.drawObject !== null) {
             this.drawParent.remove(this.drawObject);
         }
-        geometry = new THREE.SphereGeometry(3, 4, 4);
+        geometry = new THREE.SphereGeometry(4, 4, 4);
         material = new THREE.MeshBasicMaterial({color: 0x7b9b7b});
         this.drawObject = new THREE.Mesh(geometry, material);
         this.drawObject.position.set(this.userPoint.pos.getX(), this.userPoint.pos.getY(), 0);
@@ -115,7 +115,7 @@ REAL3D.CurveModel.CurveEdge.prototype.updateDraw = function () {
         geometry = new THREE.Geometry();
         geometry.vertices.push(new THREE.Vector3(this.vertices[0].userPoint.pos.getX(), this.vertices[0].userPoint.pos.getY(), 1),
             new THREE.Vector3(this.vertices[1].userPoint.pos.getX(), this.vertices[1].userPoint.pos.getY(), 1));
-        material = new THREE.LineBasicMaterial({color: 0x7b9b7b, linewidth: 2});
+        material = new THREE.LineDashedMaterial({color: 0x7b9b7b});
         this.drawObject = new THREE.Line(geometry, material);
         this.drawParent.add(this.drawObject);
     }
@@ -184,6 +184,62 @@ REAL3D.CurveModel.constructCurveTree = function (userPointTree, smoothValues, ve
     return curveTree;
 };
 
-REAL3D.CurveModel.subdivideCurveTree = function (curveTree, subdTime, vertDrawParent, edgeDrawParent) {
+//Curve Geomerty
+REAL3D.CurveGeometry = {
+};
+
+REAL3D.CurveGeometry.Curve = function () {
+    "use strict";
+    this.position = [];
+    this.isClose = false;
+    this.drawParent = null;
+    this.drawObject = null;
+};
+
+REAL3D.CurveGeometry.Curve.prototype.updateDraw = function () {
+    "use strict";
+    if (this.drawParent !== null) {
+        if (this.drawObject !== null) {
+            this.drawParent.remove(this.drawObject);
+        }
+        this.drawObject = new THREE.Object3D();
+        this.drawParent.add(this.drawObject);
+        var vertexCount, geometry, material, vid;
+        material = new THREE.LineBasicMaterial({color: 0x7b9b7b, linewidth: 2});
+        vertexCount = this.position.length;
+        for (vid = 1; vid < vertexCount; vid++) {
+            geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(this.position[vid].getX(), this.position[vid].getY(), this.position[vid].getZ()),
+                new THREE.Vector3(this.position[vid - 1].getX(), this.position[vid - 1].getY(), this.position[vid - 1].getZ()));
+            this.drawObject.add(new THREE.Line(geometry, material));
+        }
+        if (vertexCount > 2 && this.isClose) {
+            geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(this.position[0].getX(), this.position[0].getY(), this.position[0].getZ()),
+                new THREE.Vector3(this.position[vertexCount - 1].getX(), this.position[vertexCount - 1].getY(), this.position[vertexCount - 1].getZ()));
+            this.drawObject.add(new THREE.Line(geometry, material));
+        }
+    }
+};
+
+REAL3D.CurveGeometry.Curve.prototype.hideDraw = function () {
+    "use strict";
+    if (this.drawParent !== null && this.drawObject !== null) {
+        this.drawParent.remove(this.drawObject);
+        this.drawObject = null;
+    }
+};
+
+REAL3D.CurveGeometry.Curve.prototype.remove = function () {
+    "use strict";
+    if (this.drawParent !== null && this.drawObject !== null) {
+        this.drawParent.remove(this.drawObject);
+    }
+    this.position = null;
+    this.drawParent = null;
+    this.drawObject = null;
+};
+
+REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, drawParent) {
     "use strict";
 };

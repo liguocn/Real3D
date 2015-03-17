@@ -5,7 +5,7 @@ REAL3D.GeneralDesignEdit.CurveData = {
     userPointTree: null,
     smoothValues: null,
     curveTree: null,
-    subdCurveTree: null,
+    subdCurves: null,
     drawObject: null,
     subdTime: null
 };
@@ -31,30 +31,21 @@ REAL3D.GeneralDesignEdit.CurveData.draw = function () {
     REAL3D.RenderManager.scene.add(this.drawObject);
     //draw
     this.curveTree = REAL3D.CurveModel.constructCurveTree(this.userPointTree, this.smoothValues, this.drawObject, this.drawObject);
-    //this.subdCurveTree = REAL3D.CurveModel.subdivideCurveTree(this.curveTree, this.subdTime, null, this.drawObject);
-};
-
-REAL3D.GeneralDesignEdit.CurveData.hideDraw = function () {
-    "use strict";
-    //publish hide message
-    if (this.curveTree !== null) {
-        this.curveTree.publish("hideDraw");
-    }
-    if (this.subdCurveTree !== null) {
-        this.subdCurveTree.publish("hideDraw");
-    }
+    //this.subdCurves = REAL3D.CurveGeometry.constructCurveFromCurveTree(this.curveTree, this.drawObject);
 };
 
 REAL3D.GeneralDesignEdit.CurveData.releaseDraw = function () {
     "use strict";
     //publish remove message
     if (this.curveTree !== null) {
-        this.curveTree.publish("remove");
+        this.curveTree.publish("hideDraw");
         this.curveTree = new REAL3D.CurveModel.CurveTree();
     }
-    if (this.subdCurveTree !== null) {
-        this.subdCurveTree.publish("remove");
-        this.subdCurveTree = null;
+    if (this.subdCurves !== null) {
+        var cid;
+        for (cid = 0; cid < this.subdCurves.length; cid++) {
+            this.subdCurves[cid].hideDraw();
+        }
     }
     if (this.drawObject !== null) {
         REAL3D.RenderManager.scene.remove(this.drawObject);
@@ -72,7 +63,7 @@ REAL3D.GeneralDesignEdit.CurveData.releaseData = function () {
     this.userPointTree = null;
     this.smoothValues = null;
     this.curveTree = null;
-    this.subdCurveTree = null;
+    this.subdCurves = null;
     this.drawObject = null;
     this.subdTime = null;
 };
