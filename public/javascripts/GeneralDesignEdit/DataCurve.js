@@ -31,7 +31,11 @@ REAL3D.GeneralDesignEdit.CurveData.draw = function () {
     REAL3D.RenderManager.scene.add(this.drawObject);
     //draw
     this.curveTree = REAL3D.CurveModel.constructCurveTree(this.userPointTree, this.smoothValues, this.drawObject, this.drawObject);
-    //this.subdCurves = REAL3D.CurveGeometry.constructCurveFromCurveTree(this.curveTree, this.drawObject);
+    this.subdCurves = REAL3D.CurveGeometry.constructCurveFromCurveTree(this.curveTree, this.subdTime, this.drawObject);
+    var cid;
+    for (cid = 0; cid < this.subdCurves.length; cid++) {
+        this.subdCurves[cid].updateDraw();
+    }
 };
 
 REAL3D.GeneralDesignEdit.CurveData.releaseDraw = function () {

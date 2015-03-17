@@ -240,6 +240,35 @@ REAL3D.CurveGeometry.Curve.prototype.remove = function () {
     this.drawObject = null;
 };
 
-REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, drawParent) {
+REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime, drawParent) {
     "use strict";
+    var curves, vertices, vertCount, vid, assistFlag, subdCurve, subdContinue;
+    curves = [];
+    vertices = curveTree.vertices;
+    vertCount = vertices.length;
+    assistFlag = [];
+    for (vid = 0; vid < vertCount; vid++) {
+        assistFlag[vid] = 1;
+    }
+    subdContinue = true;
+    while (subdContinue) {
+        subdContinue = false;
+        for (vid = 0; vid < vertCount; vid++) {
+            if (assistFlag[vid] === 1) {
+                subdContinue = true;
+                subdCurve = REAL3D.CurveGeometry.extractSubdCurve(vertices, curveTree.smoothValues, assistFlag, vid);
+                subdCurve.drawParent = drawParent;
+                curves.push(subdCurve);
+                break;
+            }
+        }
+    }
+    return curves;
 };
+
+REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, assistFlag, vertId) {
+    "use strict";
+    var curveInfo;
+    return curveInfo;
+};
+
