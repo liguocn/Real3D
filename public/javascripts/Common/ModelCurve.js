@@ -1,4 +1,4 @@
-/*jslint plusplus: true */
+/*jslint plusplus: true, continue: true */
 /*global REAL3D, THREE, console */
 
 REAL3D.CurveModel = {
@@ -10,6 +10,7 @@ REAL3D.CurveModel.CurveVertex = function (userPoint, curveTree, drawParent) {
     this.curveTree = curveTree;
     this.drawParent = drawParent;
     this.edges = [];
+    this.assistId = null;
     this.drawObject = null;
     this.userPoint.subscribe("updateDraw", this, this.updateDraw);
     this.userPoint.subscribe("remove", this, this.remove);
@@ -44,9 +45,9 @@ REAL3D.CurveModel.CurveVertex.prototype.updateDraw = function () {
             this.drawParent.remove(this.drawObject);
         }
         geometry = new THREE.SphereGeometry(4, 4, 4);
-        material = new THREE.MeshBasicMaterial({color: 0x7b9b7b});
+        material = new THREE.MeshBasicMaterial({color: 0xbbbbbb});
         this.drawObject = new THREE.Mesh(geometry, material);
-        this.drawObject.position.set(this.userPoint.pos.getX(), this.userPoint.pos.getY(), 0);
+        this.drawObject.position.set(this.userPoint.pos.getX(), this.userPoint.pos.getY(), -1);
         this.drawParent.add(this.drawObject);
     }
 };
@@ -113,9 +114,9 @@ REAL3D.CurveModel.CurveEdge.prototype.updateDraw = function () {
             this.drawParent.remove(this.drawObject);
         }
         geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(this.vertices[0].userPoint.pos.getX(), this.vertices[0].userPoint.pos.getY(), 1),
-            new THREE.Vector3(this.vertices[1].userPoint.pos.getX(), this.vertices[1].userPoint.pos.getY(), 1));
-        material = new THREE.LineDashedMaterial({color: 0x7b9b7b});
+        geometry.vertices.push(new THREE.Vector3(this.vertices[0].userPoint.pos.getX(), this.vertices[0].userPoint.pos.getY(), -1),
+            new THREE.Vector3(this.vertices[1].userPoint.pos.getX(), this.vertices[1].userPoint.pos.getY(), -1));
+        material = new THREE.LineDashedMaterial({color: 0xbbbbbb});
         this.drawObject = new THREE.Line(geometry, material);
         this.drawParent.add(this.drawObject);
     }
@@ -150,6 +151,16 @@ REAL3D.CurveModel.CurveTree.prototype.addEdge = function (index1, index2, drawPa
     "use strict";
     var edge = new REAL3D.CurveModel.CurveEdge(this.vertices[index1], this.vertices[index2], this, drawParent);
     this.edges.push(edge);
+    this.vertices[index1].addEdge(edge);
+    this.vertices[index2].addEdge(edge);
+};
+
+REAL3D.CurveModel.CurveTree.prototype.updateAssistId = function () {
+    "use strict";
+    var vid;
+    for (vid = 0; vid < this.vertices.length; vid++) {
+        this.vertices[vid].assistId = vid;
+    }
 };
 
 //Curve Tools
@@ -205,7 +216,7 @@ REAL3D.CurveGeometry.Curve.prototype.updateDraw = function () {
         this.drawObject = new THREE.Object3D();
         this.drawParent.add(this.drawObject);
         var vertexCount, geometry, material, vid;
-        material = new THREE.LineBasicMaterial({color: 0x7b9b7b, linewidth: 2});
+        material = new THREE.LineBasicMaterial({color: 0x7b9b9b, linewidth: 2});
         vertexCount = this.position.length;
         for (vid = 1; vid < vertexCount; vid++) {
             geometry = new THREE.Geometry();
@@ -244,9 +255,10 @@ REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime
     "use strict";
     var curves, vertices, vertCount, vid, assistFlag, subdCurve, subdContinue;
     curves = [];
+    curveTree.updateAssistId();
     vertices = curveTree.vertices;
     vertCount = vertices.length;
-    assistFlag = [];
+    assistFlag = []; //1: unvisit, -1: invalid, 0: visited
     for (vid = 0; vid < vertCount; vid++) {
         assistFlag[vid] = 1;
     }
@@ -256,7 +268,7 @@ REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime
         for (vid = 0; vid < vertCount; vid++) {
             if (assistFlag[vid] === 1) {
                 subdContinue = true;
-                subdCurve = REAL3D.CurveGeometry.extractSubdCurve(vertices, curveTree.smoothValues, assistFlag, vid);
+                subdCurve = REAL3D.CurveGeometry.extractSubdCurve(vertices, curveTree.smoothValues, assistFlag, vid, subdTime);
                 subdCurve.drawParent = drawParent;
                 curves.push(subdCurve);
                 break;
@@ -266,9 +278,105 @@ REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime
     return curves;
 };
 
-REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, assistFlag, vertId) {
+REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, assistFlag, vertId, subdTime) {
     "use strict";
-    var curveInfo;
-    return curveInfo;
+    var curve, startId, curId, curEdges, isClose, stop, subdVertPos, subdSmoothValues, eid, sid, nextSubdVertPos, nextSubdSmoothValues, vid, cuttingPos, preId, nextId;
+    startId = -1;
+    curId = vertId;
+    isClose = false;
+    //find out startId
+    while (startId === -1) {
+        assistFlag[curId] = 0;
+        curEdges = curveVertives[curId].edges;
+        if (curEdges.length === 1) {
+            startId = curId;
+            isClose = false;
+            break;
+        } else if (curEdges.length === 2) {
+            if (assistFlag[curEdges[0].vertices[0].assistId] === 1) {
+                curId = curEdges[0].vertices[0].assistId;
+            } else if (assistFlag[curEdges[0].vertices[1].assistId] === 1) {
+                curId = curEdges[0].vertices[1].assistId;
+            } else if (assistFlag[curEdges[1].vertices[0].assistId] === 1) {
+                curId = curEdges[1].vertices[0].assistId;
+            } else if (assistFlag[curEdges[1].vertices[1].assistId] === 1) {
+                curId = curEdges[1].vertices[1].assistId;
+            } else {
+                startId = curId;
+                isClose = true;
+            }
+            continue;
+        } else {
+            console.log("error: curEdges.length = ", curEdges.length);
+        }
+    }
+
+    //tranverse
+    curId = startId;
+    subdVertPos = [];
+    subdSmoothValues = [];
+    do {
+        subdVertPos.push(curveVertives[curId].userPoint.pos);
+        subdSmoothValues.push(smoothValues[curId]);
+        assistFlag[curId] = -1;
+        curEdges = curveVertives[curId].edges;
+        stop = true;
+        for (eid = 0; eid < curEdges.length; eid++) {
+            if (assistFlag[curEdges[eid].vertices[0].assistId] !== -1) {
+                curId = curEdges[eid].vertices[0].assistId;
+                stop = false;
+                break;
+            } else if (assistFlag[curEdges[eid].vertices[1].assistId] !== -1) {
+                curId = curEdges[eid].vertices[1].assistId;
+                stop = false;
+                break;
+            }
+        }
+    } while (stop === false);
+
+    //subdivide curve
+    nextSubdVertPos = [];
+    nextSubdSmoothValues = [];
+    for (sid = 0; sid < subdTime; sid++) {
+        for (vid = 0; vid < subdVertPos.length; vid++) {
+            if (isClose === false && (vid === 0 || vid === subdVertPos.length - 1)) {
+                nextSubdVertPos.push(subdVertPos[vid]);
+                nextSubdSmoothValues.push(subdSmoothValues[vid]);
+            } else {
+                if (subdSmoothValues[vid] > 0) {
+                    preId = vid - 1;
+                    nextId = vid + 1;
+                    if (vid === 0) {
+                        preId = subdVertPos.length - 1;
+                    } else if (vid === subdVertPos.length - 1) {
+                        nextId = 0;
+                    }
+                    cuttingPos = REAL3D.Vector2.add(REAL3D.Vector2.scale(subdVertPos[preId], subdSmoothValues[vid]),
+                        REAL3D.Vector2.scale(subdVertPos[vid], 1 - subdSmoothValues[vid]));
+                    nextSubdVertPos.push(cuttingPos);
+                    nextSubdSmoothValues.push(subdSmoothValues[vid]);
+                    cuttingPos = REAL3D.Vector2.add(REAL3D.Vector2.scale(subdVertPos[nextId], subdSmoothValues[vid]),
+                        REAL3D.Vector2.scale(subdVertPos[vid], 1 - subdSmoothValues[vid]));
+                    nextSubdVertPos.push(cuttingPos);
+                    nextSubdSmoothValues.push(subdSmoothValues[vid]);
+                } else {
+                    nextSubdVertPos.push(subdVertPos[vid]);
+                    nextSubdSmoothValues.push(subdSmoothValues[vid]);
+                }
+            }
+        }
+        subdVertPos = nextSubdVertPos;
+        subdSmoothValues = nextSubdSmoothValues;
+        nextSubdVertPos = [];
+        nextSubdSmoothValues = [];
+    }
+
+    curve = new REAL3D.CurveGeometry.Curve();
+    curve.isClose = isClose;
+    for (vid = 0; vid < subdVertPos.length; vid++) {
+        curve.position.push(new REAL3D.Vector3(subdVertPos[vid].getX(), subdVertPos[vid].getY(), 0));
+    }
+
+    return curve;
 };
 

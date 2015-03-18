@@ -8,7 +8,7 @@ REAL3D.GeneralDesignEdit = {
     winH: 0,
     canvasElement: null,
     designName: '',
-    currentSmoothValue: 0.5
+    currentSmoothValue: 0.3
 };
 
 REAL3D.GeneralDesignEdit.init = function (winW, winH, canvasElement) {
