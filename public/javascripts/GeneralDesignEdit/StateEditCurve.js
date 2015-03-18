@@ -141,15 +141,21 @@ REAL3D.GeneralDesignEdit.EditCurveState.releaseReferenceObject = function () {
 
 REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode = function (curveEditMode) {
     "use strict";
-    this.curveEditMode = curveEditMode;
-    if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.CREATE) {
-        REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.NONE);
-    } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT) {
-        REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT);
-    } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.REMOVE) {
-        REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.REMOVE);
-    } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.MERGE) {
-        REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.MERGE);
+    if (this.curveEditMode !== curveEditMode) {
+        if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT) {
+            REAL3D.GeneralDesignEdit.CurveData.editUserPointId = -1;
+            REAL3D.GeneralDesignEdit.CurveData.draw();
+        }
+        this.curveEditMode = curveEditMode;
+        if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.CREATE) {
+            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.NONE);
+        } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT) {
+            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT);
+        } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.REMOVE) {
+            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.REMOVE);
+        } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.MERGE) {
+            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.MERGE);
+        }
     }
 };
 

@@ -7,7 +7,8 @@ REAL3D.GeneralDesignEdit.CurveData = {
     curveTree: null,
     subdCurves: null,
     drawObject: null,
-    subdTime: null
+    subdTime: null,
+    editUserPointId: -1
 };
 
 REAL3D.GeneralDesignEdit.CurveData.init = function (curveData) {
@@ -35,6 +36,19 @@ REAL3D.GeneralDesignEdit.CurveData.draw = function () {
     var cid;
     for (cid = 0; cid < this.subdCurves.length; cid++) {
         this.subdCurves[cid].updateDraw();
+    }
+    this.drawEditUserPoint();
+};
+
+REAL3D.GeneralDesignEdit.CurveData.drawEditUserPoint = function () {
+    "use strict";
+    if (this.editUserPointId !== -1) {
+        var geometry, material, refBall;
+        geometry = new THREE.SphereGeometry(4, 4, 4);
+        material = new THREE.MeshBasicMaterial({color: 0xeb2b2b});
+        refBall = new THREE.Mesh(geometry, material);
+        refBall.position.set(this.userPointTree.points[this.editUserPointId].pos.getX(), this.userPointTree.points[this.editUserPointId].pos.getY(), 5);
+        this.drawObject.add(refBall);
     }
 };
 

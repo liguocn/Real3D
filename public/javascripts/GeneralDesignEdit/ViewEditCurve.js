@@ -70,6 +70,9 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseDown = function (e) {
                 //console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
             }
         }
+    } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT) {
+        REAL3D.GeneralDesignEdit.CurveData.editUserPointId = this.hitUserPointIndex;
+        REAL3D.GeneralDesignEdit.CurveData.draw();
     }
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
@@ -211,7 +214,7 @@ REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (mousePosX, mo
     }
 };
 
-REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode = function (mouseMode) {
+REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode = function (mouseState) {
     "use strict";
-    this.mouseMode = mouseMode;
+    this.mouseState = mouseState;
 };
