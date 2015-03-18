@@ -7,8 +7,7 @@ REAL3D.GeneralDesignEdit = {
     winW: 0,
     winH: 0,
     canvasElement: null,
-    designName: '',
-    currentSmoothValue: 0.3
+    designName: ''
 };
 
 REAL3D.GeneralDesignEdit.init = function (winW, winH, canvasElement) {
@@ -131,7 +130,8 @@ REAL3D.GeneralDesignEdit.MouseState = {
     HITCANVAS: 5,
     REMOVEUSERPOINT: 6,
     INSERTUSERPOINT: 7,
-    MERGEUSERPOINT: 8
+    MERGEUSERPOINT: 8,
+    EDITUSERPOINT: 9
 };
 
 REAL3D.GeneralDesignEdit.HITRADIUS = 250;

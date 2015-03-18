@@ -160,7 +160,7 @@ REAL3D.GeneralDesignEdit.EditCurveView.createNewUserPoint = function (mousePosX,
     cameraPos = this.camera.position;
     worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
     worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
-    newId = REAL3D.GeneralDesignEdit.CurveData.createUserPoint(worldPosX, worldPosY, REAL3D.GeneralDesignEdit.currentSmoothValue);
+    newId = REAL3D.GeneralDesignEdit.CurveData.createUserPoint(worldPosX, worldPosY, REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
     return newId;
 };
 
@@ -209,4 +209,9 @@ REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (mousePosX, mo
     if (REAL3D.GeneralDesignEdit.CurveData.removeUserPoint(hitIndex)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
     }
+};
+
+REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode = function (mouseMode) {
+    "use strict";
+    this.mouseMode = mouseMode;
 };
