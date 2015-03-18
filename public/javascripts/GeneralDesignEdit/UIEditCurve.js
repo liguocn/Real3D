@@ -64,9 +64,15 @@ REAL3D.GeneralDesignEdit.EditCurveUI.changeSmoothValue = function () {
     REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue(validSmoothValue);
 };
 
+REAL3D.GeneralDesignEdit.EditCurveUI.setSmoothValue = function (smoothValue) {
+    "use strict";
+    $('#smoothValue').val(smoothValue / this.maxSmoothValue);
+};
+
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToCreate = function () {
     "use strict";
     REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.CREATE);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };
 
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToEdit = function () {
@@ -77,9 +83,11 @@ REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToEdit = function () {
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToRemove = function () {
     "use strict";
     REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.REMOVE);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };
 
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToMerge = function () {
     "use strict";
     REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.MERGE);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };

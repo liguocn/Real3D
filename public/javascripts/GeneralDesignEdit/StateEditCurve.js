@@ -169,7 +169,8 @@ REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode = {
 REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue = function (smoothValue) {
     "use strict";
     if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT) {
-
+        REAL3D.GeneralDesignEdit.CurveData.changeSmoothValue(smoothValue);
+        REAL3D.GeneralDesignEdit.CurveData.draw();
     } else {
         this.currentSmoothValue = smoothValue;
     }

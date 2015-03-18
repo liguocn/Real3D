@@ -71,8 +71,7 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseDown = function (e) {
             }
         }
     } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT) {
-        REAL3D.GeneralDesignEdit.CurveData.editUserPointId = this.hitUserPointIndex;
-        REAL3D.GeneralDesignEdit.CurveData.draw();
+        this.editUserPoint(this.hitUserPointIndex);
     }
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
@@ -211,6 +210,17 @@ REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (mousePosX, mo
     hitIndex = this.hitDetection(mousePosX, mousePosY);
     if (REAL3D.GeneralDesignEdit.CurveData.removeUserPoint(hitIndex)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
+    }
+};
+
+REAL3D.GeneralDesignEdit.EditCurveView.editUserPoint = function (hitUserPointIndex) {
+    "use strict";
+    REAL3D.GeneralDesignEdit.CurveData.editUserPointId = hitUserPointIndex;
+    REAL3D.GeneralDesignEdit.CurveData.draw();
+    if (hitUserPointIndex === -1) {
+        REAL3D.GeneralDesignEdit.EditCurveUI.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
+    } else {
+        REAL3D.GeneralDesignEdit.EditCurveUI.setSmoothValue(REAL3D.GeneralDesignEdit.CurveData.smoothValues[hitUserPointIndex]);
     }
 };
 

@@ -278,7 +278,7 @@ REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime
     return curves;
 };
 
-REAL3D.CurveGeometry.subdFactors = [0.5, 0.29289, 0.25989, 0.252425, 0.250603, 0.25015065871];
+REAL3D.CurveGeometry.subdFactors = [0.25989, 0.252425, 0.250603, 0.25015065871, 0.25];
 
 REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, assistFlag, vertId, subdTime) {
     "use strict";
@@ -339,16 +339,11 @@ REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, a
     //subdivide curve
     nextSubdVertPos = [];
     nextSubdSmoothValues = [];
-    for (sid = 1; sid <= subdTime; sid++) {
+    for (sid = 0; sid < subdTime; sid++) {
         for (vid = 0; vid < subdVertPos.length; vid++) {
             if (isClose === false && (vid === 0 || vid === subdVertPos.length - 1)) {
                 nextSubdVertPos.push(subdVertPos[vid]);
-                //nextSubdSmoothValues.push(subdSmoothValues[vid]);
-                if (subdSmoothValues[vid] > 0) {
-                    nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
-                } else {
-                    nextSubdSmoothValues.push(0);
-                }
+                nextSubdSmoothValues.push(0);
             } else {
                 if (subdSmoothValues[vid] > 0) {
                     preId = vid - 1;
@@ -361,32 +356,14 @@ REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, a
                     cuttingPos = REAL3D.Vector2.add(REAL3D.Vector2.scale(subdVertPos[preId], subdSmoothValues[vid]),
                         REAL3D.Vector2.scale(subdVertPos[vid], 1 - subdSmoothValues[vid]));
                     nextSubdVertPos.push(cuttingPos);
-                    //nextSubdSmoothValues.push(subdSmoothValues[vid]);
-                    if (subdSmoothValues[vid] > 0) {
-                        nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
-                    } else {
-                        nextSubdSmoothValues.push(0);
-                    }
-                    nextSubdSmoothValues.push(0.25);
+                    nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
                     cuttingPos = REAL3D.Vector2.add(REAL3D.Vector2.scale(subdVertPos[nextId], subdSmoothValues[vid]),
                         REAL3D.Vector2.scale(subdVertPos[vid], 1 - subdSmoothValues[vid]));
                     nextSubdVertPos.push(cuttingPos);
-                    //nextSubdSmoothValues.push(subdSmoothValues[vid]);
-                    if (subdSmoothValues[vid] > 0) {
-                        nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
-                    } else {
-                        nextSubdSmoothValues.push(0);
-                    }
-                    nextSubdSmoothValues.push(0.25);
+                    nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
                 } else {
                     nextSubdVertPos.push(subdVertPos[vid]);
-                    //nextSubdSmoothValues.push(subdSmoothValues[vid]);
-                    if (subdSmoothValues[vid] > 0) {
-                        nextSubdSmoothValues.push(REAL3D.CurveGeometry.subdFactors[sid]);
-                    } else {
-                        nextSubdSmoothValues.push(0);
-                    }
-                    nextSubdSmoothValues.push(0.25);
+                    nextSubdSmoothValues.push(0);
                 }
             }
         }

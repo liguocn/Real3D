@@ -136,3 +136,10 @@ REAL3D.GeneralDesignEdit.CurveData.removeUserPoint = function (index) {
     this.userPointTree.deletePoint(index);
     return true;
 };
+
+REAL3D.GeneralDesignEdit.CurveData.changeSmoothValue = function (smoothValue) {
+    "use strict";
+    if (this.editUserPointId !== -1) {
+        this.smoothValues[this.editUserPointId] = smoothValue;
+    }
+};
