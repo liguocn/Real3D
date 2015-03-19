@@ -269,9 +269,11 @@ REAL3D.CurveGeometry.constructCurveFromCurveTree = function (curveTree, subdTime
             if (assistFlag[vid] === 1) {
                 subdContinue = true;
                 subdCurve = REAL3D.CurveGeometry.extractSubdCurve(vertices, curveTree.smoothValues, assistFlag, vid, subdTime);
-                subdCurve.drawParent = drawParent;
-                curves.push(subdCurve);
-                break;
+                if (subdCurve.position.length > 1) {
+                    subdCurve.drawParent = drawParent;
+                    curves.push(subdCurve);
+                    break;
+                }
             }
         }
     }
@@ -286,6 +288,7 @@ REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, a
     startId = -1;
     curId = vertId;
     isClose = false;
+    curve = new REAL3D.CurveGeometry.Curve();
     //find out startId
     while (startId === -1) {
         assistFlag[curId] = 0;
@@ -310,6 +313,7 @@ REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, a
             continue;
         } else {
             console.log("error: curEdges.length = ", curEdges.length);
+            return curve;
         }
     }
 
@@ -373,7 +377,6 @@ REAL3D.CurveGeometry.extractSubdCurve = function (curveVertives, smoothValues, a
         nextSubdSmoothValues = [];
     }
 
-    curve = new REAL3D.CurveGeometry.Curve();
     curve.isClose = isClose;
     for (vid = 0; vid < subdVertPos.length; vid++) {
         curve.position.push(new REAL3D.Vector3(subdVertPos[vid].getX(), subdVertPos[vid].getY(), 0));

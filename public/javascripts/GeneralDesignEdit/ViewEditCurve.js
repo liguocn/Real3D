@@ -41,38 +41,30 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseDown = function (e) {
     var mouseDownDist, curPosX, curPosY, isHittingTheSamePos, newUserPointIndex;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
-    //console.log("mousePos: ", this.mouseDownPos.x, this.mouseDownPos.y, curPosX, curPosY);
     mouseDownDist = (curPosX - this.mouseDownPos.x) * (curPosX - this.mouseDownPos.x) + (curPosY - this.mouseDownPos.y) * (curPosY - this.mouseDownPos.y);
-    //console.log("mouseDownDist: ", mouseDownDist);
     isHittingTheSamePos = (mouseDownDist < REAL3D.GeneralDesignEdit.HITRADIUS);
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
-    //console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
     if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.NONE) {
         if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.EDIT) {
             this.editUserPoint(this.hitUserPointIndex);
         }
         if (this.hitUserPointIndex === -1) {
             this.mouseState = REAL3D.GeneralDesignEdit.MouseState.HITCANVAS;
-            //console.log("state: NONE -> HITCANVAS");
         } else {
             this.mouseState = REAL3D.GeneralDesignEdit.MouseState.HITUSERPOINT;
-            //console.log("state: NONE -> HITUSERPOINT");
         }
     } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.CREATINGUSERPOINT) {
         if (isHittingTheSamePos) {
             this.finishCreatingNewUserPoint();
             this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
-            //console.log("state: CREATINGUSERPOINT -> NONE, hit the same point, finishCreatingNewUserPoint");
         } else {
             if (this.hitUserPointIndex === -1) {
                 newUserPointIndex = this.createNewUserPoint(curPosX, curPosY);
-                //console.log("createNewUserPoint: ", this.lastCreatedPointIndex, newUserPointIndex);
                 this.connectUserPoint(this.lastCreatedPointIndex, newUserPointIndex);
                 this.lastCreatedPointIndex = newUserPointIndex;
             } else {
                 this.connectUserPoint(this.hitUserPointIndex, this.lastCreatedPointIndex);
                 this.lastCreatedPointIndex = this.hitUserPointIndex;
-                //console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
             }
         }
     }
