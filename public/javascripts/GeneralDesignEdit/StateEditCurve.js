@@ -148,13 +148,13 @@ REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode = function (curveEdi
         }
         this.curveEditMode = curveEditMode;
         if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.CREATE) {
-            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.NONE);
+            REAL3D.GeneralDesignEdit.EditCurveView.switchEditMode(REAL3D.GeneralDesignEdit.EditCurveView.EditMode.CREAT);
         } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT) {
-            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT);
+            REAL3D.GeneralDesignEdit.EditCurveView.switchEditMode(REAL3D.GeneralDesignEdit.EditCurveView.EditMode.EDIT);
         } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.REMOVE) {
-            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.REMOVE);
-        } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.MERGE) {
-            REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode(REAL3D.GeneralDesignEdit.MouseState.MERGE);
+            REAL3D.GeneralDesignEdit.EditCurveView.switchEditMode(REAL3D.GeneralDesignEdit.EditCurveView.EditMode.REMOVE);
+        } else if (this.curveEditMode === REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.INSERT) {
+            REAL3D.GeneralDesignEdit.EditCurveView.switchEditMode(REAL3D.GeneralDesignEdit.EditCurveView.EditMode.INSERT);
         }
     }
 };
@@ -163,7 +163,7 @@ REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode = {
     CREATE: 0,
     EDIT: 1,
     REMOVE: 2,
-    MERGE: 3
+    INSERT: 3
 };
 
 REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue = function (smoothValue) {
@@ -175,4 +175,3 @@ REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue = function (smoothValu
         this.currentSmoothValue = smoothValue;
     }
 };
-

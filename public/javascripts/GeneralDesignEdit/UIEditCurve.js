@@ -24,8 +24,8 @@ REAL3D.GeneralDesignEdit.EditCurveUI.enter = function () {
     $('#edit').get(0).addEventListener("click", function () { that.switchEditModeToEdit(); });
     $('<div><input type="radio" id="remove" name="editRadio">删除</div>').appendTo('#editMode');
     $('#remove').get(0).addEventListener("click", function () { that.switchEditModeToRemove(); });
-    $('<div><input type="radio" id="merge" name="editRadio">合并</div>').appendTo('#editMode');
-    $('#merge').get(0).addEventListener("click", function () { that.switchEditModeToMerge(); });
+    $('<div><input type="radio" id="insert" name="editRadio">插入</div>').appendTo('#editMode');
+    $('#insert').get(0).addEventListener("click", function () { that.switchEditModeToInsert(); });
     $('<hr />').appendTo('#toolBar');
     $('#create').get(0).checked = true;
 
@@ -86,8 +86,8 @@ REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToRemove = function () {
     this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };
 
-REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToMerge = function () {
+REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToInsert = function () {
     "use strict";
-    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.MERGE);
+    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.INSERT);
     this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };

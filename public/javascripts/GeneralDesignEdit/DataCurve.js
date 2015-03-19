@@ -134,7 +134,20 @@ REAL3D.GeneralDesignEdit.CurveData.removeUserPoint = function (index) {
     }
     this.userPointTree.points[index].publish("remove");
     this.userPointTree.deletePoint(index);
+    this.smoothValues.splice(index, 1);
+    console.log("    smoothValues: ", this.smoothValues);
     return true;
+};
+
+REAL3D.GeneralDesignEdit.CurveData.insertUserPoint = function (worldPosX, worldPosY, smoothValue) {
+    "use strict";
+    var insertId = this.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
+    if (insertId !== -1) {
+        this.smoothValues.push(smoothValue);
+        return true;
+    } else {
+        return false;
+    }
 };
 
 REAL3D.GeneralDesignEdit.CurveData.changeSmoothValue = function (smoothValue) {

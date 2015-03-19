@@ -7,6 +7,7 @@ REAL3D.GeneralDesignEdit.EditCurveView = {
     winH: null,
     camera: null,
     mouseState: null,
+    editMode: null,
     isMouseDown: null,
     mouseDownPos: null,
     mouseMovePos: null,
@@ -26,6 +27,7 @@ REAL3D.GeneralDesignEdit.EditCurveView.init = function (canvasOffset, winW, winH
         this.winH = winH;
     }
     this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+    this.editMode = REAL3D.GeneralDesignEdit.EditCurveView.EditMode.CREAT;
     this.isMouseDown = false;
     this.mouseDownPos = new THREE.Vector2(0, 0);
     this.mouseMovePos = new THREE.Vector2(0, 0);
@@ -46,6 +48,9 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseDown = function (e) {
     this.hitUserPointIndex = this.hitDetection(curPosX, curPosY); //if only isHittingTheSamePos == true
     //console.log("hit the same point: ", isHittingTheSamePos, "  hit index: ", this.hitUserPointIndex);
     if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.NONE) {
+        if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.EDIT) {
+            this.editUserPoint(this.hitUserPointIndex);
+        }
         if (this.hitUserPointIndex === -1) {
             this.mouseState = REAL3D.GeneralDesignEdit.MouseState.HITCANVAS;
             //console.log("state: NONE -> HITCANVAS");
@@ -70,8 +75,6 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseDown = function (e) {
                 //console.log("connectUserPoint to exist point: ", this.hitUserPointIndex);
             }
         }
-    } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.EDITUSERPOINT) {
-        this.editUserPoint(this.hitUserPointIndex);
     }
     this.mouseDownPos.set(curPosX, curPosY);
     this.mouseMovePos.set(curPosX, curPosY);
@@ -117,23 +120,30 @@ REAL3D.GeneralDesignEdit.EditCurveView.mouseUp = function (e) {
     if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.DRAGGINGUSERPOINT) {
         this.draggingUserPoint(curPosX, curPosY);
         this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
-        //console.log("state: DRAGGINGUSERPOINT -> NONE");
     } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.DRAGGINGCANVAS) {
         this.draggingCanvas(curPosX, curPosY);
         this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
-        //console.log("state: DRAGGINGCANVAS -> NONE");
     } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.HITUSERPOINT) {
-        this.connectUserPoint(this.lastCreatedPointIndex, this.hitUserPointIndex);
-        this.lastCreatedPointIndex = this.hitUserPointIndex;
-        this.mouseState = REAL3D.GeneralDesignEdit.MouseState.CREATINGUSERPOINT;
-        //console.log("state: HITUSERPOINT -> CREATINGUSERPOINT, connectUserPoint to exist point");
+        if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.CREAT) {
+            this.connectUserPoint(this.lastCreatedPointIndex, this.hitUserPointIndex);
+            this.lastCreatedPointIndex = this.hitUserPointIndex;
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.CREATINGUSERPOINT;
+        } else if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.REMOVE) {
+            this.removeUserPoint(this.hitUserPointIndex);
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+        } else {
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+        }
     } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.HITCANVAS) {
-        //console.log("state: HITCANVAS -> CREATINGUSERPOINT, createNewUserPoint");
-        this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
-        this.mouseState = REAL3D.GeneralDesignEdit.MouseState.CREATINGUSERPOINT;
-        //console.log("createNewUserPoint: ", this.lastCreatedPointIndex);
-    } else if (this.mouseState === REAL3D.GeneralDesignEdit.MouseState.REMOVEUSERPOINT) {
-        this.removeUserPoint(curPosX, curPosY);
+        if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.CREAT) {
+            this.lastCreatedPointIndex = this.createNewUserPoint(curPosX, curPosY);
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.CREATINGUSERPOINT;
+        } else if (this.editMode === REAL3D.GeneralDesignEdit.EditCurveView.EditMode.INSERT) {
+            this.insertUserPoint(curPosX, curPosY);
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+        } else {
+            this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+        }
     }
     this.isMouseDown = false;
 };
@@ -204,11 +214,21 @@ REAL3D.GeneralDesignEdit.EditCurveView.draggingCanvas = function (mousePosX, mou
     this.camera.position.y += worldDifY;
 };
 
-REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (mousePosX, mousePosY) {
+REAL3D.GeneralDesignEdit.EditCurveView.removeUserPoint = function (userPointIndex) {
     "use strict";
-    var hitIndex;
-    hitIndex = this.hitDetection(mousePosX, mousePosY);
-    if (REAL3D.GeneralDesignEdit.CurveData.removeUserPoint(hitIndex)) {
+    if (REAL3D.GeneralDesignEdit.CurveData.removeUserPoint(userPointIndex)) {
+        REAL3D.GeneralDesignEdit.CurveData.draw();
+    }
+};
+
+REAL3D.GeneralDesignEdit.EditCurveView.insertUserPoint = function (mousePosX, mousePosY) {
+    "use strict";
+    var cameraPos, worldPosX, worldPosY;
+    mousePosY = this.winH - mousePosY;
+    cameraPos = this.camera.position;
+    worldPosX = mousePosX - this.winW / 2 + cameraPos.x;
+    worldPosY = mousePosY - this.winH / 2 + cameraPos.y;
+    if (REAL3D.GeneralDesignEdit.CurveData.insertUserPoint(worldPosX, worldPosY, REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue)) {
         REAL3D.GeneralDesignEdit.CurveData.draw();
     }
 };
@@ -224,7 +244,21 @@ REAL3D.GeneralDesignEdit.EditCurveView.editUserPoint = function (hitUserPointInd
     }
 };
 
+REAL3D.GeneralDesignEdit.EditCurveView.switchEditMode = function (editMode) {
+    "use strict";
+    this.editMode = editMode;
+    this.mouseState = REAL3D.GeneralDesignEdit.MouseState.NONE;
+    this.finishCreatingNewUserPoint();
+};
+
 REAL3D.GeneralDesignEdit.EditCurveView.switchMouseMode = function (mouseState) {
     "use strict";
     this.mouseState = mouseState;
+};
+
+REAL3D.GeneralDesignEdit.EditCurveView.EditMode = {
+    CREAT: 0,
+    EDIT: 1,
+    REMOVE: 2,
+    INSERT: 3
 };
