@@ -6,6 +6,7 @@ var InnerSpaceDesign = require("./InnerSpaceDesign");
 var PersonalHomePage = require("./PersonalHomePage");
 var GeneralDesign = require("./GeneralDesign");
 var GeneralDesignEdit = require("./GeneralDesignEdit");
+var CageModeling = require("./CageModeling");
 
 /* GET home page. */
 router.get("/", function (req, res) {
@@ -51,6 +52,8 @@ router.get("/innerspacedesign/edit/findName", InnerSpaceDesignEdit.findName);
 router.get("/generaldesign", GeneralDesign.enter);
 
 router.get("/generaldesign/edit", GeneralDesignEdit.enter);
+
+router.get("/cagemodeling", CageModeling.enter);
 
 router.get("/furnituredesign", function(req, res) {
     "use strict";

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset = "UTF-8">
+    <title>建模设计</title>
+    <link rel = "stylesheet" type="text/css" href="/stylesheets/CageModeling.css">
+    <script src="/javascripts/Dependence/three.min.js"></script>
+    <script src="/javascripts/Dependence/jquery-2.1.3.min.js"></script>
+    <script src = "/javascripts/Common/Real3d.js"></script>
+    <script src = "/javascripts/Common/RenderManager.js"></script>
+    <script src = "/javascripts/Common/Vector3.js"></script>
+    <script src = "/javascripts/CageModeling/UICageModeling.js"></script>
+    <script src = "/javascripts/CageModeling/StateCageModeling.js"></script>
+    <script src = "/javascripts/CageModeling/ViewCageModeling.js"></script>
+    <script src = "/javascripts/CageModeling/DataCageModeling.js"></script>
+</head>
+
+<body>
+    <div class = "centerleft">
+        <div class = "centerright">
+            <div id="designInfo" class="info">
+                设计名<input id="designName" class="parmStrCtl" type="text" value=<%= designName %> >
+                <button id="newDesign" class="button">新建</button>
+                <button id="saveDesign" class="button">保存</button>
+                <button id="back" class="button">返回</button>
+                <hr />     
+            </div>
+            <div id="leftContainer" class="leftContainer"></div>
+            <div id="mainContainer" class="mainContainer"></div>
+        </div>
+    </div>
+</body>
+</html>

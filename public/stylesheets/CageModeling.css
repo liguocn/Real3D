@@ -93,36 +93,6 @@ body
     background-color: rgb(195, 195, 200);
 }
 
-.leftContainer .curve
-{
-    font-size: 16pt;
-    color: rgb(0, 64, 64);
-    border-bottom: 10px;
-}
-
-.leftContainer .curve .parmNumCtl
-{
-    width: 45px;
-    height: 16px;
-    background-color: rgb(222, 222, 222);
-    color: rgb(0, 64, 64);
-    vertical-align: middle;
-    margin-left: 3px;
-    border-bottom: 10px;
-}
-
-.leftContainer .curve .button
-{
-    width: 70px;
-    height: 32px;
-    text-align: center;
-    font-size: 16pt;
-    border-radius: 8px;
-    color: rgb(0, 64, 64);
-    background-color: rgb(195, 195, 200); 
-    vertical-align: middle;
-}
-
 .mainContainer
 {
     float: right;
