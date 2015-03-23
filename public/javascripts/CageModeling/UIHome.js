@@ -59,10 +59,13 @@ REAL3D.CageModeling.HomeUI.normalizeView = function () {
 REAL3D.CageModeling.HomeUI.enterCreateCage = function () {
     "use strict";
     this.exit();
-}
+    REAL3D.CageModeling.enterState(REAL3D.CageModeling.CreateCageState);
+    REAL3D.CageModeling.CreateCageUI.enter();
+};
 
 REAL3D.CageModeling.HomeUI.enterEditCage = function () {
     "use strict";
     this.exit();
-}
+};
+
 

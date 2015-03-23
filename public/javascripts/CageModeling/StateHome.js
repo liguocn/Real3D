@@ -54,7 +54,7 @@ REAL3D.CageModeling.HomeState.setupRefFrame = function () {
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
 
-    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord, subLineCount;
+    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord;
     spaceDist = 250;
     maxDist = 1000;
     lineCount = maxDist / spaceDist;
