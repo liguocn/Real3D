@@ -12,7 +12,7 @@ function enterGeneralDesign() {
 function enterCageModeling() {
     "use strict";
     var subForm, item1, item2, designName;
-    designName = 'test';
+    designName = 'CageTest';
     subForm = $('<form action="/cagemodeling" method="get"></form>');
     item1 = $('<input type="text" id="designName" name="designName">');
     if (designName !== null) {

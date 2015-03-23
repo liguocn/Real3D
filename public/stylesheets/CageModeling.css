@@ -81,7 +81,20 @@ body
     margin-bottom: 10px;
 }
 
-.leftContainer .button
+.leftContainer .topButton
+{
+    /*margin-bottom: 8px;*/
+    margin-right: 8px;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    font-size: 10pt;
+    border-radius: 16px;
+    color: rgb(0, 64, 64) ;
+    background-color: rgb(195, 195, 200);
+}
+
+.leftContainer .appButton
 {
     margin-bottom: 10px;
     width: 70px;
