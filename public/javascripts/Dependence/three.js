@@ -966,11 +966,6 @@ THREE.Quaternion.prototype = {
 
 	},
 
-	multiplyLeft : function(p)
-	{
-		return this.multiplyQuaternions( p, this );
-	},
-
 	multiplyQuaternions: function ( a, b ) {
 
 		// from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
@@ -7443,7 +7438,7 @@ THREE.Object3D.prototype = {
 
 			q1.setFromAxisAngle( axis, angle );
 
-			this.quaternion.multiplyLeft( q1 );
+			this.quaternion.multiplyQuaternions( q1, this.quaternion );
 
 			return this;
 

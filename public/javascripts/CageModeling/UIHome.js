@@ -38,18 +38,22 @@ REAL3D.CageModeling.HomeUI.exit = function () {
 
 REAL3D.CageModeling.HomeUI.translateControl = function () {
     "use strict";
+    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.TransformMode.TRANSLATE);
 };
 
 REAL3D.CageModeling.HomeUI.rotateControl = function () {
     "use strict";
+    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
 };
 
 REAL3D.CageModeling.HomeUI.scaleControl = function () {
     "use strict";
+    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.TransformMode.SCALE);
 };
 
 REAL3D.CageModeling.HomeUI.normalizeView = function () {
     "use strict";
+    REAL3D.CageModeling.HomeControl.resetView();
 };
 
 REAL3D.CageModeling.HomeUI.enterCreateCage = function () {

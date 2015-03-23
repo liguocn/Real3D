@@ -125,3 +125,9 @@ REAL3D.CageModeling.MouseState = {
     NONE: 0
 };
 
+REAL3D.CageModeling.TransformMode = {
+    NONE: 0,
+    TRANSLATE: 1,
+    ROTATE: 2,
+    SCALE: 3
+};
