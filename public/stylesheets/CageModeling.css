@@ -115,13 +115,14 @@ body
 
 .leftContainer .createCage .parmNumCtl
 {
-    width: 45px;
+    width: 64px;
     height: 16px;
     background-color: rgb(222, 222, 222);
     color: rgb(0, 64, 64);
     vertical-align: middle;
-    margin-left: 3px;
+    margin-left: 10px;
     border-bottom: 10px;
+    border-radius: 4px;
 }
 
 .leftContainer .createCage .button
@@ -133,6 +134,15 @@ body
     border-radius: 8px;
     color: rgb(0, 64, 64);
     background-color: rgb(195, 195, 200); 
+    vertical-align: middle;
+}
+
+.leftContainer .createCage .selectType
+{
+    font-size: 16pt;
+    border-radius: 4px;
+    color: rgb(0, 64, 64);
+    background-color: rgb(210, 210, 210);
     vertical-align: middle;
 }
 
