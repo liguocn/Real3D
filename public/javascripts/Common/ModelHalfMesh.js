@@ -321,5 +321,6 @@ REAL3D.MeshModel.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY
     var mesh;
     mesh = new REAL3D.MeshModel.HMesh();
 
+
     return mesh;
 };
