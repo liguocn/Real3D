@@ -6,6 +6,7 @@ var InnerSpaceDesign = require("./InnerSpaceDesign");
 var PersonalHomePage = require("./PersonalHomePage");
 var GeneralDesign = require("./GeneralDesign");
 var GeneralDesignEdit = require("./GeneralDesignEdit");
+var Inspector = require("./Inspector");
 
 /* GET home page. */
 router.get("/", function (req, res) {
@@ -61,5 +62,7 @@ router.get("/designshow", function (req, res) {
     "use strict";
     res.render('DesignShow');
 });
+
+router.get("/inspector", Inspector.enter);
 
 module.exports = router;

@@ -1,0 +1,47 @@
+.centerleft
+{
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+.centerleft .centerright
+{
+    float: left;
+    position: relative;
+    left: -50%;
+}
+
+body
+{
+    background-color: rgb(222, 222, 222);
+    /*display: block;*/
+}
+
+.maincontainer
+{
+    width: 1024px;
+}
+
+.maincontainer .menubar
+{
+    width: 100%
+    height: 100px;
+}
+
+.maincontainer .menubar .menuitem
+{
+    font-size: x-large;
+    color: rgb(157, 41, 50);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.maincontainer .designitem
+{
+    font-size: x-large;
+    color: rgb(15, 41, 150);
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+

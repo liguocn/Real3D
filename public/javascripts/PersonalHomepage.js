@@ -9,6 +9,11 @@ function enterGeneralDesign() {
     window.location.href = "/generaldesign";
 }
 
+function enterInspector() {
+    "use strict";
+    window.location.href = "/inspector";
+}
+
 function logOut() {
     "use strict";
     console.log("log out");
