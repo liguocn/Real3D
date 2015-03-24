@@ -170,16 +170,59 @@ REAL3D.MeshModel.HFace.prototype.setNormal = function (fNormal) {
     this.normal = fNormal;
 };
 
+REAL3D.MeshModel.EdgeMap = function () {
+    "use strict";
+    this.edges = [];
+};
+
+REAL3D.MeshModel.EdgeMap.prototype.createEdge = function (vertStart, vertEnd) {
+    "use strict";
+    var vertexEdges, vertStartId, vertEndId, eid, res;
+    vertStartId = vertStart.getId();
+    vertEndId = vertEnd.getId();
+    res = {
+        isNew: true,
+        edge: null
+    };
+    if (this.edges[vertStartId] === undefined) {
+        res.isNew = true;
+        this.edges[vertStartId] = [];
+        res.edge = new REAL3D.MeshModel.HEdge();
+        res.edge.setVertex(vertEnd);
+        this.edges[vertStartId].push({vertId: vertEndId, edge: res.edge});
+    } else {
+        vertexEdges = this.edges[vertStartId];
+        res.isNew = true;
+        for (eid = 0; eid < vertexEdges.length; eid++) {
+            if (vertexEdges[eid].vertId === vertEndId) {
+                res.edge = vertexEdges[eid].edge;
+                res.isNew = false;
+                break;
+            }
+        }
+        if (res.isNew) {
+            res.edge = new REAL3D.MeshModel.HEdge();
+            res.edge.setVertex(vertEnd);
+            vertexEdges.push({vertId: vertEndId, edge: res.edge});
+        }
+    }
+    return res;
+};
+
 REAL3D.MeshModel.HMesh = function () {
     "use strict";
     this.vertices = [];
     this.edges = [];
     this.faces = [];
+    this.edgeMap = new REAL3D.MeshModel.EdgeMap();
+    this.vertexNewId = 0;
+    this.edgeNewId = 0;
+    this.faceNewId = 0;
 };
 
-REAL3D.MeshModel.HMesh.prototype.getVertex = function (vId) {
+REAL3D.MeshModel.HMesh.prototype.getVertex = function (index) {
     "use strict";
-    return this.vertices[vId];
+    return this.vertices[index];
 };
 
 REAL3D.MeshModel.HMesh.prototype.getVertexCount = function () {
@@ -187,9 +230,9 @@ REAL3D.MeshModel.HMesh.prototype.getVertexCount = function () {
     return this.vertices.length;
 };
 
-REAL3D.MeshModel.HMesh.prototype.getEdge = function (eId) {
+REAL3D.MeshModel.HMesh.prototype.getEdge = function (index) {
     "use strict";
-    return this.edges[eId];
+    return this.edges[index];
 };
 
 REAL3D.MeshModel.HMesh.prototype.getEdgeCount = function () {
@@ -197,9 +240,9 @@ REAL3D.MeshModel.HMesh.prototype.getEdgeCount = function () {
     return this.edges.length;
 };
 
-REAL3D.MeshModel.HMesh.prototype.getFace = function (fId) {
+REAL3D.MeshModel.HMesh.prototype.getFace = function (index) {
     "use strict";
-    return this.faces[fId];
+    return this.faces[index];
 };
 
 REAL3D.MeshModel.HMesh.prototype.getFaceCount = function () {
@@ -211,3 +254,64 @@ REAL3D.MeshModel.HMesh.prototype.updateNormal = function () {
     "use strict";
     console.log("  updateNormal");
 };
+
+//primitive operations
+REAL3D.MeshModel.HMesh.prototype.insertVertex = function (vertPos) {
+    "use strict";
+    var newVertex;
+    newVertex = new REAL3D.MeshModel.HVertex();
+    newVertex.setPosition(vertPos);
+    newVertex.setId(this.vertexNewId);
+    this.vertexNewId++;
+    return newVertex;
+};
+
+// REAL3D.MeshModel.HMesh.prototype.deleteVertex = function (vertex) {
+//     "use strict";
+// };
+
+REAL3D.MeshModel.HMesh.prototype.insertEdge = function (vertStart, vertEnd) {
+    "use strict";
+    var res = this.edgeMap.createEdge(vertStart, vertEnd);
+    if (res.isNew) {
+        this.edgeNewId++;
+        this.edges.push(res.edge);
+        vertStart.setEdge(res.edge);
+    }
+    return res.edge;
+};
+
+// REAL3D.MeshModel.HMesh.prototype.deleteEdge = function (edge) {
+//     "use strict";
+// };
+
+REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
+    "use strict";
+    if (vertices.length < 3) {
+        return null;
+    }
+    var newFace, vertCount, innerEdges, vid, eid, curEdge, pairEdge;
+    newFace = new REAL3D.MeshModel.HFace();
+    newFace.setId(this.faceNewId);
+    this.faceNewId++;
+    this.faces.push(newFace);
+    innerEdges = [];
+    vertCount = vertices.length;
+    for (vid = 0; vid < vertCount; vid++) {
+        curEdge = this.insertEdge(vertices[vid], vertices[(vid + 1) % vertCount]);
+        innerEdges.push(curEdge);
+        pairEdge = this.insertEdge(vertices[(vid + 1) % vertCount], vertices[vid]);
+        curEdge.setPair(pairEdge);
+        pairEdge.setPair(curEdge);
+    }
+    for (eid = 0; eid < vertCount; eid++) {
+        innerEdges[eid].setNext(innerEdges[(eid + 1) % vertCount]);
+        innerEdges[(eid + 1) % vertCount].setPre(innerEdges[eid]);
+    }
+    newFace.setEdge(innerEdges[0]);
+    return newFace;
+};
+
+// REAL3D.MeshModel.HMesh.prototype.deleteFace = function (face) {
+//     "use strict";
+// };
