@@ -315,3 +315,11 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
 // REAL3D.MeshModel.HMesh.prototype.deleteFace = function (face) {
 //     "use strict";
 // };
+
+REAL3D.MeshModel.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ, segX, segY, segZ) {
+    "use strict";
+    var mesh;
+    mesh = new REAL3D.MeshModel.HMesh();
+
+    return mesh;
+};
