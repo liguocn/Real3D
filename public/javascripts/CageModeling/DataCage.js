@@ -57,3 +57,13 @@ REAL3D.CageModeling.CageData.releaseData = function () {
 REAL3D.CageModeling.CageData.saveData = function () {
     "use strict";
 };
+
+REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
+    "use strict";
+    if (this.cageModel !== null) {
+        this.cageModel.remove();
+        this.cageModel = null;
+    }
+    this.cageMesh = REAL3D.MeshModel.createBoxMesh(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
+    this.draw();
+};

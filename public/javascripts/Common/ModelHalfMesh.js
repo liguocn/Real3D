@@ -31,7 +31,7 @@ REAL3D.MeshModel.HVertex.prototype.getPosition = function () {
 
 REAL3D.MeshModel.HVertex.prototype.setPosition = function (vPos) {
     "use strict";
-    this.position = vPos;
+    this.position = vPos.copyTo();
 };
 
 REAL3D.MeshModel.HVertex.prototype.getNormal = function () {
@@ -41,7 +41,7 @@ REAL3D.MeshModel.HVertex.prototype.getNormal = function () {
 
 REAL3D.MeshModel.HVertex.prototype.setNormal = function (vNormal) {
     "use strict";
-    this.normal = vNormal;
+    this.normal = vNormal.copyTo();
 };
 
 REAL3D.MeshModel.HVertex.prototype.getColor = function () {
@@ -51,7 +51,7 @@ REAL3D.MeshModel.HVertex.prototype.getColor = function () {
 
 REAL3D.MeshModel.HVertex.prototype.setColor = function (vColor) {
     "use strict";
-    this.color = vColor;
+    this.color = vColor.copyTo();
 };
 
 REAL3D.MeshModel.HVertex.prototype.getTexCoord = function () {
@@ -61,7 +61,7 @@ REAL3D.MeshModel.HVertex.prototype.getTexCoord = function () {
 
 REAL3D.MeshModel.HVertex.prototype.setTexCoord = function (vTexCoord) {
     "use strict";
-    this.texCoord = vTexCoord;
+    this.texCoord = vTexCoord.copyTo();
 };
 
 REAL3D.MeshModel.HVertex.prototype.getEdge = function () {
@@ -167,7 +167,7 @@ REAL3D.MeshModel.HFace.prototype.getNormal = function () {
 
 REAL3D.MeshModel.HFace.prototype.setNormal = function (fNormal) {
     "use strict";
-    this.normal = fNormal;
+    this.normal = fNormal.copyTo();
 };
 
 REAL3D.MeshModel.EdgeMap = function () {
@@ -263,6 +263,7 @@ REAL3D.MeshModel.HMesh.prototype.insertVertex = function (vertPos) {
     newVertex.setPosition(vertPos);
     newVertex.setId(this.vertexNewId);
     this.vertexNewId++;
+    this.vertices.push(newVertex);
     return newVertex;
 };
 
@@ -309,6 +310,7 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
         innerEdges[(eid + 1) % vertCount].setPre(innerEdges[eid]);
     }
     newFace.setEdge(innerEdges[0]);
+    this.faces.push(newFace);
     return newFace;
 };
 
@@ -316,11 +318,60 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
 //     "use strict";
 // };
 
-REAL3D.MeshModel.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ, segX, segY, segZ) {
+REAL3D.MeshModel.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
     "use strict";
-    var mesh;
+    var mesh, xStart, xEnd, yStart, yEnd, zStart, zEnd, faceVertices;
+    xStart = cenPosX - lenX / 2;
+    xEnd = xStart + lenX;
+    yStart = cenPosY - lenY / 2;
+    yEnd = yStart + lenY;
+    zStart = cenPosZ - lenZ / 2;
+    zEnd = zStart + lenZ;
     mesh = new REAL3D.MeshModel.HMesh();
-
+    mesh.insertVertex(new REAL3D.Vector3(xStart, yStart, zStart));
+    mesh.insertVertex(new REAL3D.Vector3(xStart, yStart, zEnd));
+    mesh.insertVertex(new REAL3D.Vector3(xEnd, yStart, zEnd));
+    mesh.insertVertex(new REAL3D.Vector3(xEnd, yStart, zStart));
+    mesh.insertVertex(new REAL3D.Vector3(xStart, yEnd, zStart));
+    mesh.insertVertex(new REAL3D.Vector3(xStart, yEnd, zEnd));
+    mesh.insertVertex(new REAL3D.Vector3(xEnd, yEnd, zEnd));
+    mesh.insertVertex(new REAL3D.Vector3(xEnd, yEnd, zStart));
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(0));
+    faceVertices.push(mesh.getVertex(1));
+    faceVertices.push(mesh.getVertex(5));
+    faceVertices.push(mesh.getVertex(4));
+    mesh.insertFace(faceVertices);
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(1));
+    faceVertices.push(mesh.getVertex(2));
+    faceVertices.push(mesh.getVertex(6));
+    faceVertices.push(mesh.getVertex(5));
+    mesh.insertFace(faceVertices);
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(2));
+    faceVertices.push(mesh.getVertex(3));
+    faceVertices.push(mesh.getVertex(7));
+    faceVertices.push(mesh.getVertex(6));
+    mesh.insertFace(faceVertices);
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(0));
+    faceVertices.push(mesh.getVertex(4));
+    faceVertices.push(mesh.getVertex(7));
+    faceVertices.push(mesh.getVertex(3));
+    mesh.insertFace(faceVertices);
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(4));
+    faceVertices.push(mesh.getVertex(5));
+    faceVertices.push(mesh.getVertex(6));
+    faceVertices.push(mesh.getVertex(7));
+    mesh.insertFace(faceVertices);
+    faceVertices = [];
+    faceVertices.push(mesh.getVertex(0));
+    faceVertices.push(mesh.getVertex(3));
+    faceVertices.push(mesh.getVertex(2));
+    faceVertices.push(mesh.getVertex(1));
+    mesh.insertFace(faceVertices);
 
     return mesh;
 };

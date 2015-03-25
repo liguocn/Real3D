@@ -7,12 +7,12 @@ REAL3D.InnerSpaceDesignEdit.EditWallUI = {
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.changeWallThick = function () {
     "use strict";
-    REAL3D.InnerSpaceDesignEdit.WallData.updateWallThick($('#wallThick').val());
+    REAL3D.InnerSpaceDesignEdit.WallData.updateWallThick(parseFloat($('#wallThick').val()));
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.changeWallHeight = function () {
     "use strict";
-    REAL3D.InnerSpaceDesignEdit.WallData.updateWallHeight($('#wallHeight').val());
+    REAL3D.InnerSpaceDesignEdit.WallData.updateWallHeight(parseFloat($('#wallHeight').val()));
 };
 
 REAL3D.InnerSpaceDesignEdit.EditWallUI.switchEditModeToCreate = function () {

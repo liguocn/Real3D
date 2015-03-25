@@ -3,11 +3,20 @@
 
 REAL3D.CageModeling.CreateCageState = {
     light: null,
-    refFrame: null
+    refFrame: null,
+    boxCenPos: null,
+    boxSize: null
 };
 
 REAL3D.CageModeling.CreateCageState.enter = function () {
     "use strict";
+    //init data
+    if (this.boxCenPos === null) {
+        this.boxCenPos = new REAL3D.Vector3(0, 0, 0);
+    }
+    if (this.boxSize === null) {
+        this.boxSize = new REAL3D.Vector3(100, 100, 100);
+    }
     console.log("enter CageModeling.CreateCageState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.CreateCageControl);
     REAL3D.CageModeling.CreateCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
@@ -54,95 +63,25 @@ REAL3D.CageModeling.CreateCageState.setupRefFrame = function () {
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
 
-    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord;
-    spaceDist = 250;
-    maxDist = 1000;
-    lineCount = maxDist / spaceDist;
-
-    material = new THREE.LineBasicMaterial({color: 0x999999});
-
+    var maxDist, material, geometry, line;
+    maxDist = 128;
+    material = new THREE.LineBasicMaterial({color: 0xff0000});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(-maxDist, 0, 0), new THREE.Vector3(maxDist, 0, 0));
-    line = new THREE.Line(geometry, material);
-    this.refFrame.add(line);
-    geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, -maxDist, 0), new THREE.Vector3(0, maxDist, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(maxDist, 0, 0));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
 
+    material = new THREE.LineBasicMaterial({color: 0x00ff00});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, 0, -maxDist), new THREE.Vector3(0, 0, maxDist));
-    line = new THREE.Line(geometry, material);
-    this.refFrame.add(line);
-    geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(-maxDist, 0, 0), new THREE.Vector3(maxDist, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, maxDist, 0));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
 
+    material = new THREE.LineBasicMaterial({color: 0x0000ff});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, -maxDist, 0), new THREE.Vector3(0, maxDist, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, maxDist));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
-    geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, 0, -maxDist), new THREE.Vector3(0, 0, maxDist));
-    line = new THREE.Line(geometry, material);
-    this.refFrame.add(line);
-
-    material = new THREE.LineBasicMaterial({color: 0xbbbbbb});
-    for (lid = 1; lid <= lineCount; lid++) {
-        coord = lid * spaceDist;
-
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(coord, -maxDist, 0), new THREE.Vector3(coord, maxDist, 0));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-coord, -maxDist, 0), new THREE.Vector3(-coord, maxDist, 0));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-maxDist, coord, 0), new THREE.Vector3(maxDist, coord, 0));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-maxDist, -coord, 0), new THREE.Vector3(maxDist, -coord, 0));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-maxDist, 0, coord), new THREE.Vector3(maxDist, 0, coord));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-maxDist, 0, -coord), new THREE.Vector3(maxDist, 0, -coord));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(coord, 0, -maxDist), new THREE.Vector3(coord, 0, maxDist));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(-coord, 0, -maxDist), new THREE.Vector3(-coord, 0, maxDist));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, coord, -maxDist), new THREE.Vector3(0, coord, maxDist));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, -coord, -maxDist), new THREE.Vector3(0, -coord, maxDist));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, -maxDist, coord), new THREE.Vector3(0, maxDist, coord));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, -maxDist, -coord), new THREE.Vector3(0, maxDist, -coord));
-        line = new THREE.Line(geometry, material);
-        this.refFrame.add(line);
-    }
 };
 
 REAL3D.CageModeling.CreateCageState.releaseRefFrame = function () {

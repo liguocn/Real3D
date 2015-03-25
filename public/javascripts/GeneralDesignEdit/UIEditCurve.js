@@ -59,7 +59,7 @@ REAL3D.GeneralDesignEdit.EditCurveUI.removeReturnButton = function () {
 REAL3D.GeneralDesignEdit.EditCurveUI.changeSmoothValue = function () {
     "use strict";
     var uiSmoothValue, validSmoothValue;
-    uiSmoothValue = $('#smoothValue').val();
+    uiSmoothValue = parseFloat($('#smoothValue').val());
     validSmoothValue = uiSmoothValue * this.maxSmoothValue;
     REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue(validSmoothValue);
 };

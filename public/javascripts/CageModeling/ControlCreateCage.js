@@ -59,6 +59,19 @@ REAL3D.CageModeling.CreateCageControl.mouseUp = function (e) {
     this.isMouseDown = false;
 };
 
+REAL3D.CageModeling.CreateCageControl.keyPress = function (e) {
+    "use strict";
+    if (e.which === 116 || e.which === 84) {
+        this.switchTransformMode(REAL3D.CageModeling.TransformMode.TRANSLATE);
+    } else if (e.which === 114 || e.which === 82) {
+        this.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+    } else if (e.which === 115 || e.which === 83) {
+        this.switchTransformMode(REAL3D.CageModeling.TransformMode.SCALE);
+    } else if (e.which === 110 || e.which === 78) {
+        this.resetView()
+    }
+};
+
 REAL3D.CageModeling.CreateCageControl.switchTransformMode = function (transformMode) {
     "use strict";
     this.transformMode = transformMode;
@@ -86,7 +99,7 @@ REAL3D.CageModeling.CreateCageControl.zoomCamera = function (mousePosX, mousePos
     "use strict";
     var worldDifY;
     worldDifY = mousePosY - this.mouseMovePos.y;
-    this.camera.translateZ(worldDifY * 5);
+    this.camera.translateZ(worldDifY * 2);
 };
 
 REAL3D.CageModeling.CreateCageControl.resetView = function () {
