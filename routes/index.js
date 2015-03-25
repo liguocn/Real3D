@@ -6,11 +6,8 @@ var InnerSpaceDesign = require("./InnerSpaceDesign");
 var PersonalHomePage = require("./PersonalHomePage");
 var GeneralDesign = require("./GeneralDesign");
 var GeneralDesignEdit = require("./GeneralDesignEdit");
-<<<<<<< HEAD
 var Inspector = require("./Inspector");
-=======
 var CageModeling = require("./CageModeling");
->>>>>>> remotes/origin/master
 
 /* GET home page. */
 router.get("/", function (req, res) {

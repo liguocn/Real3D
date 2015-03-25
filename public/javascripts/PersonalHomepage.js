@@ -9,11 +9,10 @@ function enterGeneralDesign() {
     window.location.href = "/generaldesign";
 }
 
-<<<<<<< HEAD
 function enterInspector() {
     "use strict";
     window.location.href = "/inspector";
-=======
+
 function enterCageModeling() {
     "use strict";
     var subForm, item1, item2, designName;
