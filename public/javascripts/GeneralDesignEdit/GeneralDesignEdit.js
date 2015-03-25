@@ -29,6 +29,7 @@ REAL3D.GeneralDesignEdit.init = function (winW, winH, canvasElement) {
     canvasElement.style.outline = "none";
 
     //init user data: not done
+    REAL3D.GeneralDesignEdit.CurveData.init(null);
 };
 
 REAL3D.GeneralDesignEdit.run = function () {
@@ -119,3 +120,16 @@ REAL3D.GeneralDesignEdit.switchControlState = function (controlState) {
     this.controlState = controlState;
     this.controlState.init($(this.canvasElement).offset(), this.winW, this.winH);
 };
+
+REAL3D.GeneralDesignEdit.MouseState = {
+    NONE: 0,
+    CREATINGUSERPOINT: 1,
+    DRAGGINGUSERPOINT: 2,
+    DRAGGINGCANVAS: 3,
+    HITUSERPOINT: 4,
+    HITCANVAS: 5
+};
+
+REAL3D.GeneralDesignEdit.HITRADIUS = 250;
+REAL3D.GeneralDesignEdit.MOVERADIUS = 100;
+REAL3D.GeneralDesignEdit.SMOOTHVALUE = 0.5;

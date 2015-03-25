@@ -2,6 +2,7 @@
 /*global REAL3D, THREE, console, alert, window, document, $ */
 
 REAL3D.GeneralDesignEdit.EditCurveUI = {
+    maxSmoothValue: 0.4
 };
 
 REAL3D.GeneralDesignEdit.EditCurveUI.enter = function () {
@@ -13,18 +14,18 @@ REAL3D.GeneralDesignEdit.EditCurveUI.enter = function () {
     var that = this;
     $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#toolBar');
     $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
-    $('#smoothValue').val(0);
+    $('#smoothValue').val(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue / this.maxSmoothValue);
     $('<hr />').appendTo('#toolBar');
 
     $('<div id="editMode">编辑模式</div>').appendTo('#toolBar');
     $('<div><input type="radio" id="create" name="editRadio">创建</div>').appendTo('#editMode');
     $('#create').get(0).addEventListener("click", function () { that.switchEditModeToCreate(); });
+    $('<div><input type="radio" id="edit" name="editRadio">编辑</div>').appendTo('#editMode');
+    $('#edit').get(0).addEventListener("click", function () { that.switchEditModeToEdit(); });
+    $('<div><input type="radio" id="remove" name="editRadio">删除</div>').appendTo('#editMode');
+    $('#remove').get(0).addEventListener("click", function () { that.switchEditModeToRemove(); });
     $('<div><input type="radio" id="insert" name="editRadio">插入</div>').appendTo('#editMode');
     $('#insert').get(0).addEventListener("click", function () { that.switchEditModeToInsert(); });
-    $('<div><input type="radio" id="delete" name="editRadio">删除</div>').appendTo('#editMode');
-    $('#delete').get(0).addEventListener("click", function () { that.switchEditModeToDelete(); });
-    $('<div><input type="radio" id="merge" name="editRadio">合并</div>').appendTo('#editMode');
-    $('#merge').get(0).addEventListener("click", function () { that.switchEditModeToMerge(); });
     $('<hr />').appendTo('#toolBar');
     $('#create').get(0).checked = true;
 
@@ -55,22 +56,38 @@ REAL3D.GeneralDesignEdit.EditCurveUI.removeReturnButton = function () {
     $('#return').remove();
 };
 
+REAL3D.GeneralDesignEdit.EditCurveUI.changeSmoothValue = function () {
+    "use strict";
+    var uiSmoothValue, validSmoothValue;
+    uiSmoothValue = parseFloat($('#smoothValue').val());
+    validSmoothValue = uiSmoothValue * this.maxSmoothValue;
+    REAL3D.GeneralDesignEdit.EditCurveState.changeSmoothValue(validSmoothValue);
+};
+
+REAL3D.GeneralDesignEdit.EditCurveUI.setSmoothValue = function (smoothValue) {
+    "use strict";
+    $('#smoothValue').val(smoothValue / this.maxSmoothValue);
+};
+
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToCreate = function () {
     "use strict";
-    //REAL3D.GeneralDesignEdit.EditCurveState.switchEditState(REAL3D.GeneralDesignEdit.EditCurveState.EDITSTATE.CREATE);
+    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.CREATE);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
+};
+
+REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToEdit = function () {
+    "use strict";
+    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.EDIT);
+};
+
+REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToRemove = function () {
+    "use strict";
+    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.REMOVE);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };
 
 REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToInsert = function () {
     "use strict";
-    //REAL3D.GeneralDesignEdit.EditCurveState.switchEditState(REAL3D.GeneralDesignEdit.EditCurveState.EDITSTATE.INSERT);
-};
-
-REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToDelete = function () {
-    "use strict";
-    //REAL3D.GeneralDesignEdit.EditCurveState.switchEditState(REAL3D.GeneralDesignEdit.EditCurveState.EDITSTATE.DELETE);
-};
-
-REAL3D.GeneralDesignEdit.EditCurveUI.switchEditModeToMerge = function () {
-    "use strict";
-    //REAL3D.GeneralDesignEdit.EditCurveState.switchEditState(REAL3D.GeneralDesignEdit.EditCurveState.EDITSTATE.MERGE);
+    REAL3D.GeneralDesignEdit.EditCurveState.switchCurveEditMode(REAL3D.GeneralDesignEdit.EditCurveState.CurveEditMode.INSERT);
+    this.setSmoothValue(REAL3D.GeneralDesignEdit.EditCurveState.currentSmoothValue);
 };

@@ -159,7 +159,7 @@ REAL3D.CommonModel.UserPointTree.prototype = {
 
     insertPointOnEdge: function (worldPosX, worldPosY) {
         "use strict";
-        var userPointLen, assistFlag, pid, neighbors, neigLen, nid, curPoint, neigPoint, insertPos, lineLen0, lineLen1, lineLen2, deltaLen, breakFlag, newUserPoint;
+        var userPointLen, assistFlag, pid, neighbors, neigLen, nid, curPoint, neigPoint, insertPos, lineLen0, lineLen1, lineLen2, deltaLen, insertId, newUserPoint;
         insertPos = new REAL3D.Vector2(worldPosX, worldPosY);
         userPointLen = this.points.length;
         this.updateAssistId();
@@ -168,9 +168,9 @@ REAL3D.CommonModel.UserPointTree.prototype = {
             assistFlag[pid] = 1;
             this.points[pid].updateNeighborOrder();
         }
-        breakFlag = false;
+        insertId = -1;
         for (pid = 0; pid < userPointLen; pid++) {
-            if (breakFlag) {
+            if (insertId !== -1) {
                 break;
             }
             curPoint = this.points[pid];
@@ -198,13 +198,14 @@ REAL3D.CommonModel.UserPointTree.prototype = {
                         curPoint.updateNeighborOrder();
                         neigPoint.updateNeighborOrder();
 
-                        breakFlag = true;
+                        insertId = this.points.length - 1;
                         break;
                     }
                 }
             }
             assistFlag[pid] = -1;
         }
+        return insertId;
     },
 
     setPosition : function (index, worldPosX, worldPosY) {

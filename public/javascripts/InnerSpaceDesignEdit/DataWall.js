@@ -187,3 +187,27 @@ REAL3D.InnerSpaceDesignEdit.WallData.updateWallHeight = function (height) {
     this.wallHeight = height;
     this.draw();
 };
+
+REAL3D.InnerSpaceDesignEdit.WallData.removeUserPoint = function (userPointIndex) {
+    "use strict";
+    if (userPointIndex >= 0 || userPointIndex < this.userPointTree.points.length) {
+        this.userPointTree.points[userPointIndex].publish("remove");
+        this.userPointTree.deletePoint(userPointIndex);
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.WallData.mergeUserPoint = function (userPointIndex) {
+    "use strict";
+    if (userPointIndex >= 0 || userPointIndex < this.userPointTree.points.length) {
+        this.releaseDraw();
+        this.userPointTree.mergePoint(userPointIndex);
+        this.draw();
+    }
+};
+
+REAL3D.InnerSpaceDesignEdit.WallData.insertUserPoint = function (worldPosX, worldPosY) {
+    "use strict";
+    this.releaseDraw();
+    this.userPointTree.insertPointOnEdge(worldPosX, worldPosY);
+    this.draw();
+};

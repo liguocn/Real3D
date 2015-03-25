@@ -81,7 +81,20 @@ body
     margin-bottom: 10px;
 }
 
-.leftContainer .button
+.leftContainer .topButton
+{
+    /*margin-bottom: 8px;*/
+    margin-right: 8px;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    font-size: 10pt;
+    border-radius: 16px;
+    color: rgb(0, 64, 64) ;
+    background-color: rgb(195, 195, 200);
+}
+
+.leftContainer .appButton
 {
     margin-bottom: 10px;
     width: 70px;
@@ -93,25 +106,66 @@ body
     background-color: rgb(195, 195, 200);
 }
 
-.leftContainer .curve
+.leftContainer .createCage
 {
     font-size: 16pt;
     color: rgb(0, 64, 64);
     border-bottom: 10px;
 }
 
-.leftContainer .curve .parmNumCtl
+.leftContainer .createCage .parmNumCtl
 {
-    width: 45px;
+    width: 64px;
     height: 16px;
     background-color: rgb(222, 222, 222);
     color: rgb(0, 64, 64);
     vertical-align: middle;
-    margin-left: 3px;
+    margin-left: 10px;
+    border-bottom: 10px;
+    border-radius: 4px;
+}
+
+.leftContainer .createCage .button
+{
+    width: 70px;
+    height: 32px;
+    text-align: center;
+    font-size: 16pt;
+    border-radius: 8px;
+    color: rgb(0, 64, 64);
+    background-color: rgb(195, 195, 200); 
+    vertical-align: middle;
+}
+
+.leftContainer .createCage .selectType
+{
+    font-size: 16pt;
+    border-radius: 4px;
+    color: rgb(0, 64, 64);
+    background-color: rgb(210, 210, 210);
+    vertical-align: middle;
+}
+
+.leftContainer .editCage
+{
+    font-size: 16pt;
+    color: rgb(0, 64, 64);
     border-bottom: 10px;
 }
 
-.leftContainer .curve .button
+.leftContainer .editCage .parmNumCtl
+{
+    width: 64px;
+    height: 16px;
+    background-color: rgb(222, 222, 222);
+    color: rgb(0, 64, 64);
+    vertical-align: middle;
+    margin-left: 10px;
+    border-bottom: 10px;
+    border-radius: 4px;
+}
+
+.leftContainer .editCage .button
 {
     width: 70px;
     height: 32px;

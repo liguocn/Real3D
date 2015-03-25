@@ -65,12 +65,12 @@ REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToOverheadWalkMode = function () {
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.changeOverheadCameraHeight = function () {
     "use strict";
-    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraHeight($('#cameraHeight').val());
+    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraHeight(parseFloat($('#cameraHeight').val()));
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.changeOverheadCameraAngle = function () {
     "use strict";
-    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraAngle(0.0174532925 * $('#cameraAngle').val());
+    REAL3D.InnerSpaceDesignEdit.OverheadView.changeCameraAngle(0.0174532925 * parseFloat(($('#cameraAngle').val())));
 };
 
 REAL3D.InnerSpaceDesignEdit.EditRoamUI.switchToPathConstrainedWalkMode = function () {

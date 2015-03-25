@@ -9,9 +9,27 @@ function enterGeneralDesign() {
     window.location.href = "/generaldesign";
 }
 
+<<<<<<< HEAD
 function enterInspector() {
     "use strict";
     window.location.href = "/inspector";
+=======
+function enterCageModeling() {
+    "use strict";
+    var subForm, item1, item2, designName;
+    designName = 'CageTest';
+    subForm = $('<form action="/cagemodeling" method="get"></form>');
+    item1 = $('<input type="text" id="designName" name="designName">');
+    if (designName !== null) {
+        item1.val(designName);
+    }
+    item2 = $('<button type="submit">j</button>');
+    item1.appendTo(subForm);
+    item2.appendTo(subForm);
+    console.log("subForm: ", subForm);
+    console.log("designName: ", designName);
+    subForm.submit();
+>>>>>>> remotes/origin/master
 }
 
 function logOut() {
