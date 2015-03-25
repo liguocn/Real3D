@@ -67,8 +67,8 @@ REAL3D.CageModeling.CreateCageUI.normalizeView = function () {
 REAL3D.CageModeling.CreateCageUI.enterEditCageUI = function () {
     "use strict";
     this.exit();
-    //REAL3D.CageModeling.enterState(REAL3D.CageModeling.HomeState);
-    //REAL3D.CageModeling.HomeUI.enter();
+    REAL3D.CageModeling.enterState(REAL3D.CageModeling.EditCageState);
+    REAL3D.CageModeling.EditCageUI.enter();
 };
 
 REAL3D.CageModeling.CreateCageUI.changeCreateType = function () {

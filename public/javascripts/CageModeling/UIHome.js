@@ -66,6 +66,8 @@ REAL3D.CageModeling.HomeUI.enterCreateCage = function () {
 REAL3D.CageModeling.HomeUI.enterEditCage = function () {
     "use strict";
     this.exit();
+    REAL3D.CageModeling.enterState(REAL3D.CageModeling.EditCageState);
+    REAL3D.CageModeling.EditCageUI.enter();
 };
 
 
