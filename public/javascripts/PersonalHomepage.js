@@ -28,7 +28,6 @@ function enterCageModeling() {
     console.log("subForm: ", subForm);
     console.log("designName: ", designName);
     subForm.submit();
->>>>>>> remotes/origin/master
 }
 
 function logOut() {
