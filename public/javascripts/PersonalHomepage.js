@@ -12,6 +12,7 @@ function enterGeneralDesign() {
 function enterInspector() {
     "use strict";
     window.location.href = "/inspector";
+}
 
 function enterCageModeling() {
     "use strict";
