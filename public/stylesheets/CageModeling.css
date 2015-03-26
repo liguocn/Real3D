@@ -177,6 +177,18 @@ body
     vertical-align: middle;
 }
 
+.leftContainer .editCage .applyButton
+{
+    width: 50px;
+    height: 24px;
+    text-align: center;
+    font-size: 12pt;
+    border-radius: 8px;
+    color: rgb(0, 64, 64);
+    background-color: rgb(205, 205, 205); 
+    vertical-align: middle;
+}
+
 .mainContainer
 {
     float: right;

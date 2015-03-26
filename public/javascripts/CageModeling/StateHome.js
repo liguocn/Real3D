@@ -10,7 +10,7 @@ REAL3D.CageModeling.HomeState.enter = function () {
     "use strict";
     console.log("enter CageModeling.HomeState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.HomeControl);
-    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.ViewMode.ROTATE);
 
     //setup light
     this.setupLight();

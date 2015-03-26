@@ -125,9 +125,19 @@ REAL3D.CageModeling.MouseState = {
     NONE: 0
 };
 
-REAL3D.CageModeling.TransformMode = {
+REAL3D.CageModeling.ViewMode = {
     NONE: 0,
     TRANSLATE: 1,
     ROTATE: 2,
     SCALE: 3
+};
+
+REAL3D.CageModeling.EditMode = {
+    NONE: 0,
+    EDIT: 1,
+    EXTRUDE: 2,
+    SPLIT: 3,
+    DELETE: 4,
+    MERGE: 5,
+    CONNECT: 6
 };

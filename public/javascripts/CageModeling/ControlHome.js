@@ -6,7 +6,7 @@ REAL3D.CageModeling.HomeControl = {
     winW: null,
     winH: null,
     camera: null,
-    transformMode: null,
+    viewMode: null,
     isMouseDown: null,
     mouseMovePos: null
 };
@@ -43,11 +43,11 @@ REAL3D.CageModeling.HomeControl.mouseMove = function (e) {
         var curPosX, curPosY;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        if (this.transformMode === REAL3D.CageModeling.TransformMode.TRANSLATE) {
+        if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
             this.translateCamera(curPosX, curPosY);
-        } else if (this.transformMode === REAL3D.CageModeling.TransformMode.ROTATE) {
+        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
             this.rotateScene(curPosX, curPosY);
-        } else if (this.transformMode === REAL3D.CageModeling.TransformMode.SCALE) {
+        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
             this.zoomCamera(curPosX, curPosY);
         }
         this.mouseMovePos.set(curPosX, curPosY);
@@ -59,9 +59,9 @@ REAL3D.CageModeling.HomeControl.mouseUp = function (e) {
     this.isMouseDown = false;
 };
 
-REAL3D.CageModeling.HomeControl.switchTransformMode = function (transformMode) {
+REAL3D.CageModeling.HomeControl.switchTransformMode = function (viewMode) {
     "use strict";
-    this.transformMode = transformMode;
+    this.viewMode = viewMode;
 };
 
 REAL3D.CageModeling.HomeControl.translateCamera = function (mousePosX, mousePosY) {

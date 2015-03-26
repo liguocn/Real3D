@@ -19,7 +19,7 @@ REAL3D.CageModeling.CreateCageState.enter = function () {
     }
     console.log("enter CageModeling.CreateCageState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.CreateCageControl);
-    REAL3D.CageModeling.CreateCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+    REAL3D.CageModeling.CreateCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
 
     //setup light
     this.setupLight();

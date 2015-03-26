@@ -6,7 +6,7 @@ REAL3D.CageModeling.CreateCageControl = {
     winW: null,
     winH: null,
     camera: null,
-    transformMode: null,
+    viewMode: null,
     isMouseDown: null,
     mouseMovePos: null
 };
@@ -43,11 +43,11 @@ REAL3D.CageModeling.CreateCageControl.mouseMove = function (e) {
         var curPosX, curPosY;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        if (this.transformMode === REAL3D.CageModeling.TransformMode.TRANSLATE) {
+        if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
             this.translateCamera(curPosX, curPosY);
-        } else if (this.transformMode === REAL3D.CageModeling.TransformMode.ROTATE) {
+        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
             this.rotateScene(curPosX, curPosY);
-        } else if (this.transformMode === REAL3D.CageModeling.TransformMode.SCALE) {
+        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
             this.zoomCamera(curPosX, curPosY);
         }
         this.mouseMovePos.set(curPosX, curPosY);
@@ -62,19 +62,19 @@ REAL3D.CageModeling.CreateCageControl.mouseUp = function (e) {
 REAL3D.CageModeling.CreateCageControl.keyPress = function (e) {
     "use strict";
     if (e.which === 116 || e.which === 84) {
-        this.switchTransformMode(REAL3D.CageModeling.TransformMode.TRANSLATE);
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.TRANSLATE);
     } else if (e.which === 114 || e.which === 82) {
-        this.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
     } else if (e.which === 115 || e.which === 83) {
-        this.switchTransformMode(REAL3D.CageModeling.TransformMode.SCALE);
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.SCALE);
     } else if (e.which === 110 || e.which === 78) {
-        this.resetView()
+        this.resetView();
     }
 };
 
-REAL3D.CageModeling.CreateCageControl.switchTransformMode = function (transformMode) {
+REAL3D.CageModeling.CreateCageControl.switchViewMode = function (viewMode) {
     "use strict";
-    this.transformMode = transformMode;
+    this.viewMode = viewMode;
 };
 
 REAL3D.CageModeling.CreateCageControl.translateCamera = function (mousePosX, mousePosY) {

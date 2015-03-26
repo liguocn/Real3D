@@ -10,7 +10,8 @@ REAL3D.CageModeling.EditCageState.enter = function () {
     "use strict";
     console.log("enter CageModeling.EditCageState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.EditCageControl);
-    REAL3D.CageModeling.EditCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+    REAL3D.CageModeling.EditCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
+    REAL3D.CageModeling.EditCageControl.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
 
     //setup light
     this.setupLight();
