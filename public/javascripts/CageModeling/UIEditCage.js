@@ -237,6 +237,11 @@ REAL3D.CageModeling.EditCageUI.changeExtrudeDistance = function () {
     "use strict";
 };
 
+REAL3D.CageModeling.EditCageUI.setExtrudeDistance = function (dist) {
+    "use strict";
+    
+};
+
 REAL3D.CageModeling.EditCageUI.applyExtrude = function () {
     "use strict";
 };

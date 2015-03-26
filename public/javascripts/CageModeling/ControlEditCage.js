@@ -9,7 +9,8 @@ REAL3D.CageModeling.EditCageControl = {
     viewMode: null,
     editMode: null,
     isMouseDown: null,
-    mouseMovePos: null
+    mouseMovePos: null,
+    mouseState: null
 };
 
 REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
@@ -26,6 +27,7 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
     }
     this.isMouseDown = false;
     this.mouseMovePos = new THREE.Vector2(0, 0);
+    this.mouseState = REAL3D.CageModeling.MouseState.NONE;
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
@@ -36,6 +38,16 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     curPosY = e.pageY - this.canvasOffset.top;
     this.isMouseDown = true;
     this.mouseMovePos.set(curPosX, curPosY);
+    this.hitDetection(curPosX, curPosY);
+    if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.VERTEX) {
+
+    }
 };
 
 REAL3D.CageModeling.EditCageControl.mouseMove = function (e) {
@@ -44,12 +56,20 @@ REAL3D.CageModeling.EditCageControl.mouseMove = function (e) {
         var curPosX, curPosY;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
-            this.translateCamera(curPosX, curPosY);
-        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
-            this.rotateScene(curPosX, curPosY);
-        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
-            this.zoomCamera(curPosX, curPosY);
+        if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
+            if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
+                this.translateCamera(curPosX, curPosY);
+            } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
+                this.rotateScene(curPosX, curPosY);
+            } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
+                this.zoomCamera(curPosX, curPosY);
+            }
+        } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+
+        } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+
+        } else if (this.mouseState === REAL3D.CageModeling.MouseState.VERTEX) {
+
         }
         this.mouseMovePos.set(curPosX, curPosY);
     }
@@ -58,6 +78,15 @@ REAL3D.CageModeling.EditCageControl.mouseMove = function (e) {
 REAL3D.CageModeling.EditCageControl.mouseUp = function (e) {
     "use strict";
     this.isMouseDown = false;
+    if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.VERTEX) {
+
+    }
 };
 
 REAL3D.CageModeling.EditCageControl.keyPress = function (e) {
@@ -112,4 +141,9 @@ REAL3D.CageModeling.EditCageControl.resetView = function () {
 REAL3D.CageModeling.EditCageControl.switchEditMode = function (editMode) {
     "use strict";
     this.editMode = editMode;
+};
+
+REAL3D.CageModeling.EditCageControl.hitDetection = function (mousePosX, mousePosY) {
+    "use strict";
+    this.mouseState = REAL3D.CageModeling.MouseState.HITCANVAS;
 };

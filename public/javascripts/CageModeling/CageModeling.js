@@ -139,5 +139,14 @@ REAL3D.CageModeling.EditMode = {
     SPLIT: 3,
     DELETE: 4,
     MERGE: 5,
-    CONNECT: 6
+    CONNECT: 6,
+    FILLHOLE: 7
+};
+
+REAL3D.CageModeling.MouseState = {
+    NONE: 0,
+    HITCANVAS: 1,
+    HITFACE: 2,
+    HITEDGE: 3,
+    HITVERTEX: 4
 };
