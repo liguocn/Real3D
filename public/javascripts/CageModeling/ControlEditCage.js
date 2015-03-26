@@ -145,5 +145,13 @@ REAL3D.CageModeling.EditCageControl.switchEditMode = function (editMode) {
 
 REAL3D.CageModeling.EditCageControl.hitDetection = function (mousePosX, mousePosY) {
     "use strict";
-    this.mouseState = REAL3D.CageModeling.MouseState.HITCANVAS;
+    if (REAL3D.CageModeling.CageData.pickVertex(mousePosX, mousePosY)) {
+        this.mouseState = REAL3D.CageModeling.MouseState.HITVERTEX;
+    } else if (REAL3D.CageModeling.CageData.pickEdge(mousePosX, mousePosY)) {
+        this.mouseState = REAL3D.CageModeling.MouseState.HITEDGE;
+    } else if (REAL3D.CageModeling.CageData.pickFace(mousePosX, mousePosY)) {
+        this.mouseState = REAL3D.CageModeling.MouseState.HITFACE;
+    } else {
+        this.mouseState = REAL3D.CageModeling.MouseState.HITCANVAS;
+    }
 };

@@ -3,6 +3,7 @@
 
 REAL3D.CageModeling.CageData = {
     cageMesh: null,
+    pickTool: null,
     cageModel: null,
     drawObject: null
 };
@@ -16,6 +17,10 @@ REAL3D.CageModeling.CageData.init = function (cageData) {
         this.cageMesh = new REAL3D.MeshModel.HMesh();
     }
     //
+    if (this.pickTool === null) {
+        this.pickTool = new REAL3D.PickTool.PickHMesh();
+    }
+    this.pickTool.setMesh(this.cageMesh);
     this.draw();
 };
 
@@ -28,6 +33,10 @@ REAL3D.CageModeling.CageData.draw = function () {
     if (this.cageMesh !== null) {
         this.cageModel = new REAL3D.CageModel.Cage(this.cageMesh, this.drawObject);
     }
+};
+
+REAL3D.CageModeling.CageData.drawPickedObject = function () {
+    "use strict";
 };
 
 REAL3D.CageModeling.CageData.releaseDraw = function () {
@@ -66,4 +75,19 @@ REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ
     }
     this.cageMesh = REAL3D.MeshModel.createBoxMesh(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
     this.draw();
+};
+
+REAL3D.CageModeling.CageData.pickVertex = function (mousePosX, mousePosY) {
+    "use strict";
+    return false;
+};
+
+REAL3D.CageModeling.CageData.pickEdge = function (mousePosX, mousePosY) {
+    "use strict";
+    return false;
+};
+
+REAL3D.CageModeling.CageData.pickFace = function (mousePosX, mousePosY) {
+    "use strict";
+    return false;
 };
