@@ -1,4 +1,4 @@
-var Inspector = require("../models/Inspector");
+var Inspector = require("../models/InspectorInfo");
 
 exports.enter = function (req, res) {
 	"use strict";
