@@ -5,7 +5,8 @@ REAL3D.CageModeling.CageData = {
     cageMesh: null,
     pickTool: null,
     cageModel: null,
-    drawObject: null
+    drawObject: null,
+    pickedObject: null
 };
 
 REAL3D.CageModeling.CageData.init = function (cageData) {
@@ -37,6 +38,30 @@ REAL3D.CageModeling.CageData.draw = function () {
 
 REAL3D.CageModeling.CageData.drawPickedObject = function () {
     "use strict";
+    this.releaseDrawPickedObject();
+    this.pickedObject = new THREE.Object3D();
+    REAL3D.RenderManager.scene.add(this.pickedObject);
+    //draw picked objects
+    var pickedVertex, material, geometry, ball, pid, vPos;
+    if (this.pickTool !== null) {
+        pickedVertex = this.pickTool.getPickedVertex();
+        material = new THREE.MeshBasicMaterial({color: 0xbb6b6b});
+        for (pid = 0; pid < pickedVertex.length; pid++) {
+            vPos = this.cageMesh.getVertex(pickedVertex[pid]).getPosition();
+            geometry = new THREE.SphereGeometry(6, 6, 6);
+            ball = new THREE.Mesh(geometry, material);
+            ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
+            this.pickedObject.add(ball);
+        }
+    }
+};
+
+REAL3D.CageModeling.CageData.releaseDrawPickedObject = function () {
+    "use strict";
+    if (this.pickedObject !== null) {
+        REAL3D.RenderManager.scene.remove(this.pickedObject);
+        this.pickedObject = null;
+    }
 };
 
 REAL3D.CageModeling.CageData.releaseDraw = function () {
@@ -74,20 +99,26 @@ REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ
         this.cageModel = null;
     }
     this.cageMesh = REAL3D.MeshModel.createBoxMesh(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
+    this.pickTool.setMesh(this.cageMesh);
     this.draw();
 };
 
-REAL3D.CageModeling.CageData.pickVertex = function (mousePosX, mousePosY) {
+REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
+    "use strict";
+    if (this.pickTool !== null) {
+        var isPicked = this.pickTool.pickVertex(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        this.drawPickedObject();
+        return isPicked;
+    }
+    return false;
+};
+
+REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
     return false;
 };
 
-REAL3D.CageModeling.CageData.pickEdge = function (mousePosX, mousePosY) {
-    "use strict";
-    return false;
-};
-
-REAL3D.CageModeling.CageData.pickFace = function (mousePosX, mousePosY) {
+REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
     return false;
 };

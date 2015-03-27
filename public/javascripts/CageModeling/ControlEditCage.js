@@ -33,12 +33,14 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
 
 REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     "use strict";
-    var curPosX, curPosY;
+    var curPosX, curPosY, mouseNormPosX, mouseNormPosY;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
     this.isMouseDown = true;
     this.mouseMovePos.set(curPosX, curPosY);
-    this.hitDetection(curPosX, curPosY);
+    mouseNormPosX = curPosX / this.winW * 2 - 1;
+    mouseNormPosY = 1 - curPosY / this.winH * 2;
+    this.hitDetection(mouseNormPosX, mouseNormPosY);
     if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
 
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
@@ -143,13 +145,20 @@ REAL3D.CageModeling.EditCageControl.switchEditMode = function (editMode) {
     this.editMode = editMode;
 };
 
-REAL3D.CageModeling.EditCageControl.hitDetection = function (mousePosX, mousePosY) {
+REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mouseNormPosY) {
     "use strict";
-    if (REAL3D.CageModeling.CageData.pickVertex(mousePosX, mousePosY)) {
+    //console.log("hitDetection");
+    var worldMatrix, projectMatrix, cameraMatrix, cameraProjectMatrix;
+    worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
+    projectMatrix = this.camera.projectionMatrix;
+    cameraMatrix = this.camera.matrixWorld;
+    cameraProjectMatrix = new THREE.Matrix4();
+    cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
+    if (REAL3D.CageModeling.CageData.pickVertex(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
         this.mouseState = REAL3D.CageModeling.MouseState.HITVERTEX;
-    } else if (REAL3D.CageModeling.CageData.pickEdge(mousePosX, mousePosY)) {
+    } else if (REAL3D.CageModeling.CageData.pickEdge(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
         this.mouseState = REAL3D.CageModeling.MouseState.HITEDGE;
-    } else if (REAL3D.CageModeling.CageData.pickFace(mousePosX, mousePosY)) {
+    } else if (REAL3D.CageModeling.CageData.pickFace(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
         this.mouseState = REAL3D.CageModeling.MouseState.HITFACE;
     } else {
         this.mouseState = REAL3D.CageModeling.MouseState.HITCANVAS;

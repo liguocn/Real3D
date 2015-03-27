@@ -46,17 +46,17 @@ REAL3D.CageModeling.CreateCageUI.exit = function () {
 
 REAL3D.CageModeling.CreateCageUI.translateControl = function () {
     "use strict";
-    REAL3D.CageModeling.CreateCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.TRANSLATE);
+    REAL3D.CageModeling.CreateCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.TRANSLATE);
 };
 
 REAL3D.CageModeling.CreateCageUI.rotateControl = function () {
     "use strict";
-    REAL3D.CageModeling.CreateCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.ROTATE);
+    REAL3D.CageModeling.CreateCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
 };
 
 REAL3D.CageModeling.CreateCageUI.scaleControl = function () {
     "use strict";
-    REAL3D.CageModeling.CreateCageControl.switchTransformMode(REAL3D.CageModeling.TransformMode.SCALE);
+    REAL3D.CageModeling.CreateCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.SCALE);
 };
 
 REAL3D.CageModeling.CreateCageUI.normalizeView = function () {
