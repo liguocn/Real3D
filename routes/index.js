@@ -7,6 +7,7 @@ var PersonalHomePage = require("./PersonalHomePage");
 var GeneralDesign = require("./GeneralDesign");
 var GeneralDesignEdit = require("./GeneralDesignEdit");
 var Inspector = require("./Inspector");
+var InspectorEdit = require("./InspectorEdit")
 var CageModeling = require("./CageModeling");
 
 /* GET home page. */
@@ -67,5 +68,7 @@ router.get("/designshow", function (req, res) {
 });
 
 router.get("/inspector", Inspector.enter);
+
+router.get("/inspector/edit", InspectorEdit.enter);
 
 module.exports = router;
