@@ -22,10 +22,6 @@ REAL3D.CageModeling.CageData.init = function (cageData) {
         this.cageMesh = new REAL3D.MeshModel.HMesh();
     }
     //
-    if (this.pickTool === null) {
-        this.pickTool = new REAL3D.PickTool.PickHMesh();
-    }
-    this.pickTool.setMesh(this.cageMesh);
     this.operations = [];
     this.draw();
 };
@@ -52,12 +48,13 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
     this.refObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refObject);
     //draw picked objects
-    var pickedVertex, material, geometry, ball, pid, vPos;
+    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos;
     if (this.pickTool !== null) {
+        pickedMesh = this.pickTool.mesh;
         pickedVertex = this.pickTool.getPickedVertex();
         material = new THREE.MeshBasicMaterial({color: 0xbb6b6b});
         for (pid = 0; pid < pickedVertex.length; pid++) {
-            vPos = this.cageMesh.getVertex(pickedVertex[pid]).getPosition();
+            vPos = pickedMesh.getVertex(pickedVertex[pid]).getPosition();
             geometry = new THREE.SphereGeometry(6, 6, 6);
             ball = new THREE.Mesh(geometry, material);
             ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
@@ -119,7 +116,7 @@ REAL3D.CageModeling.CageData.getCurOperation = function () {
 REAL3D.CageModeling.CageData.previewOperation = function () {
     "use strict";
     if (this.curOperation !== null) {
-        this.previewMesh = this.curOperation.preview();
+        this.previewMesh = this.curOperation.preview(this.pickTool);
         console.log(" previewMesh: ", this.previewMesh);
         this.draw();
     }
@@ -130,6 +127,7 @@ REAL3D.CageModeling.CageData.generateOperation = function () {
     if (this.curOperation !== null) {
         this.previewMesh = null;
         this.cageMesh = this.curOperation.generate();
+        this.pickCageMesh();
         this.operations.push(this.curOperation);
         this.operation = null;
         this.draw();
@@ -159,6 +157,14 @@ REAL3D.CageModeling.CageData.generateOperation = function () {
 //     this.operations.push(createTool);
 //     this.draw();
 // };
+
+REAL3D.CageModeling.CageData.pickCageMesh = function () {
+    "use strict";
+    if (this.pickTool === null) {
+        this.pickTool = new REAL3D.PickTool.PickHMesh();
+    }
+    this.pickTool.setMesh(this.cageMesh);
+};
 
 REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
