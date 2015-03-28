@@ -2,6 +2,16 @@
 /*global REAL3D, THREE, console, alert, window, document, $ */
 
 REAL3D.CageModeling.CreateCageUI = {
+    cenPosX: 0,
+    cenPosY: 0,
+    cenPosZ: 0,
+    boxLenX: 100,
+    boxLenY: 100,
+    boxLenZ: 100,
+    torusInnerRadius: 50,
+    torusOuterRadius: 100,
+    torusRadialSegments: 1,
+    torusCircularSegments: 6
 };
 
 REAL3D.CageModeling.CreateCageUI.enter = function () {
@@ -66,6 +76,7 @@ REAL3D.CageModeling.CreateCageUI.normalizeView = function () {
 
 REAL3D.CageModeling.CreateCageUI.enterEditCageUI = function () {
     "use strict";
+    REAL3D.CageModeling.CageData.generateOperation();
     this.exit();
     REAL3D.CageModeling.enterState(REAL3D.CageModeling.EditCageState);
     REAL3D.CageModeling.EditCageUI.enter();
@@ -86,47 +97,46 @@ REAL3D.CageModeling.CreateCageUI.changeCreateType = function () {
 
 REAL3D.CageModeling.CreateCageUI.switchToBoxType = function () {
     "use strict";
-    var that, boxCenPos, boxSize;
+    var that;
     that = this;
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
     $('#parameters').remove();
     $('<div id="parameters"></div>').appendTo('#toolBar');
 
     $('<div>中心位置</div>').appendTo('#parameters');
     $('<div">X<input id="boxPositionX" class="parmNumCtl" type="number" min="-500" max="1000" step="1"></div>').appendTo('#parameters');
     $('#boxPositionX').get(0).addEventListener("input", function () { that.changeBoxPositionX(); }, false);
-    $('#boxPositionX').val(boxCenPos.getX());
+    $('#boxPositionX').val(this.cenPosX);
     $('<br>').appendTo('#parameters');
 
     $('<div">Y<input id="boxPositionY" class="parmNumCtl" type="number" min="-500" max="500" step="1"></div>').appendTo('#parameters');
     $('#boxPositionY').get(0).addEventListener("input", function () { that.changeBoxPositionY(); }, false);
-    $('#boxPositionY').val(boxCenPos.getY());
+    $('#boxPositionY').val(this.cenPosY);
     $('<br>').appendTo('#parameters');
 
     $('<div">Z<input id="boxPositionZ" class="parmNumCtl" type="number" min="-500" max="500" step="1"></div>').appendTo('#parameters');
     $('#boxPositionZ').get(0).addEventListener("input", function () { that.changeBoxPositionZ(); }, false);
-    $('#boxPositionZ').val(boxCenPos.getZ());
+    $('#boxPositionZ').val(this.cenPosZ);
     $('<hr />').appendTo('#parameters');
 
 
     $('<div>大小</div>').appendTo('#parameters');
     $('<div">长(cm)<input id="boxLengthX" class="parmNumCtl" type="number" min="10" max="1000" step="1"></div>').appendTo('#parameters');
     $('#boxLengthX').get(0).addEventListener("input", function () { that.changeBoxLengthX(); }, false);
-    $('#boxLengthX').val(boxSize.getX());
+    $('#boxLengthX').val(this.boxLenX);
     $('<br>').appendTo('#parameters');
 
     $('<div">宽(cm)<input id="boxLengthZ" class="parmNumCtl" type="number" min="10" max="1000" step="1"></div>').appendTo('#parameters');
     $('#boxLengthZ').get(0).addEventListener("input", function () { that.changeBoxLengthZ(); }, false);
-    $('#boxLengthZ').val(boxSize.getZ());
+    $('#boxLengthZ').val(this.boxLenY);
     $('<br>').appendTo('#parameters');
 
     $('<div">高(cm)<input id="boxLengthY" class="parmNumCtl" type="number" min="10" max="1000" step="1"></div>').appendTo('#parameters');
     $('#boxLengthY').get(0).addEventListener("input", function () { that.changeBoxLengthY(); }, false);
-    $('#boxLengthY').val(boxSize.getY());
+    $('#boxLengthY').val(this.boxLenZ);
     $('<hr />').appendTo('#parameters');
 
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.CreateBox(this.cenPosX, this.cenPosY, this.cenPosZ, this.boxLenX, this.boxLenY, this.boxLenZ));
+    REAL3D.CageModeling.CageData.previewOperation();
 
     // $('<div>分段数</div>').appendTo('#parameters');
     // $('<div">长<input id="boxSegmentsX" class="parmNumCtl" type="number" min="1" max="10"></div>').appendTo('#parameters');
@@ -208,62 +218,56 @@ REAL3D.CageModeling.CreateCageUI.switchToTemplateType = function () {
 
 REAL3D.CageModeling.CreateCageUI.changeBoxPositionX = function () {
     "use strict";
-    var posX, boxCenPos, boxSize;
-    posX = parseFloat($('#boxPositionX').val());
-    REAL3D.CageModeling.CreateCageState.boxCenPos.setX(posX);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.cenPosX = parseFloat($('#boxPositionX').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.CreateCageUI.changeBoxPositionY = function () {
     "use strict";
-    var posY, boxCenPos, boxSize;
-    posY = parseFloat($('#boxPositionY').val());
-    REAL3D.CageModeling.CreateCageState.boxCenPos.setY(posY);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.cenPosY = parseFloat($('#boxPositionY').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.CreateCageUI.changeBoxPositionZ = function () {
     "use strict";
-    var posZ, boxCenPos, boxSize;
-    posZ = parseFloat($('#boxPositionZ').val());
-    REAL3D.CageModeling.CreateCageState.boxCenPos.setZ(posZ);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.cenPosZ = parseFloat($('#boxPositionZ').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.CreateCageUI.changeBoxLengthX = function () {
     "use strict";
-    var lenX, boxCenPos, boxSize;
-    lenX = parseFloat($('#boxLengthX').val());
-    REAL3D.CageModeling.CreateCageState.boxSize.setX(lenX);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.lenX = parseFloat($('#boxLengthX').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.CreateCageUI.changeBoxLengthY = function () {
     "use strict";
-    var lenY, boxCenPos, boxSize;
-    lenY = parseFloat($('#boxLengthY').val());
-    REAL3D.CageModeling.CreateCageState.boxSize.setY(lenY);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.lenY = parseFloat($('#boxLengthY').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.CreateCageUI.changeBoxLengthZ = function () {
     "use strict";
-    var lenZ, boxCenPos, boxSize;
-    lenZ = parseFloat($('#boxLengthZ').val());
-    REAL3D.CageModeling.CreateCageState.boxSize.setZ(lenZ);
-    boxCenPos = REAL3D.CageModeling.CreateCageState.boxCenPos;
-    boxSize = REAL3D.CageModeling.CreateCageState.boxSize;
-    REAL3D.CageModeling.CageData.createBoxMesh(boxCenPos.getX(), boxCenPos.getY(), boxCenPos.getZ(), boxSize.getX(), boxSize.getY(), boxSize.getZ());
+    var curOperation = REAL3D.CageModeling.CageData.getOperation();
+    if (curOperation !== null) {
+        curOperation.lenZ = parseFloat($('#boxLengthZ').val());
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 // REAL3D.CageModeling.CreateCageUI.changeBoxSegmentsX = function () {

@@ -3,10 +3,14 @@
 
 REAL3D.CageModeling.CageData = {
     cageMesh: null,
-    pickTool: null,
+    previewMesh: null,
     cageModel: null,
+    previewModel: null,
     drawObject: null,
-    pickedObject: null
+    pickTool: null,
+    refObject: null,
+    curOperation: null,
+    operations: null
 };
 
 REAL3D.CageModeling.CageData.init = function (cageData) {
@@ -22,6 +26,7 @@ REAL3D.CageModeling.CageData.init = function (cageData) {
         this.pickTool = new REAL3D.PickTool.PickHMesh();
     }
     this.pickTool.setMesh(this.cageMesh);
+    this.operations = [];
     this.draw();
 };
 
@@ -31,16 +36,21 @@ REAL3D.CageModeling.CageData.draw = function () {
     this.drawObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.drawObject);
     //draw
-    if (this.cageMesh !== null) {
+    if (this.previewMesh !== null) {
+        console.log("  draw preview mesh");
+        this.previewModel = new REAL3D.CageModel.Cage(this.previewMesh, this.drawObject);
+    } else if (this.cageMesh !== null) {
+        console.log("  draw cage mesh");
         this.cageModel = new REAL3D.CageModel.Cage(this.cageMesh, this.drawObject);
     }
+    this.drawRefObject();
 };
 
-REAL3D.CageModeling.CageData.drawPickedObject = function () {
+REAL3D.CageModeling.CageData.drawRefObject = function () {
     "use strict";
-    this.releaseDrawPickedObject();
-    this.pickedObject = new THREE.Object3D();
-    REAL3D.RenderManager.scene.add(this.pickedObject);
+    this.releaseDrawRefObject();
+    this.refObject = new THREE.Object3D();
+    REAL3D.RenderManager.scene.add(this.refObject);
     //draw picked objects
     var pickedVertex, material, geometry, ball, pid, vPos;
     if (this.pickTool !== null) {
@@ -51,21 +61,25 @@ REAL3D.CageModeling.CageData.drawPickedObject = function () {
             geometry = new THREE.SphereGeometry(6, 6, 6);
             ball = new THREE.Mesh(geometry, material);
             ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
-            this.pickedObject.add(ball);
+            this.refObject.add(ball);
         }
     }
 };
 
-REAL3D.CageModeling.CageData.releaseDrawPickedObject = function () {
+REAL3D.CageModeling.CageData.releaseDrawRefObject = function () {
     "use strict";
-    if (this.pickedObject !== null) {
-        REAL3D.RenderManager.scene.remove(this.pickedObject);
-        this.pickedObject = null;
+    if (this.refObject !== null) {
+        REAL3D.RenderManager.scene.remove(this.refObject);
+        this.refObject = null;
     }
 };
 
 REAL3D.CageModeling.CageData.releaseDraw = function () {
     "use strict";
+    if (this.previewModel !== null) {
+        this.previewModel.remove();
+        this.previewModel = null;
+    }
     if (this.cageModel !== null) {
         this.cageModel.remove();
         this.cageModel = null;
@@ -92,22 +106,65 @@ REAL3D.CageModeling.CageData.saveData = function () {
     "use strict";
 };
 
-REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
+REAL3D.CageModeling.CageData.setCurOperation = function (operation) {
     "use strict";
-    if (this.cageModel !== null) {
-        this.cageModel.remove();
-        this.cageModel = null;
-    }
-    this.cageMesh = REAL3D.MeshModel.createBoxMesh(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
-    this.pickTool.setMesh(this.cageMesh);
-    this.draw();
+    this.curOperation = operation;
 };
+
+REAL3D.CageModeling.CageData.getCurOperation = function () {
+    "use strict";
+    return this.curOperation;
+};
+
+REAL3D.CageModeling.CageData.previewOperation = function () {
+    "use strict";
+    if (this.curOperation !== null) {
+        this.previewMesh = this.curOperation.preview();
+        console.log(" previewMesh: ", this.previewMesh);
+        this.draw();
+    }
+};
+
+REAL3D.CageModeling.CageData.generateOperation = function () {
+    "use strict";
+    if (this.curOperation !== null) {
+        this.previewMesh = null;
+        this.cageMesh = this.curOperation.generate();
+        this.operations.push(this.curOperation);
+        this.operation = null;
+        this.draw();
+    }
+};
+
+// REAL3D.CageModeling.CageData.previewBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
+//     "use strict";
+//     if (this.cageModel !== null) {
+//         this.cageModel.remove();
+//         this.cageModel = null;
+//     }
+//     var createTool = new REAL3D.MeshModel.CreateBox(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
+//     this.cageMesh = createTool.generate();
+//     this.draw();
+// };
+
+// REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
+//     "use strict";
+//     if (this.cageModel !== null) {
+//         this.cageModel.remove();
+//         this.cageModel = null;
+//     }
+//     var createTool = new REAL3D.MeshModel.CreateBox(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
+//     this.cageMesh = createTool.generate();
+//     this.pickTool.setMesh(this.cageMesh);
+//     this.operations.push(createTool);
+//     this.draw();
+// };
 
 REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
     if (this.pickTool !== null) {
         var isPicked = this.pickTool.pickVertex(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
-        this.drawPickedObject();
+        this.draw();
         return isPicked;
     }
     return false;

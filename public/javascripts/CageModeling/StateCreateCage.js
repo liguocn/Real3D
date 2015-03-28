@@ -3,20 +3,11 @@
 
 REAL3D.CageModeling.CreateCageState = {
     light: null,
-    refFrame: null,
-    boxCenPos: null,
-    boxSize: null
+    refFrame: null
 };
 
 REAL3D.CageModeling.CreateCageState.enter = function () {
     "use strict";
-    //init data
-    if (this.boxCenPos === null) {
-        this.boxCenPos = new REAL3D.Vector3(0, 0, 0);
-    }
-    if (this.boxSize === null) {
-        this.boxSize = new REAL3D.Vector3(100, 100, 100);
-    }
     console.log("enter CageModeling.CreateCageState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.CreateCageControl);
     REAL3D.CageModeling.CreateCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);

@@ -318,60 +318,8 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
 //     "use strict";
 // };
 
-REAL3D.MeshModel.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
-    "use strict";
-    var mesh, xStart, xEnd, yStart, yEnd, zStart, zEnd, faceVertices;
-    xStart = cenPosX - lenX / 2;
-    xEnd = xStart + lenX;
-    yStart = cenPosY - lenY / 2;
-    yEnd = yStart + lenY;
-    zStart = cenPosZ - lenZ / 2;
-    zEnd = zStart + lenZ;
-    mesh = new REAL3D.MeshModel.HMesh();
-    mesh.insertVertex(new REAL3D.Vector3(xStart, yStart, zStart));
-    mesh.insertVertex(new REAL3D.Vector3(xStart, yStart, zEnd));
-    mesh.insertVertex(new REAL3D.Vector3(xEnd, yStart, zEnd));
-    mesh.insertVertex(new REAL3D.Vector3(xEnd, yStart, zStart));
-    mesh.insertVertex(new REAL3D.Vector3(xStart, yEnd, zStart));
-    mesh.insertVertex(new REAL3D.Vector3(xStart, yEnd, zEnd));
-    mesh.insertVertex(new REAL3D.Vector3(xEnd, yEnd, zEnd));
-    mesh.insertVertex(new REAL3D.Vector3(xEnd, yEnd, zStart));
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(0));
-    faceVertices.push(mesh.getVertex(1));
-    faceVertices.push(mesh.getVertex(5));
-    faceVertices.push(mesh.getVertex(4));
-    mesh.insertFace(faceVertices);
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(1));
-    faceVertices.push(mesh.getVertex(2));
-    faceVertices.push(mesh.getVertex(6));
-    faceVertices.push(mesh.getVertex(5));
-    mesh.insertFace(faceVertices);
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(2));
-    faceVertices.push(mesh.getVertex(3));
-    faceVertices.push(mesh.getVertex(7));
-    faceVertices.push(mesh.getVertex(6));
-    mesh.insertFace(faceVertices);
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(0));
-    faceVertices.push(mesh.getVertex(4));
-    faceVertices.push(mesh.getVertex(7));
-    faceVertices.push(mesh.getVertex(3));
-    mesh.insertFace(faceVertices);
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(4));
-    faceVertices.push(mesh.getVertex(5));
-    faceVertices.push(mesh.getVertex(6));
-    faceVertices.push(mesh.getVertex(7));
-    mesh.insertFace(faceVertices);
-    faceVertices = [];
-    faceVertices.push(mesh.getVertex(0));
-    faceVertices.push(mesh.getVertex(3));
-    faceVertices.push(mesh.getVertex(2));
-    faceVertices.push(mesh.getVertex(1));
-    mesh.insertFace(faceVertices);
-
-    return mesh;
+REAL3D.MeshModel.ElementType = {
+    VERTEX: 0,
+    EDGE: 1,
+    FACE: 2
 };

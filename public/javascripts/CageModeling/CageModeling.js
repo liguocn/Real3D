@@ -143,6 +143,11 @@ REAL3D.CageModeling.EditMode = {
     FILLHOLE: 7
 };
 
+REAL3D.CageModeling.EditState = {
+    NONE: 0,
+    EDITTING: 1
+};
+
 REAL3D.CageModeling.MouseState = {
     NONE: 0,
     HITCANVAS: 1,
