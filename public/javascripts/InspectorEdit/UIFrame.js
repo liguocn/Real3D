@@ -42,26 +42,6 @@ REAL3D.InspectorEdit.FrameUI.back = function () {
     window.location.href = "/Inspector";
 };
 
-REAL3D.InspectorEdit.run = function () {
-    "use strict";
-    var that = this;
-    function animateFunction(timestamp) {
-        REAL3D.RenderManager.update();
-        if (that.constrolState !== null) {
-            if (that.constrolState.update !== undefined) {
-                that.constrolState.update(timestamp);
-            }
-        }
-        if (that.editState !== null) {
-            if (that.editState.update !== undefined) {
-                that.editState.update(timestamp);
-            }
-        }
-        requestAnimationFrame(animateFunction);
-    }
-    requestAnimationFrame(animateFunction);
-};
-
 $(document).ready(function () {
     "use strict";
     console.log("InspectorEdit UI ready.");
@@ -71,5 +51,5 @@ $(document).ready(function () {
         REAL3D.InspectorEdit.FrameUI.winH,
         REAL3D.InspectorEdit.FrameUI.canvasElement);
     REAL3D.InspectorEdit.run();
-    //REAL3D.InspectorEdit.enterState(REAL3D.InspectorEdit.Light);
+    REAL3D.InspectorEdit.enterState(REAL3D.InspectorEdit.StateMaterial);
 });
