@@ -36,8 +36,12 @@ REAL3D.CageModeling.CreateCageState.setupLight = function () {
     this.releaseLight();
     this.light = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.light);
-    var ambientLight = new THREE.AmbientLight(0x2b2b2b);
-    this.light.add(ambientLight);
+    //var ambientLight = new THREE.AmbientLight(0x2b2b2b);
+    //this.light.add(ambientLight);
+
+    var hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
+    hemisphereLight.position.set(0, 0, 10000);
+    this.light.add(hemisphereLight);
 };
 
 REAL3D.CageModeling.CreateCageState.releaseLight = function () {

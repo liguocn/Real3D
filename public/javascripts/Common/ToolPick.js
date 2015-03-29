@@ -5,6 +5,7 @@ REAL3D.PickTool = {
 };
 
 REAL3D.PickTool.HITVERTEXRADIUS = 0.0005;
+REAL3D.PickTool.HITEDGESCALE = 0.999;
 
 REAL3D.PickTool.PickHMesh = function () {
     "use strict";
@@ -64,11 +65,52 @@ REAL3D.PickTool.PickHMesh.prototype.getPickedVertex = function () {
 
 REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
+    if (this.mesh === null) {
+        return false;
+    }
+    this.mesh.updateEdgeIndex();
+    var wpMatrix, edgeCount, eid, visitFlag, curEdge, pairEdge, vertPosStart, vertPosEnd, threeVertPosStart, threeVertPosEnd, edgeLen, edgeStartLen, edgeEndLen;
+    wpMatrix = new THREE.Matrix4();
+    wpMatrix.multiplyMatrices(projectMatrix, worldMatrix);
+    edgeCount = this.mesh.getEdgeCount();
+    visitFlag = [];
+    for (eid = 0; eid < edgeCount; eid++) {
+        visitFlag.push(1);
+    }
+    this.pickedEdge = [];
+    for (eid = 0; eid < edgeCount; eid++) {
+        if (visitFlag[eid] !== 1) {
+            continue;
+        }
+        curEdge = this.mesh.getEdge(eid);
+        pairEdge = curEdge.getPair();
+        visitFlag[eid] = -1;
+        visitFlag[pairEdge.getAssistObject()] = -1;
+        vertPosStart = pairEdge.getVertex().getPosition();
+        threeVertPosStart = new THREE.Vector3(vertPosStart.getX(), vertPosStart.getY(), vertPosStart.getZ());
+        threeVertPosStart.applyProjection(wpMatrix);
+        vertPosEnd = curEdge.getVertex().getPosition();
+        threeVertPosEnd = new THREE.Vector3(vertPosEnd.getX(), vertPosEnd.getY(), vertPosEnd.getZ());
+        threeVertPosEnd.applyProjection(wpMatrix);
+        edgeLen = (threeVertPosEnd.x - threeVertPosStart.x) * (threeVertPosEnd.x - threeVertPosStart.x) + (threeVertPosEnd.y - threeVertPosStart.y) * (threeVertPosEnd.y - threeVertPosStart.y);
+        edgeLen = Math.sqrt(edgeLen);
+        edgeStartLen = (threeVertPosStart.x - mouseNormPosX) * (threeVertPosStart.x - mouseNormPosX) + (threeVertPosStart.y - mouseNormPosY) * (threeVertPosStart.y - mouseNormPosY);
+        edgeStartLen = Math.sqrt(edgeStartLen);
+        edgeEndLen = (threeVertPosEnd.x - mouseNormPosX) * (threeVertPosEnd.x - mouseNormPosX) + (threeVertPosEnd.y - mouseNormPosY) * (threeVertPosEnd.y - mouseNormPosY);
+        edgeEndLen = Math.sqrt(edgeEndLen);
+        //console.log("  Edge Scale: ", edgeLen / (edgeStartLen + edgeEndLen));
+        if (edgeLen > (edgeStartLen + edgeEndLen) * REAL3D.PickTool.HITEDGESCALE) {
+            this.pickedEdge.push(eid);
+            return true;
+        }
+    }
+
     return false;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.getPickedEdge = function () {
     "use strict";
+    return this.pickedEdge;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
@@ -78,4 +120,5 @@ REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMat
 
 REAL3D.PickTool.PickHMesh.prototype.getPickedFace = function () {
     "use strict";
+    return this.pickedFace;
 };

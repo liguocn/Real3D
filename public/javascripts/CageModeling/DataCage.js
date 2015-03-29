@@ -33,10 +33,10 @@ REAL3D.CageModeling.CageData.draw = function () {
     REAL3D.RenderManager.scene.add(this.drawObject);
     //draw
     if (this.previewMesh !== null) {
-        console.log("  draw preview mesh");
+        //console.log("  draw preview mesh");
         this.previewModel = new REAL3D.CageModel.Cage(this.previewMesh, this.drawObject);
     } else if (this.cageMesh !== null) {
-        console.log("  draw cage mesh");
+        //console.log("  draw cage mesh");
         this.cageModel = new REAL3D.CageModel.Cage(this.cageMesh, this.drawObject);
     }
     this.drawRefObject();
@@ -48,9 +48,10 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
     this.refObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refObject);
     //draw picked objects
-    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos;
+    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos, vPos0, vPos1, pEdge, edgeVector, cylinder, threeEdgeVector, threeUpVector, pickedEdge, edgeLen, rotateQ;
     if (this.pickTool !== null) {
         pickedMesh = this.pickTool.mesh;
+
         pickedVertex = this.pickTool.getPickedVertex();
         material = new THREE.MeshBasicMaterial({color: 0xbb6b6b});
         for (pid = 0; pid < pickedVertex.length; pid++) {
@@ -59,6 +60,27 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
             ball = new THREE.Mesh(geometry, material);
             ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
             this.refObject.add(ball);
+        }
+
+        pickedEdge = this.pickTool.getPickedEdge();
+        material = new THREE.MeshPhongMaterial({color: 0xbb6b6b, specular: 0x101010, shininess: 10});
+        threeUpVector = new THREE.Vector3(0, 1, 0);
+        for (pid = 0; pid < pickedEdge.length; pid++) {
+            pEdge = pickedMesh.getEdge(pickedEdge[pid]);
+            vPos0 =  pEdge.getVertex().getPosition();
+            vPos1 = pEdge.getPair().getVertex().getPosition();
+            edgeVector = REAL3D.Vector3.sub(vPos1, vPos0);
+            edgeLen = edgeVector.unify();
+            geometry = new THREE.CylinderGeometry(2, 2, edgeLen, 4);
+            cylinder = new THREE.Mesh(geometry, material);
+            cylinder.translateX((vPos0.x + vPos1.x) / 2);
+            cylinder.translateY((vPos0.y + vPos1.y) / 2);
+            cylinder.translateZ((vPos0.z + vPos1.z) / 2);
+            threeEdgeVector = new THREE.Vector3(edgeVector.x, edgeVector.y, edgeVector.z);
+            rotateQ = new THREE.Quaternion();
+            rotateQ.setFromUnitVectors(threeUpVector, threeEdgeVector);
+            cylinder.setRotationFromQuaternion(rotateQ);
+            this.refObject.add(cylinder);
         }
     }
 };
@@ -178,6 +200,11 @@ REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, 
 
 REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
+    if (this.pickTool !== null) {
+        var isPicked = this.pickTool.pickEdge(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        this.draw();
+        return isPicked;
+    }
     return false;
 };
 
