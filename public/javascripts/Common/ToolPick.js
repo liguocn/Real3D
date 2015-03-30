@@ -115,10 +115,106 @@ REAL3D.PickTool.PickHMesh.prototype.getPickedEdge = function () {
 
 REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
+    if (this.mesh === null) {
+        return false;
+    }
+    var wpMatrix, faceCount, mousePoint, faceNormal, threeFaceNormal, fid, startEdge, polyVertices, polyTriCount, ptid, curEdge, bboxMinX, bboxMaxX, bboxMinY, bboxMaxY, vertPos, threeVertPos;
+    wpMatrix = new THREE.Matrix4();
+    wpMatrix.multiplyMatrices(projectMatrix, worldMatrix);
+    faceCount = this.mesh.getFaceCount();
+    mousePoint = new REAL3D.Vector2(mouseNormPosX, mouseNormPosY);
+    this.pickedFace = [];
+    for (fid = 0; fid < faceCount; fid++) {
+        //cull back face
+        faceNormal = this.mesh.getFace(fid).getNormal();
+        threeFaceNormal = new THREE.Vector3(faceNormal.getX(), faceNormal.getY(), faceNormal.getZ());
+        threeFaceNormal.applyMatrix4(worldMatrix);
+        if (threeFaceNormal.z <= 0) {
+            continue;
+        }
+        //collect polyline vertices
+        polyVertices = [];
+        startEdge = this.mesh.getFace(fid).getEdge();
+        curEdge = startEdge;
+        bboxMinX = null;
+        bboxMaxX = null;
+        bboxMinY = null;
+        bboxMaxY = null;
+        do {
+            vertPos = curEdge.getVertex().getPosition();
+            threeVertPos = new THREE.Vector3(vertPos.getX(), vertPos.getY(), vertPos.getZ());
+            threeVertPos.applyProjection(wpMatrix);  //speed up: project all the vertices once
+            polyVertices.push(new REAL3D.Vector2(threeVertPos.x, threeVertPos.y));
+            if (bboxMinX === null) {
+                bboxMinX = threeVertPos.x;
+                bboxMaxX = threeVertPos.x;
+                bboxMinY = threeVertPos.y;
+                bboxMaxY = threeVertPos.y;
+            } else {
+                if (threeVertPos.x < bboxMinX) {
+                    bboxMinX = threeVertPos.x;
+                } else if (threeVertPos.x > bboxMaxX) {
+                    bboxMaxX = threeVertPos.x;
+                }
+                if (threeVertPos.y < bboxMinY) {
+                    bboxMinY = threeVertPos.y;
+                } else if (threeVertPos.y > bboxMaxY) {
+                    bboxMaxY = threeVertPos.y;
+                }
+            }
+            curEdge = curEdge.getNext();
+        } while (curEdge !== startEdge);
+        if (polyVertices.length < 3) {
+            continue;
+        }
+        //compare bbox
+        if (mouseNormPosX <= bboxMinX || mouseNormPosX >= bboxMaxX || mouseNormPosY <= bboxMinY || mouseNormPosY >= bboxMaxY) {
+            continue;
+        }
+        //judge line segments' intersections
+        polyTriCount = polyVertices.length - 2;
+        for (ptid = 1; ptid <= polyTriCount; ptid++) {
+            if (this.isPointIn2DTriangle(mousePoint, polyVertices[0], polyVertices[ptid], polyVertices[ptid + 1])) {
+                this.pickedFace.push(fid);
+                return true;
+            }
+        }
+    }
     return false;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.getPickedFace = function () {
     "use strict";
     return this.pickedFace;
+};
+
+REAL3D.PickTool.PickHMesh.prototype.isPointIn2DTriangle = function (point, triVert0, triVert1, triVert2) {
+    "use strict";
+    var intersectCount;
+    intersectCount = 0;
+    if (this.isPointXRayIntersectLineSegment(point, triVert0, triVert1)) {
+        intersectCount++;
+    }
+    if (this.isPointXRayIntersectLineSegment(point, triVert1, triVert2)) {
+        intersectCount++;
+    }
+    if (this.isPointXRayIntersectLineSegment(point, triVert2, triVert0)) {
+        intersectCount++;
+    }
+    return (intersectCount === 1);
+};
+
+REAL3D.PickTool.PickHMesh.prototype.isPointXRayIntersectLineSegment = function (point, vert0, vert1) {
+    "use strict";
+    var yDelta, w, t;
+    yDelta = vert0.y - vert1.y;
+    if (REAL3D.isZero(yDelta)) {
+        return false;
+    }
+    w = (point.y - vert1.y) / yDelta;
+    if (w >= 1 || w <= 0) {
+        return false;
+    }
+    t = w * vert0.x + (1 - w) * vert1.x - point.x;
+    return (t > 0);
 };

@@ -48,7 +48,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
     this.refObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refObject);
     //draw picked objects
-    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos, vPos0, vPos1, pEdge, edgeVector, cylinder, threeEdgeVector, threeUpVector, pickedEdge, edgeLen, rotateQ;
+    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos, vPos0, vPos1, pEdge, edgeVector, cylinder, threeEdgeVector, threeUpVector, pickedEdge, edgeLen, rotateQ, eid, mesh, pickedFace, fid, pFace, pStartEdge, pCurEdge, edgeCount;
     if (this.pickTool !== null) {
         pickedMesh = this.pickTool.mesh;
 
@@ -81,6 +81,29 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
             rotateQ.setFromUnitVectors(threeUpVector, threeEdgeVector);
             cylinder.setRotationFromQuaternion(rotateQ);
             this.refObject.add(cylinder);
+        }
+
+        pickedFace = this.pickTool.getPickedFace();
+        material = new THREE.MeshPhongMaterial({color: 0xbb6b6b, specular: 0x101010, shininess: 10});
+        for (fid = 0; fid < pickedFace.length; fid++) {
+            pFace = pickedMesh.getFace(pickedFace[fid]);
+            geometry = new THREE.Geometry();
+            pStartEdge = pFace.getEdge();
+            pCurEdge = pStartEdge;
+            edgeCount = 0;
+            do {
+                vPos = pCurEdge.getVertex().getPosition();
+                geometry.vertices.push(new THREE.Vector3(vPos.getX(), vPos.getY(), vPos.getZ()));
+                pCurEdge = pCurEdge.getNext();
+                edgeCount++;
+            } while (pCurEdge !== pStartEdge);
+            for (eid = 1; eid < edgeCount - 1; eid++) {
+                geometry.faces.push(new THREE.Face3(0, eid, eid + 1));
+            }
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            mesh = new THREE.Mesh(geometry, material);
+            this.refObject.add(mesh);
         }
     }
 };
@@ -156,30 +179,6 @@ REAL3D.CageModeling.CageData.generateOperation = function () {
     }
 };
 
-// REAL3D.CageModeling.CageData.previewBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
-//     "use strict";
-//     if (this.cageModel !== null) {
-//         this.cageModel.remove();
-//         this.cageModel = null;
-//     }
-//     var createTool = new REAL3D.MeshModel.CreateBox(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
-//     this.cageMesh = createTool.generate();
-//     this.draw();
-// };
-
-// REAL3D.CageModeling.CageData.createBoxMesh = function (cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ) {
-//     "use strict";
-//     if (this.cageModel !== null) {
-//         this.cageModel.remove();
-//         this.cageModel = null;
-//     }
-//     var createTool = new REAL3D.MeshModel.CreateBox(cenPosX, cenPosY, cenPosZ, lenX, lenY, lenZ);
-//     this.cageMesh = createTool.generate();
-//     this.pickTool.setMesh(this.cageMesh);
-//     this.operations.push(createTool);
-//     this.draw();
-// };
-
 REAL3D.CageModeling.CageData.pickCageMesh = function () {
     "use strict";
     if (this.pickTool === null) {
@@ -210,5 +209,10 @@ REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mo
 
 REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
     "use strict";
+    if (this.pickTool !== null) {
+        var isPicked = this.pickTool.pickFace(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        this.draw();
+        return isPicked;
+    }
     return false;
 };

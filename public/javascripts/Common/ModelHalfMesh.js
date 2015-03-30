@@ -4,6 +4,7 @@
 REAL3D.MeshModel = {
 };
 
+/////////////////////////////////////////////////// HVertex ///////////////////////////////////////////////////
 REAL3D.MeshModel.HVertex = function () {
     "use strict";
     this.vId = null;
@@ -85,6 +86,7 @@ REAL3D.MeshModel.HVertex.prototype.setAssistObject = function (assistObject) {
     this.assistObject = assistObject;
 };
 
+/////////////////////////////////////////////////// HEdge ///////////////////////////////////////////////////
 REAL3D.MeshModel.HEdge = function () {
     "use strict";
     this.eId = null;
@@ -92,6 +94,7 @@ REAL3D.MeshModel.HEdge = function () {
     this.pairEdge = null;
     this.nextEdge = null;
     this.preEdge = null;
+    this.hFace = null;
     this.assistObject = null;
 };
 
@@ -145,6 +148,16 @@ REAL3D.MeshModel.HEdge.prototype.setPre = function (preEdge) {
     this.preEdge = preEdge;
 };
 
+REAL3D.MeshModel.HEdge.prototype.getFace = function () {
+    "use strict";
+    return this.hFace;
+};
+
+REAL3D.MeshModel.HEdge.prototype.setFace = function (hFace) {
+    "use strict";
+    return this.hFace = hFace;
+};
+
 REAL3D.MeshModel.HEdge.prototype.getAssistObject = function () {
     "use strict";
     return this.assistObject;
@@ -155,6 +168,7 @@ REAL3D.MeshModel.HEdge.prototype.setAssistObject = function (assistObject) {
     this.assistObject = assistObject;
 };
 
+/////////////////////////////////////////////////// HFace ///////////////////////////////////////////////////
 REAL3D.MeshModel.HFace = function () {
     "use strict";
     this.fId = null;
@@ -203,6 +217,7 @@ REAL3D.MeshModel.HFace.prototype.setAssistObject = function (assistObject) {
     this.assistObject = assistObject;
 };
 
+/////////////////////////////////////////////////// EdgeMap ///////////////////////////////////////////////////
 REAL3D.MeshModel.EdgeMap = function () {
     "use strict";
     this.edges = [];
@@ -242,6 +257,7 @@ REAL3D.MeshModel.EdgeMap.prototype.createEdge = function (vertStart, vertEnd) {
     return res;
 };
 
+/////////////////////////////////////////////////// HMesh ///////////////////////////////////////////////////
 REAL3D.MeshModel.HMesh = function () {
     "use strict";
     this.vertices = [];
@@ -286,6 +302,38 @@ REAL3D.MeshModel.HMesh.prototype.getFaceCount = function () {
 REAL3D.MeshModel.HMesh.prototype.updateNormal = function () {
     "use strict";
     console.log("  updateNormal");
+    var faceCount, fid, startEdge, curEdge, startVertPos, faceNormal, triVertPos0, triVertPos1, vertCount, vid, vertNormal;
+    //update face normal
+    faceCount = this.faces.length;
+    for (fid = 0; fid < faceCount; fid++) {
+        startEdge = this.faces[fid].getEdge();
+        startVertPos = startEdge.getPair().getVertex().getPosition();
+        curEdge = startEdge.getNext().getNext();
+        faceNormal = new REAL3D.Vector3(0, 0, 0);
+        while (curEdge !== startEdge) {
+            triVertPos0 = curEdge.getPair().getVertex().getPosition();
+            triVertPos1 = curEdge.getVertex().getPosition();
+            faceNormal.addVector(REAL3D.Vector3.crossProduct(REAL3D.Vector3.sub(triVertPos0, startVertPos),
+                REAL3D.Vector3.sub(triVertPos1, startVertPos)));
+            curEdge = curEdge.getNext();
+        }
+        faceNormal.unify();
+        this.faces[fid].setNormal(faceNormal);
+    }
+
+    //update vertex normal
+    vertCount = this.vertices.length;
+    for (vid = 0; vid < vertCount; vid++) {
+        startEdge = this.vertices[vid].getEdge();
+        curEdge = startEdge;
+        vertNormal = new REAL3D.Vector3(0, 0, 0);
+        do {
+            vertNormal.addVector(curEdge.getFace().getNormal());
+            curEdge = curEdge.getPair().getNext();
+        } while (curEdge !== startEdge && curEdge !== null);
+        vertNormal.unify();
+        this.vertices[vid].setNormal(vertNormal);
+    }
 };
 
 //primitive operations
@@ -308,6 +356,7 @@ REAL3D.MeshModel.HMesh.prototype.insertEdge = function (vertStart, vertEnd) {
     "use strict";
     var res = this.edgeMap.createEdge(vertStart, vertEnd);
     if (res.isNew) {
+        res.edge.setId(this.edgeNewId);
         this.edgeNewId++;
         this.edges.push(res.edge);
         vertStart.setEdge(res.edge);
@@ -328,11 +377,11 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
     newFace = new REAL3D.MeshModel.HFace();
     newFace.setId(this.faceNewId);
     this.faceNewId++;
-    this.faces.push(newFace);
     innerEdges = [];
     vertCount = vertices.length;
     for (vid = 0; vid < vertCount; vid++) {
         curEdge = this.insertEdge(vertices[vid], vertices[(vid + 1) % vertCount]);
+        curEdge.setFace(newFace);
         innerEdges.push(curEdge);
         pairEdge = this.insertEdge(vertices[(vid + 1) % vertCount], vertices[vid]);
         curEdge.setPair(pairEdge);

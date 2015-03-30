@@ -76,5 +76,7 @@ REAL3D.MeshModel.CreateBox.prototype.generateBox = function () {
     faceVertices.push(mesh.getVertex(1));
     mesh.insertFace(faceVertices);
 
+    mesh.updateNormal();
+
     return mesh;
 };

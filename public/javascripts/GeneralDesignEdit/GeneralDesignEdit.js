@@ -81,7 +81,8 @@ REAL3D.GeneralDesignEdit.mouseUp = function (e) {
 
 REAL3D.GeneralDesignEdit.keyPress = function (e) {
     "use strict";
-    if (this.controlState !== null) {if (this.controlState.keyPress !== undefined) {
+    if (this.controlState !== null) {
+        if (this.controlState.keyPress !== undefined) {
             this.controlState.keyPress(e);
         }
     }

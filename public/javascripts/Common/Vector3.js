@@ -130,3 +130,9 @@ REAL3D.Vector3.dotProduct = function (vec1, vec2) {
     var res = vec1.getX() * vec2.getX() + vec1.getY() * vec2.getY() + vec1.getZ() * vec2.getZ();
     return res;
 };
+
+REAL3D.Vector3.crossProduct = function (vec1, vec2) {
+    "use strict";
+    var res = new REAL3D.Vector3(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
+    return res;
+};
