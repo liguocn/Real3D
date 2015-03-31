@@ -16,6 +16,8 @@ REAL3D.MeshModel.Extrude.prototype.preview = function (pickTool) {
     "use strict";
     if (this.previewMesh === null) {
         //construct extrude topology
+        this.previewMesh = this.mesh.getCopy();
+        
     }
     //extrude distance
 

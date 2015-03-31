@@ -427,6 +427,10 @@ REAL3D.MeshModel.HMesh.prototype.updateFaceIndex = function () {
     }
 };
 
+REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
+    "use strict";
+};
+
 REAL3D.MeshModel.ElementType = {
     VERTEX: 0,
     EDGE: 1,
