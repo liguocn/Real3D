@@ -12,7 +12,7 @@ REAL3D.CageModeling.EditCageState.enter = function () {
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.EditCageControl);
     REAL3D.CageModeling.EditCageControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
     REAL3D.CageModeling.EditCageControl.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
-    REAL3D.CageModeling.CageData.pickCageMesh();
+    REAL3D.CageModeling.CageData.pickCageMesh(false);
 
     //setup light
     this.setupLight();
@@ -87,4 +87,10 @@ REAL3D.CageModeling.EditCageState.releaseRefFrame = function () {
         REAL3D.RenderManager.scene.remove(this.refFrame);
         this.refFrame = null;
     }
+};
+
+REAL3D.CageModeling.EditCageState.switchEditMode = function (editMode) {
+    "use strict";
+    REAL3D.CageModeling.EditCageControl.switchEditMode(editMode);
+    REAL3D.CageModeling.CageData.generateOperation(false);
 };

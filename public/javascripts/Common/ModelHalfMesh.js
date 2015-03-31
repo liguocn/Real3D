@@ -396,9 +396,9 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
     return newFace;
 };
 
-// REAL3D.MeshModel.HMesh.prototype.deleteFace = function (face) {
-//     "use strict";
-// };
+REAL3D.MeshModel.HMesh.prototype.deleteFace = function (face) {
+    "use strict";
+};
 
 REAL3D.MeshModel.HMesh.prototype.updateVertexIndex = function () {
     "use strict";

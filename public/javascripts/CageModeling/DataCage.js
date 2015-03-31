@@ -161,30 +161,33 @@ REAL3D.CageModeling.CageData.getCurOperation = function () {
 REAL3D.CageModeling.CageData.previewOperation = function () {
     "use strict";
     if (this.curOperation !== null) {
-        this.previewMesh = this.curOperation.preview(this.pickTool);
+        this.previewMesh = this.curOperation.preview(this.pickTool); //change pickMesh to previewMesh
         console.log(" previewMesh: ", this.previewMesh);
         this.draw();
     }
 };
 
-REAL3D.CageModeling.CageData.generateOperation = function () {
+//1. Apply
+//2. Change pick element
+//3. Switch UI
+REAL3D.CageModeling.CageData.generateOperation = function (keepPickIndex) {
     "use strict";
     if (this.curOperation !== null) {
         this.previewMesh = null;
         this.cageMesh = this.curOperation.generate();
-        this.pickCageMesh();
+        this.pickCageMesh(keepPickIndex);
         this.operations.push(this.curOperation);
-        this.operation = null;
+        this.curOperation = null;
         this.draw();
     }
 };
 
-REAL3D.CageModeling.CageData.pickCageMesh = function () {
+REAL3D.CageModeling.CageData.pickCageMesh = function (keepPickIndex) {
     "use strict";
     if (this.pickTool === null) {
         this.pickTool = new REAL3D.PickTool.PickHMesh();
     }
-    this.pickTool.setMesh(this.cageMesh);
+    this.pickTool.setMesh(this.cageMesh, keepPickIndex);
 };
 
 REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {

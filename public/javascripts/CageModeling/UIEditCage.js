@@ -133,6 +133,8 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     $('#RotateZ').get(0).addEventListener("input", function () { that.rotateZ(); }, false);
     $('#RotateZ').val(1);
     $('<hr />').appendTo('#editOption');
+
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
@@ -150,6 +152,8 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
     $('#applyExtrude').click(function () { that.applyExtrude(); });
 
     $('<hr />').appendTo('#editOption');
+
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EXTRUDE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToSplit = function () {
@@ -168,16 +172,20 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToSplit = function () {
     $('#splitEdgeCount').get(0).addEventListener("input", function () { that.changeSplitEdgeCount(); }, false);
     $('#splitEdgeCount').val(2);
     $('<hr />').appendTo('#editOption');
+
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.SPLIT);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToRemove = function () {
     "use strict";
     $('#editOption').remove();
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.DELETE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToMerge = function () {
     "use strict";
     $('#editOption').remove();
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.MERGE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToConnect = function () {
@@ -191,6 +199,7 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToConnect = function () {
     $('#checkFillHole').click(function () { that.checkFillHole(); });
 
     $('<hr />').appendTo('#editOption');
+    REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.CONNECT);
 };
 
 REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
@@ -239,7 +248,8 @@ REAL3D.CageModeling.EditCageUI.changeExtrudeDistance = function () {
 
 REAL3D.CageModeling.EditCageUI.setExtrudeDistance = function (dist) {
     "use strict";
-    
+    console.log(" setExtrudeDistance: ", dist);
+    $('#extrudeDistance').val(dist);
 };
 
 REAL3D.CageModeling.EditCageUI.applyExtrude = function () {

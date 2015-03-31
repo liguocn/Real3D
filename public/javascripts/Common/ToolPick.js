@@ -16,12 +16,19 @@ REAL3D.PickTool.PickHMesh = function () {
     this.pickedFace = null;
 };
 
-REAL3D.PickTool.PickHMesh.prototype.setMesh = function (mesh) {
+REAL3D.PickTool.PickHMesh.prototype.setMesh = function (mesh, keepPickIndex) {
     "use strict";
     this.mesh = mesh;
-    this.pickedVertex = [];
-    this.pickedEdge = [];
-    this.pickedFace = [];
+    if (!keepPickIndex) {
+        this.pickedVertex = [];
+        this.pickedEdge = [];
+        this.pickedFace = [];
+    }
+};
+
+REAL3D.PickTool.PickHMesh.prototype.getMesh = function () {
+    "use strict";
+    return this.mesh;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.pickVertex = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
@@ -49,8 +56,8 @@ REAL3D.PickTool.PickHMesh.prototype.pickVertex = function (worldMatrix, projectM
         }
         //console.log("  vertex", vid, " vDist: ", vDist, " project: ", threeVPos.x, threeVPos.y, threeVPos.z, " mousePos: ", mouseNormPosX, mouseNormPosY);
     }
-    this.pickedVertex = [];
     if (minDist < REAL3D.PickTool.HITVERTEXRADIUS) {
+        this.pickedVertex = [];
         this.pickedVertex.push(minIndex);
         //console.log("    picked id: ", minIndex);
         return true;
@@ -79,7 +86,6 @@ REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMat
         visitFlag.push(1);
     }
     mousePoint = new REAL3D.Vector2(mouseNormPosX, mouseNormPosY);
-    this.pickedEdge = [];
     for (eid = 0; eid < edgeCount; eid++) {
         if (visitFlag[eid] !== 1) {
             continue;
@@ -95,6 +101,7 @@ REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMat
         threeVertPosEnd = new THREE.Vector3(vertPosEnd.getX(), vertPosEnd.getY(), vertPosEnd.getZ());
         threeVertPosEnd.applyProjection(wpMatrix);
         if (this.isPointOnLineSegment(mousePoint, new REAL3D.Vector2(threeVertPosStart.x, threeVertPosStart.y), new REAL3D.Vector2(threeVertPosEnd.x, threeVertPosEnd.y))) {
+            this.pickedEdge = [];
             this.pickedEdge.push(eid);
             return true;
         }
@@ -118,7 +125,6 @@ REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMat
     wpMatrix.multiplyMatrices(projectMatrix, worldMatrix);
     faceCount = this.mesh.getFaceCount();
     mousePoint = new REAL3D.Vector2(mouseNormPosX, mouseNormPosY);
-    this.pickedFace = [];
     for (fid = 0; fid < faceCount; fid++) {
         //cull back face
         faceNormal = this.mesh.getFace(fid).getNormal();
@@ -170,6 +176,7 @@ REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMat
         polyTriCount = polyVertices.length - 2;
         for (ptid = 1; ptid <= polyTriCount; ptid++) {
             if (this.isPointIn2DTriangle(mousePoint, polyVertices[0], polyVertices[ptid], polyVertices[ptid + 1])) {
+                this.pickedFace = [];
                 this.pickedFace.push(fid);
                 return true;
             }

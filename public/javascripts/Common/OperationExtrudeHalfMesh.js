@@ -1,13 +1,15 @@
 /*jslint plusplus: true, continue: true */
 /*global REAL3D, THREE, console */
 
-REAL3D.MeshModel.Extrude = function (index, mesh, elemType, distance) {
+REAL3D.MeshModel.Extrude = function (elemIndex, mesh, elemType, distance) {
     "use strict";
-    this.index = index;
+    this.elemIndex = elemIndex;
     this.mesh = mesh;
     this.elemType = elemType;
     this.distance = distance;
     this.previewMesh = null;
+    this.previewElemIndex = null;
+    console.log("    new Extrude Operation: ", elemIndex, elemType, distance);
 };
 
 REAL3D.MeshModel.Extrude.prototype.preview = function (pickTool) {
@@ -28,4 +30,13 @@ REAL3D.MeshModel.Extrude.prototype.apply = function () {
     //free data
     this.previewMesh = null;
     this.mesh = null;
+    this.previewElemIndex = null;
+};
+
+REAL3D.MeshModel.Extrude.prototype.addDistance = function (deltaDist) {
+    "use strict";
+    this.distance += deltaDist;
+    if (this.distance < 0) {
+        this.distance = 0;
+    }
 };
