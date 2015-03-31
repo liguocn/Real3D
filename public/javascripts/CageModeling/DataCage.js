@@ -53,7 +53,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         pickedMesh = this.pickTool.mesh;
 
         pickedVertex = this.pickTool.getPickedVertex();
-        material = new THREE.MeshBasicMaterial({color: 0xbb6b6b});
+        material = new THREE.MeshBasicMaterial({color: 0xbbbb2b});
         for (pid = 0; pid < pickedVertex.length; pid++) {
             vPos = pickedMesh.getVertex(pickedVertex[pid]).getPosition();
             geometry = new THREE.SphereGeometry(6, 6, 6);
@@ -63,7 +63,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         }
 
         pickedEdge = this.pickTool.getPickedEdge();
-        material = new THREE.MeshPhongMaterial({color: 0xbb6b6b, specular: 0x101010, shininess: 10});
+        material = new THREE.MeshPhongMaterial({color: 0x2bbbbb, specular: 0x101010, shininess: 10});
         threeUpVector = new THREE.Vector3(0, 1, 0);
         for (pid = 0; pid < pickedEdge.length; pid++) {
             pEdge = pickedMesh.getEdge(pickedEdge[pid]);
@@ -84,7 +84,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         }
 
         pickedFace = this.pickTool.getPickedFace();
-        material = new THREE.MeshPhongMaterial({color: 0xbb6b6b, specular: 0x101010, shininess: 10});
+        material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10});
         for (fid = 0; fid < pickedFace.length; fid++) {
             pFace = pickedMesh.getFace(pickedFace[fid]);
             geometry = new THREE.Geometry();

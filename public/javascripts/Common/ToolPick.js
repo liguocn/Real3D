@@ -6,6 +6,7 @@ REAL3D.PickTool = {
 
 REAL3D.PickTool.HITVERTEXRADIUS = 0.0005;
 REAL3D.PickTool.HITEDGEDISTANCE = 0.01;
+REAL3D.PickTool.POINTONEDGEWEIGHT = 0.1;
 
 REAL3D.PickTool.PickHMesh = function () {
     "use strict";
@@ -83,7 +84,6 @@ REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMat
         if (visitFlag[eid] !== 1) {
             continue;
         }
-        console.log(" pickEdge: ", eid);
         curEdge = this.mesh.getEdge(eid);
         pairEdge = curEdge.getPair();
         visitFlag[eid] = -1;
@@ -216,20 +216,20 @@ REAL3D.PickTool.PickHMesh.prototype.isPointXRayIntersectLineSegment = function (
 
 REAL3D.PickTool.PickHMesh.prototype.isPointOnLineSegment = function (point, vert0, vert1) {
     "use strict";
-    var lineVec, lineVecLen, w, distVec;
+    var lineVec, lineVecLen, pointVec, w, distVec;
     lineVec = REAL3D.Vector2.sub(vert1, vert0);
     lineVecLen = REAL3D.Vector2.dotProduct(lineVec, lineVec);
     if (REAL3D.isZero(lineVecLen)) {
         return false;
     }
-    w = REAL3D.Vector2.dotProduct(lineVec, REAL3D.Vector2.sub(vert1, point)) / lineVecLen;
+    pointVec = REAL3D.Vector2.sub(vert1, point);
+    w = REAL3D.Vector2.dotProduct(lineVec, pointVec) / lineVecLen;
     if (w <= 0 || w >= 1) {
         return false;
     }
-    distVec = REAL3D.Vector2.sub(REAL3D.Vector2.add(REAL3D.Vector2.scale(vert0, w), REAL3D.Vector2.scale(vert1, 1 - 2)), point);
+    distVec = REAL3D.Vector2.sub(REAL3D.Vector2.add(REAL3D.Vector2.scale(vert0, w), REAL3D.Vector2.scale(vert1, 1 - w)), point);
     if (distVec.length() < REAL3D.PickTool.HITEDGEDISTANCE) {
         return true;
     }
-    console.log("  Pick Edge Dist: ", distVec.length());
     return false;
 };

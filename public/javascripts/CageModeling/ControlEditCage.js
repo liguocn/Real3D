@@ -38,8 +38,9 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     curPosY = e.pageY - this.canvasOffset.top;
     this.isMouseDown = true;
     this.mouseMovePos.set(curPosX, curPosY);
-    mouseNormPosX = curPosX / this.winW * 2 - 1;
-    mouseNormPosY = 1 - curPosY / this.winH * 2;
+    mouseNormPosX = curPosX * 2 / this.winW - 1;
+    mouseNormPosY = 1 - curPosY * 2 / this.winH;
+    //console.log(" mousePos: ", curPosX, curPosY, " winW: ", this.winW, this.winH, " NormMousePos: ", mouseNormPosX, mouseNormPosY);
     this.hitDetection(mouseNormPosX, mouseNormPosY);
     if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
 
