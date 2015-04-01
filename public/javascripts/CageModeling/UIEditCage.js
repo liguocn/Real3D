@@ -135,6 +135,8 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
@@ -154,6 +156,8 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EXTRUDE);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToSplit = function () {
@@ -174,18 +178,24 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToSplit = function () {
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.SPLIT);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToRemove = function () {
     "use strict";
     $('#editOption').remove();
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.DELETE);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToMerge = function () {
     "use strict";
     $('#editOption').remove();
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.MERGE);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToConnect = function () {
@@ -200,6 +210,8 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToConnect = function () {
 
     $('<hr />').appendTo('#editOption');
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.CONNECT);
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
 };
 
 REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
@@ -244,16 +256,24 @@ REAL3D.CageModeling.EditCageUI.rotateZ = function () {
 
 REAL3D.CageModeling.EditCageUI.changeExtrudeDistance = function () {
     "use strict";
+    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
+    if (curOp !== null) {
+        curOp.setDistance(parseFloat($('#extrudeDistance').val()));
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.EditCageUI.setExtrudeDistance = function (dist) {
     "use strict";
-    console.log(" setExtrudeDistance: ", dist);
+    //console.log(" setExtrudeDistance: ", dist);
     $('#extrudeDistance').val(dist);
 };
 
 REAL3D.CageModeling.EditCageUI.applyExtrude = function () {
     "use strict";
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
+    this.setExtrudeDistance(0);
 };
 
 REAL3D.CageModeling.EditCageUI.changeSplitFaceWeight = function () {

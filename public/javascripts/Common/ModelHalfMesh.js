@@ -155,7 +155,7 @@ REAL3D.MeshModel.HEdge.prototype.getFace = function () {
 
 REAL3D.MeshModel.HEdge.prototype.setFace = function (hFace) {
     "use strict";
-    return this.hFace = hFace;
+    this.hFace = hFace;
 };
 
 REAL3D.MeshModel.HEdge.prototype.getAssistObject = function () {
@@ -301,7 +301,6 @@ REAL3D.MeshModel.HMesh.prototype.getFaceCount = function () {
 
 REAL3D.MeshModel.HMesh.prototype.updateNormal = function () {
     "use strict";
-    console.log("  updateNormal");
     var faceCount, fid, startEdge, curEdge, startVertPos, faceNormal, triVertPos0, triVertPos1, vertCount, vid, vertNormal;
     //update face normal
     faceCount = this.faces.length;
@@ -396,7 +395,25 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
     return newFace;
 };
 
-REAL3D.MeshModel.HMesh.prototype.deleteFace = function (face) {
+//1. make face edge's face null
+//2. remove face
+//3. there may exist dummy edge or vertex, if you want to remove them, please call removeDummyElement
+REAL3D.MeshModel.HMesh.prototype.deleteFace = function (faceIndex) {
+    "use strict";
+    var curFace, startEdge, curEdge;
+    if (faceIndex >= 0 && faceIndex < this.faces.length) {
+        curFace = this.faces[faceIndex];
+        startEdge = curFace.getEdge();
+        curEdge = startEdge;
+        do {
+            curEdge.setFace(null);
+            curEdge = curEdge.getNext();
+        } while (curEdge !== startEdge);
+        this.faces.splice(faceIndex, 1);
+    }
+};
+
+REAL3D.MeshModel.HMesh.prototype.removeDummyElement = function () {
     "use strict";
 };
 
@@ -429,6 +446,27 @@ REAL3D.MeshModel.HMesh.prototype.updateFaceIndex = function () {
 
 REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
     "use strict";
+    var copyMesh, vertCount, vid, faceCount, fid, faceVertices, curVertIndex, startEdge, curEdge;
+    copyMesh = new REAL3D.MeshModel.HMesh();
+    this.updateVertexIndex();
+    vertCount = this.vertices.length;
+    for (vid = 0; vid < vertCount; vid++) {
+        copyMesh.insertVertex(this.vertices[vid].getPosition());
+    }
+    faceCount = this.faces.length;
+    for (fid = 0; fid < faceCount; fid++) {
+        faceVertices = [];
+        startEdge = this.faces[fid].getEdge();
+        curEdge = startEdge;
+        do {
+            curVertIndex = curEdge.getVertex().getAssistObject();
+            faceVertices.push(copyMesh.getVertex(curVertIndex));
+            curEdge = curEdge.getNext();
+        } while (curEdge !== startEdge);
+        copyMesh.insertFace(faceVertices);
+    }
+    copyMesh.updateNormal();
+    return copyMesh;
 };
 
 REAL3D.MeshModel.ElementType = {

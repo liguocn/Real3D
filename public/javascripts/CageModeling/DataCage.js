@@ -84,6 +84,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         }
 
         pickedFace = this.pickTool.getPickedFace();
+        //console.log(" draw pickedFace: ", pickedFace.length);
         material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10});
         for (fid = 0; fid < pickedFace.length; fid++) {
             pFace = pickedMesh.getFace(pickedFace[fid]);
@@ -162,7 +163,7 @@ REAL3D.CageModeling.CageData.previewOperation = function () {
     "use strict";
     if (this.curOperation !== null) {
         this.previewMesh = this.curOperation.preview(this.pickTool); //change pickMesh to previewMesh
-        console.log(" previewMesh: ", this.previewMesh);
+        //console.log(" previewMesh: ", this.previewMesh);
         this.draw();
     }
 };

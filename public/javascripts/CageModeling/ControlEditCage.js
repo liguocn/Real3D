@@ -49,21 +49,24 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
 
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
         if (this.editState === REAL3D.CageModeling.EditState.NONE) {
-            console.log("  editState === EditState.NONE");
+            //console.log("      Create New Operation");
             this.editState = REAL3D.CageModeling.EditState.EDITTING;
             if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
                 REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Extrude(pickTool.getPickedFace()[0],
                     pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE, 0));
+                REAL3D.CageModeling.CageData.previewOperation();
             }
         } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
             if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
-                console.log("   editMode === EXTRUDE");
+                //console.log("     Edit Operation");
                 curOp = REAL3D.CageModeling.CageData.getCurOperation();
                 if (curOp.previewElemIndex !== pickTool.getPickedFace()[0]) {
+                    //console.log("      Create New Operation");
                     //generate new operation
                     REAL3D.CageModeling.CageData.generateOperation(true);
                     REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Extrude(pickTool.getPickedFace()[0],
                         pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE, 0));
+                    REAL3D.CageModeling.CageData.previewOperation();
                     //update UI
                     REAL3D.CageModeling.EditCageUI.setExtrudeDistance(0);
                 }
@@ -191,22 +194,44 @@ REAL3D.CageModeling.EditCageControl.switchEditMode = function (editMode) {
     this.editState = REAL3D.CageModeling.EditState.NONE;
 };
 
+REAL3D.CageModeling.EditCageControl.switchEditState = function (editState) {
+    "use strict";
+    this.editState = editState;
+};
+
 REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mouseNormPosY) {
     "use strict";
     //console.log("hitDetection");
-    var worldMatrix, projectMatrix, cameraMatrix, cameraProjectMatrix;
+    var worldMatrix, projectMatrix, cameraMatrix, cameraProjectMatrix, needVertexPick, needEdgePick, needFacePick;
     worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
     projectMatrix = this.camera.projectionMatrix;
     cameraMatrix = this.camera.matrixWorld;
     cameraProjectMatrix = new THREE.Matrix4();
     cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
-    if (REAL3D.CageModeling.CageData.pickVertex(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
-        this.mouseState = REAL3D.CageModeling.MouseState.HITVERTEX;
-    } else if (REAL3D.CageModeling.CageData.pickEdge(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
-        this.mouseState = REAL3D.CageModeling.MouseState.HITEDGE;
-    } else if (REAL3D.CageModeling.CageData.pickFace(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
-        this.mouseState = REAL3D.CageModeling.MouseState.HITFACE;
-    } else {
+    needVertexPick = true;
+    needEdgePick = true;
+    needFacePick = true;
+    this.mouseState = REAL3D.CageModeling.MouseState.NONE;
+    if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
+        needVertexPick = false;
+    }
+
+    if (needVertexPick) {
+        if (REAL3D.CageModeling.CageData.pickVertex(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
+            this.mouseState = REAL3D.CageModeling.MouseState.HITVERTEX;
+        }
+    }
+    if (needEdgePick && this.mouseState === REAL3D.CageModeling.MouseState.NONE) {
+        if (REAL3D.CageModeling.CageData.pickEdge(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
+            this.mouseState = REAL3D.CageModeling.MouseState.HITEDGE;
+        }
+    }
+    if (needFacePick && this.mouseState === REAL3D.CageModeling.MouseState.NONE) {
+        if (REAL3D.CageModeling.CageData.pickFace(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
+            this.mouseState = REAL3D.CageModeling.MouseState.HITFACE;
+        }
+    }
+    if (this.mouseState === REAL3D.CageModeling.MouseState.NONE) {
         this.mouseState = REAL3D.CageModeling.MouseState.HITCANVAS;
     }
 };
