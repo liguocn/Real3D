@@ -327,9 +327,14 @@ REAL3D.MeshModel.HMesh.prototype.updateNormal = function () {
         curEdge = startEdge;
         vertNormal = new REAL3D.Vector3(0, 0, 0);
         do {
-            vertNormal.addVector(curEdge.getFace().getNormal());
+            if (curEdge.getFace() !== null) {
+                vertNormal.addVector(curEdge.getFace().getNormal());
+            }
+            if (curEdge.getPair().getFace() === null) {
+                break;
+            }
             curEdge = curEdge.getPair().getNext();
-        } while (curEdge !== startEdge && curEdge !== null);
+        } while (curEdge !== startEdge);
         vertNormal.unify();
         this.vertices[vid].setNormal(vertNormal);
     }
@@ -347,7 +352,7 @@ REAL3D.MeshModel.HMesh.prototype.insertVertex = function (vertPos) {
     return newVertex;
 };
 
-// REAL3D.MeshModel.HMesh.prototype.deleteVertex = function (vertex) {
+// REAL3D.MeshModel.HMesh.prototype.deleteVertex = function (vertexIndex) {
 //     "use strict";
 // };
 
@@ -358,12 +363,16 @@ REAL3D.MeshModel.HMesh.prototype.insertEdge = function (vertStart, vertEnd) {
         res.edge.setId(this.edgeNewId);
         this.edgeNewId++;
         this.edges.push(res.edge);
-        vertStart.setEdge(res.edge);
+        if (res.edge.getFace() !== null) {
+            vertStart.setEdge(res.edge);
+        }
     }
     return res.edge;
 };
 
-// REAL3D.MeshModel.HMesh.prototype.deleteEdge = function (edge) {
+// //1. Remove edge face
+// //2. Remove edge and its pair
+// REAL3D.MeshModel.HMesh.prototype.deleteEdge = function (edgeIndex) {
 //     "use strict";
 // };
 
@@ -381,6 +390,7 @@ REAL3D.MeshModel.HMesh.prototype.insertFace = function (vertices) {
     for (vid = 0; vid < vertCount; vid++) {
         curEdge = this.insertEdge(vertices[vid], vertices[(vid + 1) % vertCount]);
         curEdge.setFace(newFace);
+        vertices[vid].setEdge(curEdge);
         innerEdges.push(curEdge);
         pairEdge = this.insertEdge(vertices[(vid + 1) % vertCount], vertices[vid]);
         curEdge.setPair(pairEdge);
@@ -413,8 +423,71 @@ REAL3D.MeshModel.HMesh.prototype.deleteFace = function (faceIndex) {
     }
 };
 
+//1. remove dummy element
+//2. make mesh a manifold
 REAL3D.MeshModel.HMesh.prototype.removeDummyElement = function () {
     "use strict";
+    var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert;
+    edgeCount = this.edges.length;
+    removeFlag = [];
+    boundaryEdges = [];
+    for (eid = 0; eid < edgeCount; eid++) {
+        if (this.edges[eid].getFace() !== null || this.edges[eid].getPair().getFace() !== null) {
+            removeFlag.push(0);
+        } else {
+            removeFlag.push(1);
+        }
+        if (this.edges[eid].getFace() === null && this.edges[eid].getPair().getFace() !== null) {
+            boundaryEdges.push(this.edges[eid]);
+        }
+    }
+    for (eid = edgeCount - 1; eid >= 0; eid--) {
+        if (removeFlag[eid] === 1) {
+            curEdge = this.edges[eid];
+            preEdge = curEdge.getPre();
+            if (preEdge !== null) {
+                preEdge.setNext(null);
+            }
+            curEdge.setPre(null);
+            nextEdge = curEdge.getNext();
+            if (nextEdge !== null) {
+                nextEdge.setPre(null);
+            }
+            curEdge.setNext(null);
+            pairEdge = curEdge.getPair();
+            if (pairEdge !== null) {
+                pairEdge.setPair(null);
+            }
+            curEdge.setPair(null);
+            curEdge.setVertex(null);
+
+            this.edges.splice(eid, 1);
+        }
+    }
+    //if a vertex is not a manifold, it should be splitted into several vertices: not done
+    for (eid = 0; eid < boundaryEdges.length; eid++) {
+        startVert = boundaryEdges[eid].getPair().getVertex();
+        startVert.setEdge(boundaryEdges[eid]);
+    }
+
+    //remove dummy vertex
+    vertCount = this.vertices.length;
+    removeFlag = [];
+    for (vid = 0; vid < vertCount; vid++) {
+        curVert = this.vertices[vid];
+        if (curVert.getEdge() === null) {
+            removeFlag.push(1);
+        } else if (curVert.getEdge().getPair() === null) {
+            removeFlag.push(1);
+        } else {
+            removeFlag.push(0);
+        }
+    }
+    for (vid = vertCount - 1; vid >= 0; vid--) {
+        if (removeFlag[vid] === 1) {
+            this.vertices.splice(vid, 1);
+        }
+    }
 };
 
 REAL3D.MeshModel.HMesh.prototype.updateVertexIndex = function () {

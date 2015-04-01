@@ -48,20 +48,16 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     if (this.mouseState === REAL3D.CageModeling.MouseState.HITCANVAS) {
 
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
-        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
-            //console.log("      Create New Operation");
-            this.editState = REAL3D.CageModeling.EditState.EDITTING;
-            if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
+        if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
+            if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+                console.log("  Create new extrude: none");
+                this.editState = REAL3D.CageModeling.EditState.EDITTING;
                 REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Extrude(pickTool.getPickedFace()[0],
                     pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE, 0));
                 REAL3D.CageModeling.CageData.previewOperation();
-            }
-        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
-            if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
-                //console.log("     Edit Operation");
+            } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
                 curOp = REAL3D.CageModeling.CageData.getCurOperation();
                 if (curOp.previewElemIndex !== pickTool.getPickedFace()[0]) {
-                    //console.log("      Create New Operation");
                     //generate new operation
                     REAL3D.CageModeling.CageData.generateOperation(true);
                     REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Extrude(pickTool.getPickedFace()[0],
@@ -71,6 +67,10 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
                     REAL3D.CageModeling.EditCageUI.setExtrudeDistance(0);
                 }
             }
+        } else if (this.editMode === REAL3D.CageModeling.EditMode.DELETE) {
+            REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Delete(pickTool.getPickedFace()[0],
+                pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE));
+            REAL3D.CageModeling.CageData.generateOperation(false);
         }
 
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
@@ -216,6 +216,9 @@ REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mous
     if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
         needVertexPick = false;
         onlyBoundary = true;
+    } else if (this.editMode === REAL3D.CageModeling.EditMode.DELETE) {
+        needVertexPick = false;
+        needEdgePick = false;
     }
 
     if (needVertexPick) {
