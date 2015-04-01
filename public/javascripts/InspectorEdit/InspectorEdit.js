@@ -1,3 +1,5 @@
+/*global REAL3D, console, THREE, requestAnimationFrame, $*/
+
 REAL3D.InspectorEdit = {
     controlState: null,
     editState: null,
@@ -15,12 +17,12 @@ REAL3D.InspectorEdit.init = function (winW, winH, canvasElement) {
 
     // register callback function
     var that = this;
-    canvasElement.addEventListener("mousedown", function(e) { that.mouseDown(e); }, false);
-    canvasElement.addEventListener("mouseup", function(e) { that.mouseUp(e); }, false);
-    canvasElement.addEventListener("mouseMove", function(e) { that.mouseMove(e); }, false);
-    canvasElement.addEventListener("keypress", function(e) { that.keyPress(e); }, false);
-    canvasElement.addEventListener("keydown", function (e) { that.keyDown(e); }, false);
-    canvasElement.addEventListener("keyup", function (e) { that.keyUp(e); }, false);
+    canvasElement.addEventListener("mousedown", function (e) { that.mouseDown(e);   }, false);
+    canvasElement.addEventListener("mouseup",   function (e) { that.mouseUp(e);     }, false);
+    canvasElement.addEventListener("mousemove", function (e) { that.mouseMove(e);   }, false);
+    canvasElement.addEventListener("keypress",  function (e) { that.keyPress(e);    }, false);
+    canvasElement.addEventListener("keydown",   function (e) { that.keyDown(e);     }, false);
+    canvasElement.addEventListener("keyup",     function (e) { that.keyUp(e);       }, false);
     canvasElement.setAttribute("tabindex", 1);
     canvasElement.focus();
     canvasElement.style.outline = "none";
@@ -33,9 +35,6 @@ REAL3D.InspectorEdit.run = function () {
     var that = this;
     function animateFunction(timestamp) {
         REAL3D.RenderManager.update();
-        //if (that.controlState === undefined) {
-        //    console.log("ControlState undefined.");
-        //}
         if (that.controlState !== null) {
             if (that.controlState.update !== undefined) {
                 that.controlState.update(timestamp);
@@ -123,4 +122,11 @@ REAL3D.InspectorEdit.switchControlState = function (controlState) {
 
 REAL3D.InspectorEdit.MouseState = {
     NONE: 0
+};
+
+REAL3D.InspectorEdit.ViewMode = {
+    NONE: 0,
+    TRANSLATE: 1,
+    ROTATE: 2,
+    SCALE: 3
 };
