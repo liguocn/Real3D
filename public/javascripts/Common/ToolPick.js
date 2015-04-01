@@ -71,7 +71,7 @@ REAL3D.PickTool.PickHMesh.prototype.getPickedVertex = function () {
     return this.pickedVertex;
 };
 
-REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
+REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY, onlyBoundary) {
     "use strict";
     if (this.mesh === null) {
         return false;
@@ -82,9 +82,20 @@ REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMat
     wpMatrix.multiplyMatrices(projectMatrix, worldMatrix);
     edgeCount = this.mesh.getEdgeCount();
     visitFlag = [];
-    for (eid = 0; eid < edgeCount; eid++) {
-        visitFlag.push(1);
+    if (onlyBoundary) {
+        for (eid = 0; eid < edgeCount; eid++) {
+            if (this.mesh.getEdge(eid).getFace() !== null) {
+                visitFlag.push(-1);
+            } else {
+                visitFlag.push(1);
+            }
+        }
+    } else {
+        for (eid = 0; eid < edgeCount; eid++) {
+            visitFlag.push(1);
+        }
     }
+
     mousePoint = new REAL3D.Vector2(mouseNormPosX, mouseNormPosY);
     for (eid = 0; eid < edgeCount; eid++) {
         if (visitFlag[eid] !== 1) {

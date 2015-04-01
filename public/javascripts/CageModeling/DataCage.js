@@ -176,11 +176,11 @@ REAL3D.CageModeling.CageData.generateOperation = function (keepPickIndex) {
     if (this.curOperation !== null) {
         this.previewMesh = null;
         this.cageMesh = this.curOperation.generate();
-        this.pickCageMesh(keepPickIndex);
         this.operations.push(this.curOperation);
         this.curOperation = null;
-        this.draw();
     }
+    this.pickCageMesh(keepPickIndex);
+    this.draw();
 };
 
 REAL3D.CageModeling.CageData.pickCageMesh = function (keepPickIndex) {
@@ -201,10 +201,10 @@ REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, 
     return false;
 };
 
-REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY) {
+REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY, onlyBoundary) {
     "use strict";
     if (this.pickTool !== null) {
-        var isPicked = this.pickTool.pickEdge(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        var isPicked = this.pickTool.pickEdge(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY, onlyBoundary);
         this.draw();
         return isPicked;
     }

@@ -202,7 +202,7 @@ REAL3D.CageModeling.EditCageControl.switchEditState = function (editState) {
 REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mouseNormPosY) {
     "use strict";
     //console.log("hitDetection");
-    var worldMatrix, projectMatrix, cameraMatrix, cameraProjectMatrix, needVertexPick, needEdgePick, needFacePick;
+    var worldMatrix, projectMatrix, cameraMatrix, cameraProjectMatrix, needVertexPick, needEdgePick, needFacePick, onlyBoundary;
     worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
     projectMatrix = this.camera.projectionMatrix;
     cameraMatrix = this.camera.matrixWorld;
@@ -211,9 +211,11 @@ REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mous
     needVertexPick = true;
     needEdgePick = true;
     needFacePick = true;
+    onlyBoundary = false;
     this.mouseState = REAL3D.CageModeling.MouseState.NONE;
     if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
         needVertexPick = false;
+        onlyBoundary = true;
     }
 
     if (needVertexPick) {
@@ -222,7 +224,7 @@ REAL3D.CageModeling.EditCageControl.hitDetection = function (mouseNormPosX, mous
         }
     }
     if (needEdgePick && this.mouseState === REAL3D.CageModeling.MouseState.NONE) {
-        if (REAL3D.CageModeling.CageData.pickEdge(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY)) {
+        if (REAL3D.CageModeling.CageData.pickEdge(worldMatrix, cameraProjectMatrix, mouseNormPosX, mouseNormPosY, onlyBoundary)) {
             this.mouseState = REAL3D.CageModeling.MouseState.HITEDGE;
         }
     }
