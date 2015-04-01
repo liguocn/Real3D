@@ -91,6 +91,7 @@ REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
             this.previewMesh.insertFace(faceVertices);
         }
         extrudeFace =  this.previewMesh.insertFace(this.extrudeVertices);
+        this.previewMesh.validateTopology();
         this.previewMesh.updateNormal();
         this.previewMesh.updateFaceIndex();
         this.previewElemIndex = extrudeFace.getAssistObject();

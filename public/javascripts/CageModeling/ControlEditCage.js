@@ -50,7 +50,7 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
         if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
             if (this.editState === REAL3D.CageModeling.EditState.NONE) {
-                console.log("  Create new extrude: none");
+                //console.log("  Create new extrude: none");
                 this.editState = REAL3D.CageModeling.EditState.EDITTING;
                 REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Extrude(pickTool.getPickedFace()[0],
                     pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE, 0));

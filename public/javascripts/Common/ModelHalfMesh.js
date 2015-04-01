@@ -425,7 +425,7 @@ REAL3D.MeshModel.HMesh.prototype.deleteFace = function (faceIndex) {
 
 //1. remove dummy element
 //2. make mesh a manifold
-REAL3D.MeshModel.HMesh.prototype.removeDummyElement = function () {
+REAL3D.MeshModel.HMesh.prototype.validateTopology = function () {
     "use strict";
     var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert;
     edgeCount = this.edges.length;
@@ -464,7 +464,7 @@ REAL3D.MeshModel.HMesh.prototype.removeDummyElement = function () {
             this.edges.splice(eid, 1);
         }
     }
-    //if a vertex is not a manifold, it should be splitted into several vertices: not done
+    //we restrict that the mesh is a manifold. No operation should make it a non-manifold.
     for (eid = 0; eid < boundaryEdges.length; eid++) {
         startVert = boundaryEdges[eid].getPair().getVertex();
         startVert.setEdge(boundaryEdges[eid]);

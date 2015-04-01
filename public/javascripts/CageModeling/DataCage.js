@@ -175,8 +175,13 @@ REAL3D.CageModeling.CageData.generateOperation = function (keepPickIndex) {
     "use strict";
     if (this.curOperation !== null) {
         this.previewMesh = null;
-        this.cageMesh = this.curOperation.generate();
-        this.operations.push(this.curOperation);
+        var resMesh = this.curOperation.generate();
+        if (resMesh !== null) {
+            this.cageMesh = resMesh;
+            this.operations.push(this.curOperation);
+        } else {
+            alert("不允许这个操作");
+        }
         this.curOperation = null;
     }
     this.pickCageMesh(keepPickIndex);
