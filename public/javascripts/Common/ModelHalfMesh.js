@@ -538,6 +538,7 @@ REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
         } while (curEdge !== startEdge);
         copyMesh.insertFace(faceVertices);
     }
+    copyMesh.validateTopology();
     copyMesh.updateNormal();
     return copyMesh;
 };

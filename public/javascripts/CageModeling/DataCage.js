@@ -53,58 +53,63 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         pickedMesh = this.pickTool.mesh;
 
         pickedVertex = this.pickTool.getPickedVertex();
-        material = new THREE.MeshBasicMaterial({color: 0xbbbb2b});
-        for (pid = 0; pid < pickedVertex.length; pid++) {
-            vPos = pickedMesh.getVertex(pickedVertex[pid]).getPosition();
-            geometry = new THREE.SphereGeometry(6, 6, 6);
-            ball = new THREE.Mesh(geometry, material);
-            ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
-            this.refObject.add(ball);
+        if (pickedVertex !== null) {
+            material = new THREE.MeshBasicMaterial({color: 0xbbbb2b});
+            for (pid = 0; pid < pickedVertex.length; pid++) {
+                vPos = pickedMesh.getVertex(pickedVertex[pid]).getPosition();
+                geometry = new THREE.SphereGeometry(6, 6, 6);
+                ball = new THREE.Mesh(geometry, material);
+                ball.position.set(vPos.getX(), vPos.getY(), vPos.getZ());
+                this.refObject.add(ball);
+            }
         }
 
         pickedEdge = this.pickTool.getPickedEdge();
-        material = new THREE.MeshPhongMaterial({color: 0x2bbbbb, specular: 0x101010, shininess: 10});
-        threeUpVector = new THREE.Vector3(0, 1, 0);
-        for (pid = 0; pid < pickedEdge.length; pid++) {
-            pEdge = pickedMesh.getEdge(pickedEdge[pid]);
-            vPos0 =  pEdge.getVertex().getPosition();
-            vPos1 = pEdge.getPair().getVertex().getPosition();
-            edgeVector = REAL3D.Vector3.sub(vPos1, vPos0);
-            edgeLen = edgeVector.unify();
-            geometry = new THREE.CylinderGeometry(2, 2, edgeLen, 4);
-            cylinder = new THREE.Mesh(geometry, material);
-            cylinder.translateX((vPos0.x + vPos1.x) / 2);
-            cylinder.translateY((vPos0.y + vPos1.y) / 2);
-            cylinder.translateZ((vPos0.z + vPos1.z) / 2);
-            threeEdgeVector = new THREE.Vector3(edgeVector.x, edgeVector.y, edgeVector.z);
-            rotateQ = new THREE.Quaternion();
-            rotateQ.setFromUnitVectors(threeUpVector, threeEdgeVector);
-            cylinder.setRotationFromQuaternion(rotateQ);
-            this.refObject.add(cylinder);
-        }
-
-        pickedFace = this.pickTool.getPickedFace();
-        //console.log(" draw pickedFace: ", pickedFace.length);
-        material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10});
-        for (fid = 0; fid < pickedFace.length; fid++) {
-            pFace = pickedMesh.getFace(pickedFace[fid]);
-            geometry = new THREE.Geometry();
-            pStartEdge = pFace.getEdge();
-            pCurEdge = pStartEdge;
-            edgeCount = 0;
-            do {
-                vPos = pCurEdge.getVertex().getPosition();
-                geometry.vertices.push(new THREE.Vector3(vPos.getX(), vPos.getY(), vPos.getZ()));
-                pCurEdge = pCurEdge.getNext();
-                edgeCount++;
-            } while (pCurEdge !== pStartEdge);
-            for (eid = 1; eid < edgeCount - 1; eid++) {
-                geometry.faces.push(new THREE.Face3(0, eid, eid + 1));
+        if (pickedEdge !== null) {
+            material = new THREE.MeshPhongMaterial({color: 0x2bbbbb, specular: 0x101010, shininess: 10});
+            threeUpVector = new THREE.Vector3(0, 1, 0);
+            for (pid = 0; pid < pickedEdge.length; pid++) {
+                pEdge = pickedMesh.getEdge(pickedEdge[pid]);
+                vPos0 =  pEdge.getVertex().getPosition();
+                vPos1 = pEdge.getPair().getVertex().getPosition();
+                edgeVector = REAL3D.Vector3.sub(vPos1, vPos0);
+                edgeLen = edgeVector.unify();
+                geometry = new THREE.CylinderGeometry(2, 2, edgeLen, 4);
+                cylinder = new THREE.Mesh(geometry, material);
+                cylinder.translateX((vPos0.x + vPos1.x) / 2);
+                cylinder.translateY((vPos0.y + vPos1.y) / 2);
+                cylinder.translateZ((vPos0.z + vPos1.z) / 2);
+                threeEdgeVector = new THREE.Vector3(edgeVector.x, edgeVector.y, edgeVector.z);
+                rotateQ = new THREE.Quaternion();
+                rotateQ.setFromUnitVectors(threeUpVector, threeEdgeVector);
+                cylinder.setRotationFromQuaternion(rotateQ);
+                this.refObject.add(cylinder);
             }
-            geometry.computeFaceNormals();
-            geometry.computeVertexNormals();
-            mesh = new THREE.Mesh(geometry, material);
-            this.refObject.add(mesh);
+        }
+        
+        pickedFace = this.pickTool.getPickedFace();
+        if (pickedFace !== null) {
+            material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10});
+            for (fid = 0; fid < pickedFace.length; fid++) {
+                pFace = pickedMesh.getFace(pickedFace[fid]);
+                geometry = new THREE.Geometry();
+                pStartEdge = pFace.getEdge();
+                pCurEdge = pStartEdge;
+                edgeCount = 0;
+                do {
+                    vPos = pCurEdge.getVertex().getPosition();
+                    geometry.vertices.push(new THREE.Vector3(vPos.getX(), vPos.getY(), vPos.getZ()));
+                    pCurEdge = pCurEdge.getNext();
+                    edgeCount++;
+                } while (pCurEdge !== pStartEdge);
+                for (eid = 1; eid < edgeCount - 1; eid++) {
+                    geometry.faces.push(new THREE.Face3(0, eid, eid + 1));
+                }
+                geometry.computeFaceNormals();
+                geometry.computeVertexNormals();
+                mesh = new THREE.Mesh(geometry, material);
+                this.refObject.add(mesh);
+            }
         }
     }
 };
@@ -173,19 +178,25 @@ REAL3D.CageModeling.CageData.previewOperation = function () {
 //3. Switch UI
 REAL3D.CageModeling.CageData.generateOperation = function (keepPickIndex) {
     "use strict";
+    var resMesh, res;
+    res = false;
     if (this.curOperation !== null) {
         this.previewMesh = null;
         var resMesh = this.curOperation.generate();
         if (resMesh !== null) {
             this.cageMesh = resMesh;
             this.operations.push(this.curOperation);
+            res = true;
         } else {
             alert("不允许这个操作");
+            this.pickTool.clearPickedElement(false);
+            //console.log("warning: invalid operation!");
         }
         this.curOperation = null;
     }
     this.pickCageMesh(keepPickIndex);
     this.draw();
+    return res;
 };
 
 REAL3D.CageModeling.CageData.pickCageMesh = function (keepPickIndex) {
