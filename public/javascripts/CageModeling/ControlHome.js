@@ -59,7 +59,20 @@ REAL3D.CageModeling.HomeControl.mouseUp = function (e) {
     this.isMouseDown = false;
 };
 
-REAL3D.CageModeling.HomeControl.switchTransformMode = function (viewMode) {
+REAL3D.CageModeling.HomeControl.keyPress = function (e) {
+    "use strict";
+    if (e.which === 116 || e.which === 84) {
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.TRANSLATE);
+    } else if (e.which === 114 || e.which === 82) {
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
+    } else if (e.which === 115 || e.which === 83) {
+        this.switchViewMode(REAL3D.CageModeling.ViewMode.SCALE);
+    } else if (e.which === 110 || e.which === 78) {
+        this.resetView();
+    }
+};
+
+REAL3D.CageModeling.HomeControl.switchViewMode = function (viewMode) {
     "use strict";
     this.viewMode = viewMode;
 };

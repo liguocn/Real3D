@@ -3,14 +3,15 @@
 
 REAL3D.CageModeling.HomeState = {
     light: null,
-    refFrame: null
+    refFrame: null,
+    testRefFrame: null
 };
 
 REAL3D.CageModeling.HomeState.enter = function () {
     "use strict";
     console.log("enter CageModeling.HomeState");
     REAL3D.CageModeling.switchControl(REAL3D.CageModeling.HomeControl);
-    REAL3D.CageModeling.HomeControl.switchTransformMode(REAL3D.CageModeling.ViewMode.ROTATE);
+    REAL3D.CageModeling.HomeControl.switchViewMode(REAL3D.CageModeling.ViewMode.ROTATE);
 
     //setup light
     this.setupLight();
@@ -36,8 +37,12 @@ REAL3D.CageModeling.HomeState.setupLight = function () {
     this.releaseLight();
     this.light = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.light);
-    var ambientLight = new THREE.AmbientLight(0x2b2b2b);
-    this.light.add(ambientLight);
+    // var ambientLight = new THREE.AmbientLight(0x2b2b2b);
+    // this.light.add(ambientLight);
+
+    var hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
+    hemisphereLight.position.set(0, 0, 10000);
+    this.light.add(hemisphereLight);
 };
 
 REAL3D.CageModeling.HomeState.releaseLight = function () {
@@ -143,6 +148,14 @@ REAL3D.CageModeling.HomeState.setupRefFrame = function () {
         line = new THREE.Line(geometry, material);
         this.refFrame.add(line);
     }
+
+    //set up testRefFrame
+    if (this.testRefFrame === null) {
+        this.testRefFrame = new REAL3D.TransformTool.RefFrame();
+    }
+    this.testRefFrame.initPosition(new REAL3D.Vector3(0, 0, 0), new REAL3D.Vector3(0, 1, 0), new REAL3D.Vector3(1, 0, 0), 300);
+    this.testRefFrame.setDrawParent(this.refFrame);
+    this.testRefFrame.draw();
 };
 
 REAL3D.CageModeling.HomeState.releaseRefFrame = function () {
