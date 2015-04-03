@@ -8,7 +8,8 @@ REAL3D.CageModeling.HomeControl = {
     camera: null,
     viewMode: null,
     isMouseDown: null,
-    mouseMovePos: null
+    mouseMovePos: null,
+    refFrame: null
 };
 
 REAL3D.CageModeling.HomeControl.init = function (canvasOffset, winW, winH) {
@@ -23,6 +24,10 @@ REAL3D.CageModeling.HomeControl.init = function (canvasOffset, winW, winH) {
         this.winW = winW;
         this.winH = winH;
     }
+    if (this.refFrame === null) {
+        this.refFrame = new REAL3D.TransformTool.RefFrame();
+        this.refFrame.init(new REAL3D.Vector3(0, 0, 0), new REAL3D.Vector3(0, 1, 0), new REAL3D.Vector3(1, 0, 0), 200, REAL3D.RenderManager.scene);
+    }
     this.isMouseDown = false;
     this.mouseMovePos = new THREE.Vector2(0, 0);
     REAL3D.RenderManager.switchCamera(this.camera);
@@ -30,25 +35,44 @@ REAL3D.CageModeling.HomeControl.init = function (canvasOffset, winW, winH) {
 
 REAL3D.CageModeling.HomeControl.mouseDown = function (e) {
     "use strict";
-    var curPosX, curPosY;
+    var curPosX, curPosY, mouseNormPosX, mouseNormPosY, projectMatrix, cameraMatrix, cameraProjectMatrix;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
+    mouseNormPosX = curPosX * 2 / this.winW - 1;
+    mouseNormPosY = 1 - curPosY * 2 / this.winH;
     this.isMouseDown = true;
+    if (this.refFrame !== null) {
+        projectMatrix = this.camera.projectionMatrix;
+        cameraMatrix = this.camera.matrixWorld;
+        cameraProjectMatrix = new THREE.Matrix4();
+        cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
+        this.refFrame.mouseDown(mouseNormPosX, mouseNormPosY, cameraProjectMatrix);
+    }
     this.mouseMovePos.set(curPosX, curPosY);
 };
 
 REAL3D.CageModeling.HomeControl.mouseMove = function (e) {
     "use strict";
     if (this.isMouseDown) {
-        var curPosX, curPosY;
+        var curPosX, curPosY, mouseNormPosX, mouseNormPosY, handled;
+        handled = false;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
-            this.translateCamera(curPosX, curPosY);
-        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
-            this.rotateScene(curPosX, curPosY);
-        } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
-            this.zoomCamera(curPosX, curPosY);
+        mouseNormPosX = curPosX * 2 / this.winW - 1;
+        mouseNormPosY = 1 - curPosY * 2 / this.winH;
+        if (this.refFrame !== null) {
+            if (this.refFrame.mouseMove(mouseNormPosX, mouseNormPosY)) {
+                handled = true;
+            }
+        }
+        if (!handled) {
+            if (this.viewMode === REAL3D.CageModeling.ViewMode.TRANSLATE) {
+                this.translateCamera(curPosX, curPosY);
+            } else if (this.viewMode === REAL3D.CageModeling.ViewMode.ROTATE) {
+                this.rotateScene(curPosX, curPosY);
+            } else if (this.viewMode === REAL3D.CageModeling.ViewMode.SCALE) {
+                this.zoomCamera(curPosX, curPosY);
+            }
         }
         this.mouseMovePos.set(curPosX, curPosY);
     }
@@ -56,6 +80,14 @@ REAL3D.CageModeling.HomeControl.mouseMove = function (e) {
 
 REAL3D.CageModeling.HomeControl.mouseUp = function (e) {
     "use strict";
+    var curPosX, curPosY, mouseNormPosX, mouseNormPosY;
+    curPosX = e.pageX - this.canvasOffset.left;
+    curPosY = e.pageY - this.canvasOffset.top;
+    mouseNormPosX = curPosX * 2 / this.winW - 1;
+    mouseNormPosY = 1 - curPosY * 2 / this.winH;
+    if (this.refFrame !== null) {
+        this.refFrame.mouseUp(mouseNormPosX, mouseNormPosY);
+    }
     this.isMouseDown = false;
 };
 
