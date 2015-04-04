@@ -28,7 +28,8 @@ REAL3D.MeshModel.HVertex.prototype.setId = function (vId) {
 
 REAL3D.MeshModel.HVertex.prototype.getPosition = function () {
     "use strict";
-    return this.position;
+    var position = this.position.copyTo();
+    return position;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setPosition = function (vPos) {
@@ -38,7 +39,8 @@ REAL3D.MeshModel.HVertex.prototype.setPosition = function (vPos) {
 
 REAL3D.MeshModel.HVertex.prototype.getNormal = function () {
     "use strict";
-    return this.normal;
+    var normal = this.normal.copyTo();
+    return normal;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setNormal = function (vNormal) {
@@ -48,7 +50,8 @@ REAL3D.MeshModel.HVertex.prototype.setNormal = function (vNormal) {
 
 REAL3D.MeshModel.HVertex.prototype.getColor = function () {
     "use strict";
-    return this.color;
+    var color = this.color.copyTo();
+    return color;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setColor = function (vColor) {
@@ -58,7 +61,8 @@ REAL3D.MeshModel.HVertex.prototype.setColor = function (vColor) {
 
 REAL3D.MeshModel.HVertex.prototype.getTexCoord = function () {
     "use strict";
-    return this.texCoord;
+    var texCoord = this.texCoord.copyTo();
+    return texCoord;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setTexCoord = function (vTexCoord) {
@@ -199,7 +203,8 @@ REAL3D.MeshModel.HFace.prototype.setEdge = function (hEdge) {
 
 REAL3D.MeshModel.HFace.prototype.getNormal = function () {
     "use strict";
-    return this.normal;
+    var normal = this.normal.copyTo();
+    return normal;
 };
 
 REAL3D.MeshModel.HFace.prototype.setNormal = function (fNormal) {

@@ -189,26 +189,44 @@ REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
 
 REAL3D.CageModeling.EditCageUI.changeTranslateValue = function () {
     "use strict";
+    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
+    if (curOp !== null) {
+        curOp.setTranslateValue(parseFloat($('#translateValue').val()));
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.EditCageUI.setTranslateValue = function (value) {
     "use strict";
+    $('#translateValue').val(value);
 };
 
 REAL3D.CageModeling.EditCageUI.changeScaleValue = function () {
     "use strict";
+    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
+    if (curOp !== null) {
+        curOp.setScaleValue(parseFloat($('#scaleValue').val()));
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.EditCageUI.setScaleValue = function (value) {
     "use strict";
+    $('#scaleValue').val(value);
 };
 
 REAL3D.CageModeling.EditCageUI.changeRotateValue = function () {
     "use strict";
+    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
+    if (curOp !== null) {
+        curOp.setRotateValue(parseFloat($('#rotateValue').val()));
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
 };
 
 REAL3D.CageModeling.EditCageUI.setRotateValue = function (value) {
     "use strict";
+    $('#rotateValue').val(value);
 };
 
 REAL3D.CageModeling.EditCageUI.configTransformUI = function (disableTranslate, disableScale, disableRotate) {

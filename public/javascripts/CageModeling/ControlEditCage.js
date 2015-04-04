@@ -11,7 +11,9 @@ REAL3D.CageModeling.EditCageControl = {
     isMouseDown: null,
     mouseMovePos: null,
     mouseState: null,
-    editState: null
+    editState: null,
+    transformRefFrame: null,
+    refSize: null
 };
 
 REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
@@ -30,6 +32,7 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
     this.mouseMovePos = new THREE.Vector2(0, 0);
     this.mouseState = REAL3D.CageModeling.MouseState.NONE;
     this.editState = REAL3D.CageModeling.EditState.NONE;
+    this.refSize = 100;
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
@@ -47,6 +50,8 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
         this.extrudeMouseDown();
     } else if (this.editMode === REAL3D.CageModeling.EditMode.DELETE) {
         this.deleteMouseDown();
+    } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
+        this.editMouseDown(mouseNormPosX, mouseNormPosY);
     }
 };
 
@@ -59,6 +64,8 @@ REAL3D.CageModeling.EditCageControl.mouseMove = function (e) {
         this.viewControlMouseMove(curPosX, curPosY);
         if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
             this.extrudeMouseMove(curPosY);
+        } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
+            this.editMouseMove(curPosX, curPosY);
         }
         this.mouseMovePos.set(curPosX, curPosY);
     }
@@ -262,4 +269,50 @@ REAL3D.CageModeling.EditCageControl.deleteMouseDown = function () {
             pickTool.getMesh(), REAL3D.MeshModel.ElementType.FACE));
         REAL3D.CageModeling.CageData.generateOperation(false);
     }
+};
+
+REAL3D.CageModeling.EditCageControl.editMouseDown = function (mouseNormPosX, mouseNormPosY) {
+    "use strict";
+    var pickTool, curOp, pickedFace, startEdge, curEdge, centerPos, vertexCount, xDir, projectMatrix, cameraMatrix, cameraProjectMatrix;
+    pickTool = REAL3D.CageModeling.CageData.pickTool;
+    if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+            pickedFace = pickTool.getMesh().getFace(pickTool.getPickedFace()[0]);
+            startEdge = pickedFace.getEdge();
+            curEdge = startEdge;
+            centerPos = new REAL3D.Vector3(0, 0, 0);
+            vertexCount = 0;
+            do {
+                centerPos.addVector(curEdge.getVertex().getPosition());
+                vertexCount++;
+                curEdge = curEdge.getNext();
+            } while (curEdge !== startEdge);
+            xDir = REAL3D.Vector3.sub(startEdge.getVertex().getPosition(), startEdge.getPair().getVertex().getPosition());
+            xDir.unify();
+            centerPos.multiply(1 / vertexCount);
+            if (this.transformRefFrame !== null) {
+                this.transformRefFrame.releaseData();
+            }
+            this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
+            this.transformRefFrame.init(centerPos, pickedFace.getNormal(), xDir, this.refSize, REAL3D.RenderManager.scene);
+        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
+
+        }
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITVERTEX) {
+
+    } else {
+        if (this.transformRefFrame !== null) {
+            projectMatrix = this.camera.projectionMatrix;
+            cameraMatrix = this.camera.matrixWorld;
+            cameraProjectMatrix = new THREE.Matrix4();
+            cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
+            this.transformRefFrame.mouseDown(mouseNormPosX, mouseNormPosY, cameraProjectMatrix);
+        }
+    }
+};
+
+REAL3D.CageModeling.EditCageControl.editMouseMove = function (mousePosX, mousePosY) {
+    "use strict";
 };
