@@ -7697,6 +7697,11 @@ THREE.Object3D.prototype = {
 
 	},
 
+	getLocalPosition: function () {
+		var result = new THREE.Vector3();
+		return result.setFromMatrixPosition( this.matrix );
+	},
+
 	getWorldPosition: function ( optionalTarget ) {
 
 		var result = optionalTarget || new THREE.Vector3();

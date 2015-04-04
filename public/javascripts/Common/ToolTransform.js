@@ -17,6 +17,12 @@ REAL3D.TransformTool.TransformType = {
     SCALEZ: 9
 };
 
+REAL3D.TransformTool.MouseDownState = {
+    NONE: 0,
+    CREATE: 1,
+    EDIT: 2
+};
+
 REAL3D.TransformTool.HITVERTEXRADIUS = 0.0005;
 
 REAL3D.TransformTool.RefFrame = function () {
@@ -32,6 +38,7 @@ REAL3D.TransformTool.RefFrame = function () {
     this.drawObject = null;
     this.mouseMovePos = null;
     this.mouseState = null;
+    this.assistHitDir = null;
 };
 
 REAL3D.TransformTool.RefFrame.prototype.init = function (centerPos, yDir, xDir, refSize, drawParent) {
@@ -48,36 +55,73 @@ REAL3D.TransformTool.RefFrame.prototype.init = function (centerPos, yDir, xDir, 
 
     this.draw();
     this.mouseMovePos = new REAL3D.Vector2(0, 0);
+    this.assistHitDir = new REAL3D.Vector2(0, 0);
     this.mouseState = REAL3D.TransformTool.TransformType.NONE;
 };
 
+//1. Hit a new operation
+//2. Hit an old operation
+//3. Hit canvas
 REAL3D.TransformTool.RefFrame.prototype.mouseDown = function (mouseNormPosX, mouseNormPosY, worldMatrix, cameraProjectMatrix) {
     "use strict";
     //hit detection
     if (this.hitDetection(mouseNormPosX, mouseNormPosY, worldMatrix, cameraProjectMatrix)) {
-        this.curTransform.type = this.mouseState;
-        //judge control direction
-        this.draw();
-        return true;
+        if (this.curTransform.type === this.mouseState) {
+            return REAL3D.TransformTool.MouseDownState.EDIT;
+        } else {
+            this.curTransform.type = this.mouseState;
+            this.curTransform.value = 0;
+            this.draw();
+            return REAL3D.TransformTool.MouseDownState.CREATE;
+        }
     }
-    return false;
+    return REAL3D.TransformTool.MouseDownState.NONE;
 };
 
-REAL3D.TransformTool.RefFrame.prototype.mouseMove = function (mouseNormPosX, mouseNormPosY) {
+REAL3D.TransformTool.RefFrame.prototype.mouseMove = function (worldDeltaX, worldDeltaY) {
     "use strict";
-    return false;
-};
-
-REAL3D.TransformTool.RefFrame.prototype.mouseUp = function (mouseNormPosX, mouseNormPosY) {
-    "use strict";
-    return false;
+    var translateDist, centerPos, translateDir, controlPos;
+    if (this.mouseState === REAL3D.TransformTool.TransformType.TRANSLATEX) {
+        translateDist = worldDeltaX * this.assistHitDir.getX() + worldDeltaY * this.assistHitDir.getY();
+        centerPos = this.centerPoint.getLocalPosition();
+        controlPos = this.ctlPointsTranslate[0].getLocalPosition();
+        translateDir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        translateDir.unify();
+        translateDir.multiply(translateDist);
+        this.curTransform.value += translateDist;
+        this.drawObject.translateX(translateDist);
+        return translateDir;
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.TRANSLATEY) {
+        translateDist = worldDeltaX * this.assistHitDir.getX() + worldDeltaY * this.assistHitDir.getY();
+        centerPos = this.centerPoint.getLocalPosition();
+        controlPos = this.ctlPointsTranslate[1].getLocalPosition();
+        translateDir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        translateDir.unify();
+        translateDir.multiply(translateDist);
+        this.curTransform.value += translateDist;
+        this.drawObject.translateY(translateDist);
+        return translateDir;
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
+        translateDist = worldDeltaX * this.assistHitDir.getX() + worldDeltaY * this.assistHitDir.getY();
+        centerPos = this.centerPoint.getLocalPosition();
+        controlPos = this.ctlPointsTranslate[2].getLocalPosition();
+        translateDir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        translateDir.unify();
+        translateDir.multiply(translateDist);
+        this.curTransform.value += translateDist;
+        this.drawObject.translateZ(translateDist);
+        return translateDir;
+    }
+    return null;
 };
 
 REAL3D.TransformTool.RefFrame.prototype.hitDetection = function (mouseNormPosX, mouseNormPosY, cameraProjectMatrix) {
     "use strict";
-    var pid, worldPos, vDist, minDist;
+    var pid, worldPos, vDist, minDist, centerPos, assistDir;
     this.drawObject.updateMatrixWorld();
     minDist = 1;
+    centerPos = this.centerPoint.getWorldPosition();
+    centerPos.applyProjection(cameraProjectMatrix);
     if (this.ctlPointsTranslate !== null) {
         for (pid = 0; pid < this.ctlPointsTranslate.length; pid++) {
             worldPos = this.ctlPointsTranslate[pid].getWorldPosition();
@@ -87,6 +131,7 @@ REAL3D.TransformTool.RefFrame.prototype.hitDetection = function (mouseNormPosX, 
             if (vDist < minDist) {
                 this.mouseState = REAL3D.TransformTool.TransformType.TRANSLATEX + pid;
                 minDist = vDist;
+                assistDir = new REAL3D.Vector2(worldPos.x - centerPos.x, worldPos.y - centerPos.y);
             }
         }
     }
@@ -98,6 +143,7 @@ REAL3D.TransformTool.RefFrame.prototype.hitDetection = function (mouseNormPosX, 
             if (vDist < minDist) {
                 this.mouseState = REAL3D.TransformTool.TransformType.ROTATEX + pid;
                 minDist = vDist;
+                assistDir = new REAL3D.Vector2(worldPos.x - centerPos.x, worldPos.y - centerPos.y);
             }
         }
     }
@@ -109,10 +155,13 @@ REAL3D.TransformTool.RefFrame.prototype.hitDetection = function (mouseNormPosX, 
             if (vDist < minDist) {
                 this.mouseState = REAL3D.TransformTool.TransformType.SCALEX + pid;
                 minDist = vDist;
+                assistDir = new REAL3D.Vector2(worldPos.x - centerPos.x, worldPos.y - centerPos.y);
             }
         }
     }
     if (minDist < REAL3D.TransformTool.HITVERTEXRADIUS) {
+        this.assistHitDir = assistDir;
+        this.assistHitDir.unify();
         return true;
     } else {
         this.mouseState = REAL3D.TransformTool.TransformType.NONE;

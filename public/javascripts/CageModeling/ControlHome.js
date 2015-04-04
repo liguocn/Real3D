@@ -24,10 +24,10 @@ REAL3D.CageModeling.HomeControl.init = function (canvasOffset, winW, winH) {
         this.winW = winW;
         this.winH = winH;
     }
-    if (this.refFrame === null) {
-        this.refFrame = new REAL3D.TransformTool.RefFrame();
-        this.refFrame.init(new REAL3D.Vector3(0, 0, 0), new REAL3D.Vector3(0, 1, 0), new REAL3D.Vector3(1, 0, 0), 200, REAL3D.RenderManager.scene);
-    }
+    // if (this.refFrame === null) {
+    //     this.refFrame = new REAL3D.TransformTool.RefFrame();
+    //     this.refFrame.init(new REAL3D.Vector3(0, 0, 0), new REAL3D.Vector3(0, 1, 0), new REAL3D.Vector3(1, 0, 0), 200, REAL3D.RenderManager.scene);
+    // }
     this.isMouseDown = false;
     this.mouseMovePos = new THREE.Vector2(0, 0);
     REAL3D.RenderManager.switchCamera(this.camera);
@@ -54,14 +54,14 @@ REAL3D.CageModeling.HomeControl.mouseDown = function (e) {
 REAL3D.CageModeling.HomeControl.mouseMove = function (e) {
     "use strict";
     if (this.isMouseDown) {
-        var curPosX, curPosY, mouseNormPosX, mouseNormPosY, handled;
+        var curPosX, curPosY, worldDeltaX, worldDeltaY, handled;
         handled = false;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        mouseNormPosX = curPosX * 2 / this.winW - 1;
-        mouseNormPosY = 1 - curPosY * 2 / this.winH;
         if (this.refFrame !== null) {
-            if (this.refFrame.mouseMove(mouseNormPosX, mouseNormPosY)) {
+            worldDeltaX = curPosX - this.mouseMovePos.x;
+            worldDeltaY = this.mouseMovePos.y - curPosY;
+            if (this.refFrame.mouseMove(worldDeltaX, worldDeltaY) !== null) {
                 handled = true;
             }
         }
@@ -80,14 +80,6 @@ REAL3D.CageModeling.HomeControl.mouseMove = function (e) {
 
 REAL3D.CageModeling.HomeControl.mouseUp = function (e) {
     "use strict";
-    var curPosX, curPosY, mouseNormPosX, mouseNormPosY;
-    curPosX = e.pageX - this.canvasOffset.left;
-    curPosY = e.pageY - this.canvasOffset.top;
-    mouseNormPosX = curPosX * 2 / this.winW - 1;
-    mouseNormPosY = 1 - curPosY * 2 / this.winH;
-    if (this.refFrame !== null) {
-        this.refFrame.mouseUp(mouseNormPosX, mouseNormPosY);
-    }
     this.isMouseDown = false;
 };
 

@@ -86,53 +86,22 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     $('#smoothValue').val(0.5);
     $('<hr />').appendTo('#editOption');
 
-    $('<div>平移值</div>').appendTo('#editOption');
-    $('<div">X<input id="translateX" class="parmNumCtl" type="number" min="-1000" max="1000" step="1"></div>').appendTo('#editOption');
-    $('#translateX').get(0).addEventListener("input", function () { that.translateX(); }, false);
-    $('#translateX').val(0);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Y<input id="translateY" class="parmNumCtl" type="number" min="-1000" max="500" step="1"></div>').appendTo('#editOption');
-    $('#translateY').get(0).addEventListener("input", function () { that.translateY(); }, false);
-    $('#translateY').val(0);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Z<input id="translateZ" class="parmNumCtl" type="number" min="-1000" max="500" step="1"></div>').appendTo('#editOption');
-    $('#translateZ').get(0).addEventListener("input", function () { that.translateZ(); }, false);
-    $('#translateZ').val(0);
+    $('<div">平移值<input id="translateValue" class="parmNumCtl" type="number" min="-1000" max="1000" step="1"></div>').appendTo('#editOption');
+    $('#translateValue').get(0).addEventListener("input", function () { that.changeTranslateValue(); }, false);
+    $('#translateValue').val(0);
     $('<hr />').appendTo('#editOption');
 
-    $('<div>放缩值</div>').appendTo('#editOption');
-    $('<div">X<input id="ScaleX" class="parmNumCtl" type="number" min="0.01" max="100" step="0.01"></div>').appendTo('#editOption');
-    $('#ScaleX').get(0).addEventListener("input", function () { that.scaleX(); }, false);
-    $('#ScaleX').val(1);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Y<input id="ScaleY" class="parmNumCtl" type="number" min="0.001" max="1000" step="0.01"></div>').appendTo('#editOption');
-    $('#ScaleY').get(0).addEventListener("input", function () { that.scaleY(); }, false);
-    $('#ScaleY').val(1);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Z<input id="ScaleZ" class="parmNumCtl" type="number" min="0.001" max="1000" step="0.01"></div>').appendTo('#editOption');
-    $('#ScaleZ').get(0).addEventListener("input", function () { that.scaleZ(); }, false);
-    $('#ScaleZ').val(1);
+    $('<div">放缩值<input id="scaleValue" class="parmNumCtl" type="number" min="0.01" max="100" step="0.01"></div>').appendTo('#editOption');
+    $('#scaleValue').get(0).addEventListener("input", function () { that.changeScaleValue(); }, false);
+    $('#scaleValue').val(1);
     $('<hr />').appendTo('#editOption');
 
-    $('<div>旋转值</div>').appendTo('#editOption');
-    $('<div">X<input id="RotateX" class="parmNumCtl" type="number" min="-180" max="180" step="1"></div>').appendTo('#editOption');
-    $('#RotateX').get(0).addEventListener("input", function () { that.rotateX(); }, false);
-    $('#RotateX').val(1);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Y<input id="RotateY" class="parmNumCtl" type="number" min="-180" max="180" step="1"></div>').appendTo('#editOption');
-    $('#RotateY').get(0).addEventListener("input", function () { that.rotateY(); }, false);
-    $('#RotateY').val(1);
-    $('<br>').appendTo('#editOption');
-
-    $('<div">Z<input id="RotateZ" class="parmNumCtl" type="number" min="-180" max="180" step="1"></div>').appendTo('#editOption');
-    $('#RotateZ').get(0).addEventListener("input", function () { that.rotateZ(); }, false);
-    $('#RotateZ').val(1);
+    $('<div">旋转值<input id="rotateValue" class="parmNumCtl" type="number" min="-180" max="180" step="1"></div>').appendTo('#editOption');
+    $('#rotateValue').get(0).addEventListener("input", function () { that.changeRotateValue(); }, false);
+    $('#rotateValue').val(1);
     $('<hr />').appendTo('#editOption');
+
+    //this.configTransformUI(true, false, false);
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
     REAL3D.CageModeling.CageData.generateOperation(false);
@@ -218,40 +187,35 @@ REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.translateX = function () {
+REAL3D.CageModeling.EditCageUI.changeTranslateValue = function () {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.translateY = function () {
+REAL3D.CageModeling.EditCageUI.setTranslateValue = function (value) {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.translateZ = function () {
+REAL3D.CageModeling.EditCageUI.changeScaleValue = function () {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.scaleX = function () {
+REAL3D.CageModeling.EditCageUI.setScaleValue = function (value) {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.scaleY = function () {
+REAL3D.CageModeling.EditCageUI.changeRotateValue = function () {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.scaleZ = function () {
+REAL3D.CageModeling.EditCageUI.setRotateValue = function (value) {
     "use strict";
 };
 
-REAL3D.CageModeling.EditCageUI.rotateX = function () {
+REAL3D.CageModeling.EditCageUI.configTransformUI = function (disableTranslate, disableScale, disableRotate) {
     "use strict";
-};
-
-REAL3D.CageModeling.EditCageUI.rotateY = function () {
-    "use strict";
-};
-
-REAL3D.CageModeling.EditCageUI.rotateZ = function () {
-    "use strict";
+    $('#translateValue').attr("disabled", disableTranslate);
+    $('#scaleValue').attr("disabled", disableScale);
+    $('#rotateValue').attr("disabled", disableRotate);
 };
 
 REAL3D.CageModeling.EditCageUI.changeExtrudeDistance = function () {

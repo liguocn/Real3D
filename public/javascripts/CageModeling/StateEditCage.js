@@ -60,25 +60,49 @@ REAL3D.CageModeling.EditCageState.setupRefFrame = function () {
     this.refFrame = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refFrame);
 
-    var maxDist, material, geometry, line;
-    maxDist = 128;
-    material = new THREE.LineBasicMaterial({color: 0xff0000});
+    var spaceDist, maxDist, lineCount, lid, material, geometry, line, coord;
+    spaceDist = 100;
+    maxDist = 1000;
+    lineCount = maxDist / spaceDist;
+
+    material = new THREE.LineBasicMaterial({color: 0xee2b8b});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(maxDist, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(-maxDist, 0, 0), new THREE.Vector3(maxDist, 0, 0));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
 
-    material = new THREE.LineBasicMaterial({color: 0x00ff00});
+    material = new THREE.LineBasicMaterial({color: 0x2b8bee});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, maxDist, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, -maxDist), new THREE.Vector3(0, 0, maxDist));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
 
-    material = new THREE.LineBasicMaterial({color: 0x0000ff});
+    material = new THREE.LineBasicMaterial({color: 0x6bae2b});
     geometry = new THREE.Geometry();
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, maxDist));
+    geometry.vertices.push(new THREE.Vector3(0, -maxDist, 0), new THREE.Vector3(0, maxDist, 0));
     line = new THREE.Line(geometry, material);
     this.refFrame.add(line);
+
+    material = new THREE.LineBasicMaterial({color: 0xbbbbbb});
+    for (lid = 1; lid <= lineCount; lid++) {
+        coord = lid * spaceDist;
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, 0, coord), new THREE.Vector3(maxDist, 0, coord));
+        line = new THREE.Line(geometry, material);
+        this.refFrame.add(line);
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-maxDist, 0, -coord), new THREE.Vector3(maxDist, 0, -coord));
+        line = new THREE.Line(geometry, material);
+        this.refFrame.add(line);
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(coord, 0, -maxDist), new THREE.Vector3(coord, 0, maxDist));
+        line = new THREE.Line(geometry, material);
+        this.refFrame.add(line);
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(-coord, 0, -maxDist), new THREE.Vector3(-coord, 0, maxDist));
+        line = new THREE.Line(geometry, material);
+        this.refFrame.add(line);
+    }
 };
 
 REAL3D.CageModeling.EditCageState.releaseRefFrame = function () {
