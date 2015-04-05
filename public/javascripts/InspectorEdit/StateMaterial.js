@@ -2,6 +2,8 @@
 
 REAL3D.InspectorEdit.StateMaterial = {
     light: null,
+    materials: null,
+    currentMaterial: [],
     materialSphere: null
 };
 
@@ -12,6 +14,9 @@ REAL3D.InspectorEdit.StateMaterial.enter = function () {
 
     // setup light
     this.setupLight();
+
+    // setup material
+    this.setupMaterials();
 
     this.createMaterialSphere();
 };
@@ -25,25 +30,8 @@ REAL3D.InspectorEdit.StateMaterial.exit = function () {
 REAL3D.InspectorEdit.StateMaterial.setupLight = function () {
     "use strict";
     this.releaseLight();
-    //this.light = new THREE.Object3D();
-    //REAL3D.RenderManager.scene.add(this.light);
-    //var ambientLight = new THREE.AmbientLight(0x2b2b2b);
-    //this.light.add(ambientLight);
-    //this.light = new THREE.AmbientLight(0x404040);
-    this.light = new THREE.PointLight( 0xffff00, 1, 1000 );
-    this.light.position.set(0, 500, 500);
-    //var lights = [];
-    //lights[0] = new THREE.PointLight( 0xffffff, 1, 0 );
-    //lights[1] = new THREE.PointLight( 0xffffff, 1, 0 );
-    //lights[2] = new THREE.PointLight( 0xffffff, 1, 0 );
-    
-    //lights[0].position.set( 0, 200, 0 );
-    //lights[1].position.set( 100, 200, 100 );
-    //lights[2].position.set( -100, -200, -100 );
-    //REAL3D.RenderManager.scene.add(lights[0]);
-    //REAL3D.RenderManager.scene.add(lights[1]);
-    //REAL3D.RenderManager.scene.add(lights[2]);
-    REAL3D.RenderManager.scene.add(this.light);
+    REAL3D.Inspector.LightDataManager.init();
+    REAL3D.Inspector.LightDataManager.addAllToScene(REAL3D.RenderManager.scene);
 };
 
 REAL3D.InspectorEdit.StateMaterial.releaseLight = function () {
@@ -52,6 +40,11 @@ REAL3D.InspectorEdit.StateMaterial.releaseLight = function () {
         REAL3D.RenderManager.scene.remove(this.light);
         this.light = null;
     }
+};
+
+REAL3D.InspectorEdit.StateMaterial.setupMaterials = function () {
+    "use strict";
+    REAL3D.Inspector.MaterialDataManager.init();
 };
 
 REAL3D.InspectorEdit.StateMaterial.releaseMaterialSphere = function () {
@@ -71,8 +64,9 @@ REAL3D.InspectorEdit.StateMaterial.createMaterialSphere = function () {
     winH = REAL3D.InspectorEdit.winH;
     radius = winW > winH ? winH/3.0 : winW/3.0;
     geometry = new THREE.SphereGeometry(radius, 32, 32);
-    material = new THREE.MeshPhongMaterial({color:0xffff00, wireframe:false});
+    //material = new THREE.MeshPhongMaterial({color:0xffff00, wireframe:false});
     //material = new THREE.LineBasicMaterial({color: 0x00FFFF});
+    material = REAL3D.Inspector.MaterialDataManager.getMaterial("MeshLambertMaterial2");
     this.materialSphere = new THREE.Mesh(geometry, material);
     REAL3D.RenderManager.scene.add(this.materialSphere);
 };
