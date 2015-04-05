@@ -38,34 +38,43 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
 
 REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
     "use strict";
-    var curPosX, curPosY, mouseNormPosX, mouseNormPosY;
+    var curPosX, curPosY, mouseNormPosX, mouseNormPosY, handled;
     curPosX = e.pageX - this.canvasOffset.left;
     curPosY = e.pageY - this.canvasOffset.top;
     this.isMouseDown = true;
     this.mouseMovePos.set(curPosX, curPosY);
     mouseNormPosX = curPosX * 2 / this.winW - 1;
     mouseNormPosY = 1 - curPosY * 2 / this.winH;
-    this.hitDetection(mouseNormPosX, mouseNormPosY);
-    if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
-        this.extrudeMouseDown();
-    } else if (this.editMode === REAL3D.CageModeling.EditMode.DELETE) {
-        this.deleteMouseDown();
-    } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
-        this.editMouseDown(mouseNormPosX, mouseNormPosY);
+    handled = false;
+    if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
+        handled = this.editPreMouseDown(mouseNormPosX, mouseNormPosY);
+    }
+    if (!handled) {
+        this.hitDetection(mouseNormPosX, mouseNormPosY);
+        if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
+            this.extrudeMouseDown();
+        } else if (this.editMode === REAL3D.CageModeling.EditMode.DELETE) {
+            this.deleteMouseDown();
+        } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
+            this.editMouseDown(mouseNormPosX, mouseNormPosY);
+        }
     }
 };
 
 REAL3D.CageModeling.EditCageControl.mouseMove = function (e) {
     "use strict";
     if (this.isMouseDown) {
-        var curPosX, curPosY;
+        var curPosX, curPosY, handled;
         curPosX = e.pageX - this.canvasOffset.left;
         curPosY = e.pageY - this.canvasOffset.top;
-        this.viewControlMouseMove(curPosX, curPosY);
+        handled = false;
         if (this.editMode === REAL3D.CageModeling.EditMode.EXTRUDE) {
-            this.extrudeMouseMove(curPosY);
+            handled = this.extrudeMouseMove(curPosY);
         } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
-            this.editMouseMove(curPosX, curPosY);
+            handled = this.editMouseMove(curPosX, curPosY);
+        }
+        if (!handled) {
+            this.viewControlMouseMove(curPosX, curPosY);
         }
         this.mouseMovePos.set(curPosX, curPosY);
     }
@@ -258,7 +267,9 @@ REAL3D.CageModeling.EditCageControl.extrudeMouseMove = function (mousePosY) {
         REAL3D.CageModeling.CageData.previewOperation();
         //update UI
         REAL3D.CageModeling.EditCageUI.setExtrudeDistance(curOp.distance);
+        return true;
     }
+    return false;
 };
 
 REAL3D.CageModeling.EditCageControl.deleteMouseDown = function () {
@@ -271,48 +282,169 @@ REAL3D.CageModeling.EditCageControl.deleteMouseDown = function () {
     }
 };
 
+REAL3D.CageModeling.EditCageControl.editPreMouseDown = function (mouseNormPosX, mouseNormPosY) {
+    "use strict";
+    var handled, pickTool, projectMatrix, cameraMatrix, cameraProjectMatrix, refRes, elemType, elemIndex;
+    handled = false;
+    pickTool = REAL3D.CageModeling.CageData.pickTool;
+    if (this.transformRefFrame !== null) {
+        projectMatrix = this.camera.projectionMatrix;
+        cameraMatrix = this.camera.matrixWorld;
+        cameraProjectMatrix = new THREE.Matrix4();
+        cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
+        refRes = this.transformRefFrame.mouseDown(mouseNormPosX, mouseNormPosY, cameraProjectMatrix);
+        if (refRes !== null) {
+            if (refRes.mouseState === REAL3D.TransformTool.MouseDownState.CREATE) {
+                this.editState = REAL3D.CageModeling.EditState.EDITTING;
+                //generate current operation and generate a new operation
+                REAL3D.CageModeling.CageData.generateOperation(true);
+                elemType = pickTool.currentElementType;
+                if (pickTool.currentElementType === REAL3D.MeshModel.ElementType.VERTEX) {
+                    elemIndex = pickTool.getPickedVertex()[0];
+                } else if (pickTool.currentElementType === REAL3D.MeshModel.ElementType.EDGE) {
+                    elemIndex = pickTool.getPickedEdge()[0];
+                } else if (pickTool.currentElementType === REAL3D.MeshModel.ElementType.FACE) {
+                    elemIndex = pickTool.getPickedFace()[0];
+                }
+                if (refRes.transformType === REAL3D.TransformTool.TransformType.TRANSLATEX ||
+                    refRes.transformType === REAL3D.TransformTool.TransformType.TRANSLATEY ||
+                    refRes.transformType === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
+                    REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Translate(elemIndex, pickTool.getMesh(), elemType, refRes.dir, refRes.value));
+                    REAL3D.CageModeling.CageData.previewOperation();
+                } else if (refRes.transformType === REAL3D.TransformTool.TransformType.SCALEX ||
+                    refRes.transformType === REAL3D.TransformTool.TransformType.SCALEY ||
+                    refRes.transformType === REAL3D.TransformTool.TransformType.SCALEZ) {
+                    REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.Scale(elemIndex, pickTool.getMesh(), elemType, refRes.dir, refRes.value));
+                    REAL3D.CageModeling.CageData.previewOperation();
+                }
+            }
+            handled = true;
+        }
+    }
+    return handled;
+};
+
+//1. Hit mesh element: a) the same element: not do anything; b) a new element: generate current operation and generate a new refFrame
+//2. Hit refFrame: a) EDIT: do nothing; b) CREATE: generate current operation and generate a new operation
+//3. Hit Canvas: view control 
 REAL3D.CageModeling.EditCageControl.editMouseDown = function (mouseNormPosX, mouseNormPosY) {
     "use strict";
-    var pickTool, curOp, pickedFace, startEdge, curEdge, centerPos, vertexCount, xDir, projectMatrix, cameraMatrix, cameraProjectMatrix;
+    var pickTool, curOp;
     pickTool = REAL3D.CageModeling.CageData.pickTool;
     if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
         if (this.editState === REAL3D.CageModeling.EditState.NONE) {
-            pickedFace = pickTool.getMesh().getFace(pickTool.getPickedFace()[0]);
-            startEdge = pickedFace.getEdge();
-            curEdge = startEdge;
-            centerPos = new REAL3D.Vector3(0, 0, 0);
-            vertexCount = 0;
-            do {
-                centerPos.addVector(curEdge.getVertex().getPosition());
-                vertexCount++;
-                curEdge = curEdge.getNext();
-            } while (curEdge !== startEdge);
-            xDir = REAL3D.Vector3.sub(startEdge.getVertex().getPosition(), startEdge.getPair().getVertex().getPosition());
-            xDir.unify();
-            centerPos.multiply(1 / vertexCount);
-            if (this.transformRefFrame !== null) {
-                this.transformRefFrame.releaseData();
-            }
-            this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
-            this.transformRefFrame.init(centerPos, pickedFace.getNormal(), xDir, this.refSize, REAL3D.RenderManager.scene);
+            this.constructRefFrameFromFace(pickTool.getMesh().getFace(pickTool.getPickedFace()[0]));
         } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
-
+            curOp = REAL3D.CageModeling.CageData.getCurOperation();
+            if (curOp.elemType !== REAL3D.MeshModel.ElementType.FACE || curOp.elemIndex !== pickTool.getPickedFace()[0]) {
+                //generate current operation and generate a new refFrame
+                REAL3D.CageModeling.CageData.generateOperation(true);
+                this.constructRefFrameFromFace(pickTool.getMesh().getFace(pickTool.getPickedFace()[0]));
+            }
         }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
-
+        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+            this.constructRefFrameFromEdge(pickTool.getMesh().getEdge(pickTool.getPickedEdge()[0]));
+        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
+            curOp = REAL3D.CageModeling.CageData.getCurOperation();
+            if (curOp.elemType !== REAL3D.MeshModel.ElementType.EDGE || curOp.elemIndex !== pickTool.getPickedEdge()[0]) {
+                //generate current operation and generate a new refFrame
+                REAL3D.CageModeling.CageData.generateOperation(true);
+                this.constructRefFrameFromEdge(pickTool.getMesh().getEdge(pickTool.getPickedEdge()[0]));
+            }
+        }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITVERTEX) {
-
-    } else {
-        if (this.transformRefFrame !== null) {
-            projectMatrix = this.camera.projectionMatrix;
-            cameraMatrix = this.camera.matrixWorld;
-            cameraProjectMatrix = new THREE.Matrix4();
-            cameraProjectMatrix.multiplyMatrices(projectMatrix, cameraProjectMatrix.getInverse(cameraMatrix));
-            this.transformRefFrame.mouseDown(mouseNormPosX, mouseNormPosY, cameraProjectMatrix);
+        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+            this.constructRefFrameFromVertex(pickTool.getMesh().getVertex(pickTool.getPickedVertex()[0]));
+        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
+            curOp = REAL3D.CageModeling.CageData.getCurOperation();
+            if (curOp.elemType !== REAL3D.MeshModel.ElementType.VERTEX || curOp.elemIndex !== pickTool.getPickedVertex()[0]) {
+                //generate current operation and generate a new refFrame
+                REAL3D.CageModeling.CageData.generateOperation(true);
+                this.constructRefFrameFromVertex(pickTool.getMesh().getVertex(pickTool.getPickedVertex()[0]));
+            }
         }
     }
 };
 
+//change parameter of operation
 REAL3D.CageModeling.EditCageControl.editMouseMove = function (mousePosX, mousePosY) {
     "use strict";
+    if (this.editState === REAL3D.CageModeling.EditState.EDITTING && this.transformRefFrame !== null) {
+        var worldDeltaX, worldDeltaY, refRes, curOp;
+        worldDeltaX = mousePosX - this.mouseMovePos.x;
+        worldDeltaY = this.mouseMovePos.y - mousePosY;
+        refRes = this.transformRefFrame.mouseMove(worldDeltaX, worldDeltaY);
+        if (refRes !== null) {
+            curOp = REAL3D.CageModeling.CageData.getCurOperation();
+            curOp.addValue(refRes.value);
+            //update UI
+            if (refRes.type === REAL3D.TransformTool.TransformType.TRANSLATEX ||
+                refRes.type === REAL3D.TransformTool.TransformType.TRANSLATEY ||
+                refRes.type === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
+                REAL3D.CageModeling.EditCageUI.setTranslateValue(curOp.value);
+                REAL3D.CageModeling.CageData.previewOperation();
+            } else if (refRes.type === REAL3D.TransformTool.TransformType.SCALEX ||
+                refRes.type === REAL3D.TransformTool.TransformType.SCALEY ||
+                refRes.type === REAL3D.TransformTool.TransformType.SCALEZ) {
+                REAL3D.CageModeling.EditCageUI.setScaleValue(curOp.value);
+                REAL3D.CageModeling.CageData.previewOperation();
+            } else {
+                console.log("error: wrong type: ", refRes.type);
+            }
+            return true;
+        }
+    }
+    return false;
+};
+
+REAL3D.CageModeling.EditCageControl.constructRefFrameFromFace = function (face) {
+    "use strict";
+    var startEdge, curEdge, centerPos, vertexCount, xDir;
+    startEdge = face.getEdge();
+    curEdge = startEdge;
+    centerPos = new REAL3D.Vector3(0, 0, 0);
+    vertexCount = 0;
+    do {
+        centerPos.addVector(curEdge.getVertex().getPosition());
+        vertexCount++;
+        curEdge = curEdge.getNext();
+    } while (curEdge !== startEdge);
+    xDir = REAL3D.Vector3.sub(startEdge.getVertex().getPosition(), startEdge.getPair().getVertex().getPosition());
+    xDir.unify();
+    centerPos.multiply(1 / vertexCount);
+    if (this.transformRefFrame !== null) {
+        this.transformRefFrame.releaseData();
+    }
+    this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
+    this.transformRefFrame.init(centerPos, face.getNormal(), xDir, this.refSize, REAL3D.RenderManager.scene);
+};
+
+REAL3D.CageModeling.EditCageControl.constructRefFrameFromEdge = function (edge) {
+    "use strict";
+    var yDir, xDir, centerPos;
+    centerPos = REAL3D.Vector3.add(edge.getVertex().getPosition(), edge.getPair().getVertex().getPosition());
+    centerPos.multiply(0.5);
+    yDir = REAL3D.Vector3.sub(edge.getVertex().getPosition(), edge.getPair().getVertex().getPosition());
+    yDir.unify();
+    xDir = null;
+    if (this.transformRefFrame !== null) {
+        this.transformRefFrame.releaseData();
+    }
+    this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
+    this.transformRefFrame.init(centerPos, yDir, xDir, this.refSize, REAL3D.RenderManager.scene);
+};
+
+REAL3D.CageModeling.EditCageControl.constructRefFrameFromVertex = function (vertex) {
+    "use strict";
+    var yDir, xDir, centerPos;
+    centerPos = vertex.getPosition();
+    yDir = REAL3D.Vector3.sub(vertex.getPosition(), vertex.getEdge().getVertex().getPosition());
+    yDir.unify();
+    xDir = null;
+    if (this.transformRefFrame !== null) {
+        this.transformRefFrame.releaseData();
+    }
+    this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
+    this.transformRefFrame.init(centerPos, yDir, xDir, this.refSize, REAL3D.RenderManager.scene);
 };

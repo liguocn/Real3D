@@ -7702,6 +7702,18 @@ THREE.Object3D.prototype = {
 		return result.setFromMatrixPosition( this.matrix );
 	},
 
+	getPositionInParent: function () {
+		var result, matrix;
+		result = new THREE.Vector3();
+		if (this.parent !== undefined) {
+			matrix = new THREE.Matrix4();
+			matrix.multiplyMatrices(this.parent.matrix, this.matrix);
+			return result.setFromMatrixPosition( matrix ); 
+		} else {
+			return result.setFromMatrixPosition( this.matrix );
+		}
+	},
+
 	getWorldPosition: function ( optionalTarget ) {
 
 		var result = optionalTarget || new THREE.Vector3();

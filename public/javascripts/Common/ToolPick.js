@@ -14,6 +14,7 @@ REAL3D.PickTool.PickHMesh = function () {
     this.pickedVertex = null;
     this.pickedEdge = null;
     this.pickedFace = null;
+    this.currentElementType = null;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.clearPickedElement = function (keepMesh) {
@@ -28,6 +29,7 @@ REAL3D.PickTool.PickHMesh.prototype.clearPickedElement = function (keepMesh) {
         this.pickedEdge = [];
         this.pickedFace = [];
     }
+    this.currentElementType = null;
 };
 
 REAL3D.PickTool.PickHMesh.prototype.setMesh = function (mesh, keepPickIndex) {
@@ -37,6 +39,7 @@ REAL3D.PickTool.PickHMesh.prototype.setMesh = function (mesh, keepPickIndex) {
         this.pickedVertex = [];
         this.pickedEdge = [];
         this.pickedFace = [];
+        this.currentElementType = null;
     }
 };
 
@@ -73,6 +76,7 @@ REAL3D.PickTool.PickHMesh.prototype.pickVertex = function (worldMatrix, projectM
     if (minDist < REAL3D.PickTool.HITVERTEXRADIUS) {
         this.pickedVertex = [];
         this.pickedVertex.push(minIndex);
+        this.currentElementType = REAL3D.MeshModel.ElementType.VERTEX;
         //console.log("    picked id: ", minIndex);
         return true;
     }
@@ -128,6 +132,7 @@ REAL3D.PickTool.PickHMesh.prototype.pickEdge = function (worldMatrix, projectMat
         if (this.isPointOnLineSegment(mousePoint, new REAL3D.Vector2(threeVertPosStart.x, threeVertPosStart.y), new REAL3D.Vector2(threeVertPosEnd.x, threeVertPosEnd.y))) {
             this.pickedEdge = [];
             this.pickedEdge.push(eid);
+            this.currentElementType = REAL3D.MeshModel.ElementType.EDGE;
             return true;
         }
     }
@@ -203,6 +208,7 @@ REAL3D.PickTool.PickHMesh.prototype.pickFace = function (worldMatrix, projectMat
             if (this.isPointIn2DTriangle(mousePoint, polyVertices[0], polyVertices[ptid], polyVertices[ptid + 1])) {
                 this.pickedFace = [];
                 this.pickedFace.push(fid);
+                this.currentElementType = REAL3D.MeshModel.ElementType.FACE;
                 return true;
             }
         }

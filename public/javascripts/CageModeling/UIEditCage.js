@@ -96,11 +96,6 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     $('#scaleValue').val(1);
     $('<hr />').appendTo('#editOption');
 
-    $('<div">旋转值<input id="rotateValue" class="parmNumCtl" type="number" min="-180" max="180" step="1"></div>').appendTo('#editOption');
-    $('#rotateValue').get(0).addEventListener("input", function () { that.changeRotateValue(); }, false);
-    $('#rotateValue').val(1);
-    $('<hr />').appendTo('#editOption');
-
     //this.configTransformUI(true, false, false);
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
@@ -215,25 +210,10 @@ REAL3D.CageModeling.EditCageUI.setScaleValue = function (value) {
     $('#scaleValue').val(value);
 };
 
-REAL3D.CageModeling.EditCageUI.changeRotateValue = function () {
-    "use strict";
-    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
-    if (curOp !== null) {
-        curOp.setRotateValue(parseFloat($('#rotateValue').val()));
-        REAL3D.CageModeling.CageData.previewOperation();
-    }
-};
-
-REAL3D.CageModeling.EditCageUI.setRotateValue = function (value) {
-    "use strict";
-    $('#rotateValue').val(value);
-};
-
 REAL3D.CageModeling.EditCageUI.configTransformUI = function (disableTranslate, disableScale, disableRotate) {
     "use strict";
     $('#translateValue').attr("disabled", disableTranslate);
     $('#scaleValue').attr("disabled", disableScale);
-    $('#rotateValue').attr("disabled", disableRotate);
 };
 
 REAL3D.CageModeling.EditCageUI.changeExtrudeDistance = function () {
