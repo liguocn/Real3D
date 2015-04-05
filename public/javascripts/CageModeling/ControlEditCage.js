@@ -387,7 +387,7 @@ REAL3D.CageModeling.EditCageControl.editMouseMove = function (mousePosX, mousePo
             } else if (refRes.type === REAL3D.TransformTool.TransformType.SCALEX ||
                 refRes.type === REAL3D.TransformTool.TransformType.SCALEY ||
                 refRes.type === REAL3D.TransformTool.TransformType.SCALEZ) {
-                REAL3D.CageModeling.EditCageUI.setScaleValue(curOp.value);
+                REAL3D.CageModeling.EditCageUI.setScaleValue(curOp.scaleValue);
                 REAL3D.CageModeling.CageData.previewOperation();
             } else {
                 console.log("error: wrong type: ", refRes.type);

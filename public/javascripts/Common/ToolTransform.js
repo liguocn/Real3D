@@ -91,13 +91,7 @@ REAL3D.TransformTool.RefFrame.prototype.mouseDown = function (mouseNormPosX, mou
         } else {
             this.curTransform.type = this.mouseState;
             this.curTransform.dir = this.getTransformDir();
-            if (this.curTransform === REAL3D.TransformTool.TransformType.TRANSLATEX ||
-                this.curTransform === REAL3D.TransformTool.TransformType.TRANSLATEY ||
-                this.curTransform === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
-                this.curTransform.value = 0;
-            } else {
-                this.curTransform.value = 1;
-            }
+            this.curTransform.value = 0;
             this.draw();
             res = {
                 mouseState: REAL3D.TransformTool.MouseDownState.CREATE,
@@ -112,7 +106,7 @@ REAL3D.TransformTool.RefFrame.prototype.mouseDown = function (mouseNormPosX, mou
 
 REAL3D.TransformTool.RefFrame.prototype.mouseMove = function (worldDeltaX, worldDeltaY) {
     "use strict";
-    var res, translateDist, centerPos, translateDir, controlPos;
+    var res, translateDist, centerPos, translateDir, controlPos, scaleLen;
     res = null;
     if (this.mouseState === REAL3D.TransformTool.TransformType.TRANSLATEX) {
         translateDist = worldDeltaX * this.assistHitDir.getX() + worldDeltaY * this.assistHitDir.getY();
@@ -138,6 +132,13 @@ REAL3D.TransformTool.RefFrame.prototype.mouseMove = function (worldDeltaX, world
             value: translateDist,
             type: this.curTransform.type
         };
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.SCALEX || this.mouseState === REAL3D.TransformTool.TransformType.SCALEY || this.mouseState === REAL3D.TransformTool.TransformType.SCALEZ) {
+        scaleLen = worldDeltaX * this.assistHitDir.getX() + worldDeltaY * this.assistHitDir.getY();
+        this.curTransform.value += scaleLen;
+        res = {
+            value: scaleLen,
+            type: this.curTransform.type
+        };
     }
     return res;
 };
@@ -159,6 +160,21 @@ REAL3D.TransformTool.RefFrame.prototype.getTransformDir = function () {
     } else if (this.mouseState === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
         centerPos = this.centerPoint.getPositionInParent();
         controlPos = this.ctlPointsTranslate[2].getPositionInParent();
+        dir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        dir.unify();
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.SCALEX) {
+        centerPos = this.centerPoint.getPositionInParent();
+        controlPos = this.ctlPointsScale[0].getPositionInParent();
+        dir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        dir.unify();
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.SCALEY) {
+        centerPos = this.centerPoint.getPositionInParent();
+        controlPos = this.ctlPointsScale[1].getPositionInParent();
+        dir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
+        dir.unify();
+    } else if (this.mouseState === REAL3D.TransformTool.TransformType.SCALEZ) {
+        centerPos = this.centerPoint.getPositionInParent();
+        controlPos = this.ctlPointsScale[2].getPositionInParent();
         dir = new REAL3D.Vector3(controlPos.x - centerPos.x, controlPos.y - centerPos.y, controlPos.z - centerPos.z);
         dir.unify();
     }
@@ -193,7 +209,7 @@ REAL3D.TransformTool.RefFrame.prototype.hitDetection = function (mouseNormPosX, 
             if (vDist < minDist) {
                 this.mouseState = REAL3D.TransformTool.TransformType.ROTATEX + pid;
                 minDist = vDist;
-                assistDir = new REAL3D.Vector2(worldPos.x - centerPos.x, worldPos.y - centerPos.y);
+                assistDir = new REAL3D.Vector2(worldPos.x - centerPos.x, worldPos.y - centerPos.y); //this is a wrong calculation
             }
         }
     }
