@@ -121,23 +121,27 @@ REAL3D.MeshModel.Scale.prototype.addValue = function (value) {
 
 REAL3D.MeshModel.Scale.prototype.getValueFromScaleValue = function (scaleValue) {
     "use strict";
+    var value;
     if (scaleValue >= 1) {
-        this.value = (this.scaleValue - 1) * 100;
+        value = (this.scaleValue - 1) * 50;
     } else {
-        this.value = (this.scaleValue - 1) * 1000;
+        value = (this.scaleValue - 1) * 250;
     }
+    return value;
 };
 
 REAL3D.MeshModel.Scale.prototype.getScaleValueFromValue = function (value) {
     "use strict";
+    var scaleValue;
     if (value >= 0) {
-        this.scaleValue = 1 + value / 100;
+        scaleValue = 1 + value / 50;
     } else {
-        this.scaleValue = 1 + value / 1000;
-        if (this.scaleValue < 0.001) {
-            this.scaleValue = 0.001;
+        scaleValue = 1 + value / 250;
+        if (scaleValue < 0.004) {
+            scaleValue = 0.004;
         }
     }
+    return scaleValue;
 };
 
 REAL3D.MeshModel.Scale.prototype.scaleMesh = function () {
