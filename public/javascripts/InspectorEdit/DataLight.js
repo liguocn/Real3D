@@ -31,6 +31,7 @@ REAL3D.Inspector.LightData = {
     name: '',
     parent: null,
     type: null,
+    used: true,
     lightParam: null,
     lightThree: null
 };

@@ -10,6 +10,7 @@ REAL3D.InspectorEdit.StateMaterial = {
 REAL3D.InspectorEdit.StateMaterial.enter = function () {
     "use strict";
     console.log("enter StateMaterial");
+    REAL3D.InspectorEdit.EditMaterialUI.enter();
     REAL3D.InspectorEdit.switchControlState(REAL3D.InspectorEdit.InspectorView);
 
     // setup light
@@ -64,9 +65,27 @@ REAL3D.InspectorEdit.StateMaterial.createMaterialSphere = function () {
     winH = REAL3D.InspectorEdit.winH;
     radius = winW > winH ? winH/3.0 : winW/3.0;
     geometry = new THREE.SphereGeometry(radius, 32, 32);
+    //geometry = new THREE.TorusKnotGeometry( radius, 30, 100, 16 );
     //material = new THREE.MeshPhongMaterial({color:0xffff00, wireframe:false});
     //material = new THREE.LineBasicMaterial({color: 0x00FFFF});
-    material = REAL3D.Inspector.MaterialDataManager.getMaterial("MeshLambertMaterial2");
-    this.materialSphere = new THREE.Mesh(geometry, material);
+    material = REAL3D.Inspector.MaterialDataManager.getMaterial();
+    this.materialSphere = new THREE.Mesh(geometry);
+    this.materialSphere.material = material;
+    //this.materialSphere.material = REAL3D.Inspector.MaterialDataManager.getMaterial("MeshMaterialWithTexture");
     REAL3D.RenderManager.scene.add(this.materialSphere);
+};
+
+REAL3D.InspectorEdit.StateMaterial.switchMaterial = function (newMaterialName) {
+    if (newMaterialName === undefined || newMaterialName === null)
+        return ;
+    var newMaterial = REAL3D.Inspector.MaterialDataManager.getMaterial(newMaterialName);
+    if (newMaterial !== null) {
+        this.materialSphere.material = newMaterial;
+        this.materialSphere.material.needsUpdate = true;
+        this.materialSphere.geometry.verticesNeedUpdate = true;
+        this.materialSphere.geometry.normalNeedUpdate = true;
+        this.materialSphere.geometry.colorsNeedUpdate = true;
+    }
+    else
+        console.log("The material does not exist: " + newMaterialName);
 };

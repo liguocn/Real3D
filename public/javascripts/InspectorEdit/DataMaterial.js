@@ -24,7 +24,8 @@ REAL3D.Inspector.FragmentShader = {
 };
 
 REAL3D.Inspector.MaterialDataManager = {
-    materials: []
+    materials: [],
+    currentName: ''
 };
 
 REAL3D.Inspector.MaterialData = function (name, threeMaterial) {
@@ -102,6 +103,8 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
     for (ii = 0; ii < materials.length; ++ii) {
         this.addMaterial(new REAL3D.Inspector.MaterialData(materialNames[ii], materials[ii]));
     }
+
+    this.currentName = materialNames[2];
 };
 
 REAL3D.Inspector.MaterialDataManager.addMaterial = function (materialData) {
@@ -119,10 +122,33 @@ REAL3D.Inspector.MaterialDataManager.removeMaterial = function (materialData) {
 
 REAL3D.Inspector.MaterialDataManager.getMaterial = function (materialName) {
     "use strict";
-    var ii;
+    var ii, queryName;
+    if ((materialName === '' || materialName === undefined) 
+        && this.currentName !== '' && this.currentName !== null) {
+        queryName = this.currentName;
+    } else {
+        queryName = materialName;
+    }
+
     for (ii in this.materials) {
-        if (this.materials[ii].name == materialName) {
+        if (this.materials[ii].name == queryName) {
+            this.currentName = queryName;
             return this.materials[ii].materialThree;
         }
     }
+    return null;
 };
+
+REAL3D.Inspector.MaterialDataManager.getAllMaterials = function () {
+    "use strict";
+    var materials= [], ii, oneMaterial;
+    for (ii in this.materials) {
+        oneMaterial = {
+            name: this.materials[ii].name,
+            type: this.materials[ii].materialThree.type,
+            isCurrent: this.materials[ii].name === this.currentName
+        };
+        materials.push(oneMaterial);
+    }
+    return materials;
+}
