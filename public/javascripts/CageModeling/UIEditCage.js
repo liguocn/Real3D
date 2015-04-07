@@ -101,6 +101,7 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EDIT);
     REAL3D.CageModeling.CageData.generateOperation(false);
     REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
+    this.configTransformUI(true, true);
 };
 
 REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
@@ -186,8 +187,9 @@ REAL3D.CageModeling.EditCageUI.changeTranslateValue = function () {
     "use strict";
     var curOp = REAL3D.CageModeling.CageData.getCurOperation();
     if (curOp !== null) {
-        curOp.setTranslateValue(parseFloat($('#translateValue').val()));
+        curOp.setValue(parseFloat($('#translateValue').val()));
         REAL3D.CageModeling.CageData.previewOperation();
+        REAL3D.CageModeling.EditCageControl.updateTransformRefFramePosition();
     }
 };
 
@@ -210,7 +212,7 @@ REAL3D.CageModeling.EditCageUI.setScaleValue = function (value) {
     $('#scaleValue').val(value);
 };
 
-REAL3D.CageModeling.EditCageUI.configTransformUI = function (disableTranslate, disableScale, disableRotate) {
+REAL3D.CageModeling.EditCageUI.configTransformUI = function (disableTranslate, disableScale) {
     "use strict";
     $('#translateValue').attr("disabled", disableTranslate);
     $('#scaleValue').attr("disabled", disableScale);

@@ -172,12 +172,14 @@ REAL3D.MeshModel.Scale.prototype.scaleMesh = function () {
     }
     if (this.elemType === REAL3D.MeshModel.ElementType.EDGE) {
         curEdge = this.mesh.getEdge(this.elemIndex);
-        scaleDir = REAL3D.Vector3.sub(this.elementCopy[0], this.centerPos);
-        scaleDir.multiply(this.scaleValue);
-        curEdge.getVertex().setPosition(REAL3D.Vector3.add(this.centerPos, scaleDir));
-        scaleDir = REAL3D.Vector3.sub(this.elementCopy[1], this.centerPos);
-        scaleDir.multiply(this.scaleValue);
-        curEdge.getPair().getVertex().setPosition(REAL3D.Vector3.add(this.centerPos, scaleDir));
+        for (curIndex = 0; curIndex < 2; curIndex++) {
+            t = REAL3D.Vector3.dotProduct(this.dir, REAL3D.Vector3.sub(this.centerPos, this.elementCopy[curIndex]));
+            curCenterPos = REAL3D.Vector3.add(this.elementCopy[curIndex], REAL3D.Vector3.scale(this.dir, t));
+            scaleDir = REAL3D.Vector3.sub(this.elementCopy[curIndex], curCenterPos);
+            scaleDir.multiply(this.scaleValue);
+            curEdge.getVertex().setPosition(REAL3D.Vector3.add(curCenterPos, scaleDir));
+            curEdge = curEdge.getPair();
+        }
     } else if (this.elemType === REAL3D.MeshModel.ElementType.FACE) {
         startEdge = this.mesh.getFace(this.elemIndex).getEdge();
         curEdge = startEdge;

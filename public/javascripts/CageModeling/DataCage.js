@@ -211,6 +211,10 @@ REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, 
     "use strict";
     if (this.pickTool !== null) {
         var isPicked = this.pickTool.pickVertex(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        if (isPicked) {
+            REAL3D.CageModeling.CageData.pickTool.clearPickedEdge();
+            REAL3D.CageModeling.CageData.pickTool.clearPickedFace();
+        }
         this.draw();
         return isPicked;
     }
@@ -221,6 +225,10 @@ REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mo
     "use strict";
     if (this.pickTool !== null) {
         var isPicked = this.pickTool.pickEdge(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY, onlyBoundary);
+        if (isPicked) {
+            REAL3D.CageModeling.CageData.pickTool.clearPickedVertex();
+            REAL3D.CageModeling.CageData.pickTool.clearPickedFace();
+        }
         this.draw();
         return isPicked;
     }
@@ -231,6 +239,10 @@ REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mo
     "use strict";
     if (this.pickTool !== null) {
         var isPicked = this.pickTool.pickFace(worldMatrix, projectMatrix, mouseNormPosX, mouseNormPosY);
+        if (isPicked) {
+            REAL3D.CageModeling.CageData.pickTool.clearPickedVertex();
+            REAL3D.CageModeling.CageData.pickTool.clearPickedEdge();
+        }
         this.draw();
         return isPicked;
     }
