@@ -1,18 +1,35 @@
 /*global REAL3D */
 
 REAL3D.Inspector.MaterialDataType = {
-    Undefined: 0,
-    MeshThreeMaterial: 1,
-    MeshShaderMaterial: 2
+    Undefined: "Undefined",
+    MaterialLambert: "MaterialLambert",
+    MaterialNormal:  "MaterialNormal",
+    MaterialDepth:   "MaterialDept", 
+    MaterialBasic:   "MaterialBasic",
+    MaterialPhong:   "MaterialPhong",
+    MaterialShader:  "MaterialShader",
+    MaterialFace:    "MaterialFace"
 };
 
 REAL3D.Inspector.MaterialData = {
     name: '',
-    type: 0,
-    textureMap: null,
-    vertexShader: [],
-    fragmentShader: [],
+    type: "Undefined",
+    materialParams: null,
+    //textureMap: null,
+    //vertexShader: '',
+    //fragmentShader: '',
     materialThree: null
+};
+
+REAL3D.Inspector.MaterialParams = {
+    color: 0,
+    wireframe: false,
+    side: 0,
+    blending: 0,
+    shading: 0,
+    overdraw: 0.0,
+    vertexShader: null,
+    fragmentShader: null
 };
 
 REAL3D.Inspector.VertexShader = {
@@ -28,30 +45,39 @@ REAL3D.Inspector.MaterialDataManager = {
     currentName: ''
 };
 
-REAL3D.Inspector.MaterialData = function (name, threeMaterial) {
+REAL3D.Inspector.MaterialData = function (name, materialData) {
     "use strict";
     this.name = name;
-    if (threeMaterial === undefined || threeMaterial === null)
+    if (materialData === undefined || materialData === null)
         return;
-    if (typeof threeMaterial === "object") {
-        if ( threeMaterial.type === "MeshBasicMaterial" || threeMaterial.type === "MeshLambertMaterial" 
-            || threeMaterial.type === "MeshDepthMaterial" || threeMaterial.type === "MeshNormalMaterial" ) {
-            this.type = REAL3D.Inspector.MaterialDataType.MeshThreeMaterial;
-            this.materialThree = threeMaterial;
-        }
-        else if ( threeMaterial.type === THREE.ShaderMaterial ) {
-            this.type = REAL3D.Inspector.MaterialDataType.MeshShaderMaterial;
-            this.materialThree = threeMaterial;
-        }
-        else {
-            this.type = REAL3D.Inspector.MaterialDataType.Undefined;
-            this.materialThree = null;
-        }
-    }
-    else {
+
+    if (materialData instanceof THREE.MeshBasicMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialBasic;
+        this.materialThree = materialData;
+    } else if (materialData instanceof THREE.MeshLambertMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialLambert;
+        this.materialThree = materialData;
+    } else if (materialData instanceof THREE.MeshDepthMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialDepth;
+        this.materialThree = materialData;
+    } else if (materialData instanceof THREE.MeshNormalMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialNormal;
+        this.materialThree = materialData;
+    } else if (materialData instanceof REAL3D.Inspector.MaterialParams) {
+        this.initFromMaterialParam(name, materialData);
+    } else {
         this.type = REAL3D.Inspector.MaterialDataType.Undefined;
         this.materialThree = null;
     }
+};
+
+REAL3D.Inspector.MaterialData.prototype.parseThreeToMaterialParams = function () {
+    "use strict";
+};
+
+REAL3D.Inspector.MaterialData.prototype.initFromMaterialParam = function(name, materialParams) {
+    "use strict";
+    this.name = name;
 };
 
 REAL3D.Inspector.MaterialData.prototype.init = function () {
@@ -80,9 +106,9 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
 
     materials = [
         new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, side: THREE.DoubleSide} ),
-        new THREE.MeshBasicMaterial( { color: 0xff0000, blending: THREE.AdditiveBlending} ),
-        new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5} ),
-        new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.SmoothShading, overdraw: 0.5 } ),
+        new THREE.MeshBasicMaterial( { color: 0xff0000, blending: THREE.AdditiveBlending } ),
+        new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading } ),
+        new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ),
         new THREE.MeshDepthMaterial( { overdraw: 0.5 } ),
         new THREE.MeshNormalMaterial( { overdraw: 0.5 } ),
         new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('../images/logo.jpg') } ),
