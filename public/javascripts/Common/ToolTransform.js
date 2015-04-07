@@ -298,14 +298,14 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     this.ctlPointsTranslate = [];
     this.axes = [];
 
-    var selectedMaterial, centerBallSize, sideBallSize, axisTopRadius, axisDownRadius, arrowRadius, material, materialX, materialY, materialZ, geometry, mesh, scalePos, rotatePos, halfAxisLen, rotateQ, halfArrowLen, rotateLen, halfRotatePos, halfScalePos, rotateDir;
+    var selectedMaterial, centerBallSize, sideBallSize, axisTopRadius, axisDownRadius, arrowRadius, material, materialArrow, materialRotate, materialScale, geometry, mesh, scalePos, rotatePos, halfAxisLen, rotateQ, halfArrowLen, rotateLen, halfRotatePos, halfScalePos, rotateDir;
     //draw ref object
     scalePos = 0.4 * this.refSize;
     rotatePos = 0.35 * this.refSize;
     halfAxisLen = 0.4 * this.refSize;
     halfArrowLen = 0.1 * this.refSize;
-    centerBallSize = this.refSize * 0.05;
-    sideBallSize = this.refSize * 0.035;
+    centerBallSize = this.refSize * 0.075;
+    sideBallSize = this.refSize * 0.05;
     axisTopRadius = this.refSize * 0.0075;
     axisDownRadius = this.refSize * 0.01;
     arrowRadius = this.refSize * 0.05;
@@ -315,16 +315,16 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     this.centerPoint = new THREE.Mesh(geometry, material);
     this.drawObject.add(this.centerPoint);
 
-    selectedMaterial = new THREE.MeshPhongMaterial({color: 0x2b2b2b, specular: 0x101010, shininess: 10});
-    materialX = new THREE.MeshPhongMaterial({color: 0xee2b8b, specular: 0x101010, shininess: 10});
-    materialY = new THREE.MeshPhongMaterial({color: 0x8bee2b, specular: 0x101010, shininess: 10});
-    materialZ = new THREE.MeshPhongMaterial({color: 0x2b8bee, specular: 0x101010, shininess: 10});
+    selectedMaterial = new THREE.MeshPhongMaterial({color: 0xee2b8b, specular: 0x101010, shininess: 10});
+    materialArrow = new THREE.MeshPhongMaterial({color: 0x8bee2b, specular: 0x101010, shininess: 10});
+    materialRotate = new THREE.MeshPhongMaterial({color: 0x2b8bee, specular: 0x101010, shininess: 10});
+    materialScale = new THREE.MeshPhongMaterial({color: 0x8bee2b, specular: 0x101010, shininess: 10});
     geometry = new THREE.SphereGeometry(sideBallSize, 8, 8);
 
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.SCALEX) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialX);
+        mesh = new THREE.Mesh(geometry, materialScale);
     }
     mesh.position.set(scalePos, 0, 0);
     this.drawObject.add(mesh);
@@ -333,7 +333,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.SCALEY) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialY);
+        mesh = new THREE.Mesh(geometry, materialScale);
     }
     mesh.position.set(0, scalePos, 0);
     this.drawObject.add(mesh);
@@ -342,7 +342,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.SCALEZ) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialZ);
+        mesh = new THREE.Mesh(geometry, materialScale);
     }
     mesh.position.set(0, 0, scalePos);
     this.drawObject.add(mesh);
@@ -351,7 +351,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.ROTATEX) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialX);
+        mesh = new THREE.Mesh(geometry, materialRotate);
     }
     mesh.position.set(0, rotatePos, rotatePos);
     this.drawObject.add(mesh);
@@ -360,7 +360,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.ROTATEY) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialY);
+        mesh = new THREE.Mesh(geometry, materialRotate);
     }
     mesh.position.set(rotatePos, 0, rotatePos);
     this.drawObject.add(mesh);
@@ -369,7 +369,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.ROTATEZ) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialZ);
+        mesh = new THREE.Mesh(geometry, materialRotate);
     }
     mesh.position.set(rotatePos, rotatePos, 0);
     this.drawObject.add(mesh);
@@ -469,7 +469,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.TRANSLATEX) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialX);
+        mesh = new THREE.Mesh(geometry, materialArrow);
     }
     mesh.translateX(halfAxisLen * 2 + halfArrowLen);
     rotateQ = new THREE.Quaternion();
@@ -481,7 +481,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.TRANSLATEY) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialY);
+        mesh = new THREE.Mesh(geometry, materialArrow);
     }
     mesh.translateY(halfAxisLen * 2 + halfArrowLen);
     this.drawObject.add(mesh);
@@ -490,7 +490,7 @@ REAL3D.TransformTool.RefFrame.prototype.draw = function () {
     if (this.curTransform.type === REAL3D.TransformTool.TransformType.TRANSLATEZ) {
         mesh = new THREE.Mesh(geometry, selectedMaterial);
     } else {
-        mesh = new THREE.Mesh(geometry, materialZ);
+        mesh = new THREE.Mesh(geometry, materialArrow);
     }
     mesh.translateZ(halfAxisLen * 2 + halfArrowLen);
     rotateQ = new THREE.Quaternion();

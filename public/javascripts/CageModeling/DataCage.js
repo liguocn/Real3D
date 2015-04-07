@@ -6,6 +6,8 @@ REAL3D.CageModeling.CageData = {
     previewMesh: null,
     cageModel: null,
     previewModel: null,
+    subdivideModel: null,
+    vertexSmoothValues: null,
     drawObject: null,
     pickTool: null,
     refObject: null,
@@ -35,9 +37,11 @@ REAL3D.CageModeling.CageData.draw = function () {
     if (this.previewMesh !== null) {
         //console.log("  draw preview mesh");
         this.previewModel = new REAL3D.CageModel.Cage(this.previewMesh, this.drawObject);
+        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.previewMesh, this.vertexSmoothValues, this.drawObject);
     } else if (this.cageMesh !== null) {
         //console.log("  draw cage mesh");
         this.cageModel = new REAL3D.CageModel.Cage(this.cageMesh, this.drawObject);
+        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.cageMesh, this.vertexSmoothValues, this.drawObject);
     }
     this.drawRefObject();
 };
@@ -48,7 +52,7 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
     this.refObject = new THREE.Object3D();
     REAL3D.RenderManager.scene.add(this.refObject);
     //draw picked objects
-    var pickedMesh, pickedVertex, material, geometry, ball, pid, vPos, vPos0, vPos1, pEdge, edgeVector, cylinder, threeEdgeVector, threeUpVector, pickedEdge, edgeLen, rotateQ, eid, mesh, pickedFace, fid, pFace, pStartEdge, pCurEdge, edgeCount;
+    var faceNormal, pickedMesh, pickedVertex, material, geometry, ball, pid, vPos, vPos0, vPos1, pEdge, edgeVector, cylinder, threeEdgeVector, threeUpVector, pickedEdge, edgeLen, rotateQ, eid, mesh, pickedFace, fid, pFace, pStartEdge, pCurEdge, edgeCount;
     if (this.pickTool !== null) {
         pickedMesh = this.pickTool.mesh;
 
@@ -89,15 +93,18 @@ REAL3D.CageModeling.CageData.drawRefObject = function () {
         
         pickedFace = this.pickTool.getPickedFace();
         if (pickedFace !== null) {
-            material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10});
+            material = new THREE.MeshPhongMaterial({color: 0xbb2bbb, specular: 0x101010, shininess: 10, transparent: true, opacity: 0.5});
             for (fid = 0; fid < pickedFace.length; fid++) {
                 pFace = pickedMesh.getFace(pickedFace[fid]);
                 geometry = new THREE.Geometry();
                 pStartEdge = pFace.getEdge();
+                faceNormal = pFace.getNormal();
+                faceNormal.multiply(0.5); //0.5: since our min unit is 1 (which means 1 cm), thus 0.5 is a reasonable value
                 pCurEdge = pStartEdge;
                 edgeCount = 0;
                 do {
                     vPos = pCurEdge.getVertex().getPosition();
+                    vPos.addVector(faceNormal);
                     geometry.vertices.push(new THREE.Vector3(vPos.getX(), vPos.getY(), vPos.getZ()));
                     pCurEdge = pCurEdge.getNext();
                     edgeCount++;
@@ -131,6 +138,10 @@ REAL3D.CageModeling.CageData.releaseDraw = function () {
     if (this.cageModel !== null) {
         this.cageModel.remove();
         this.cageModel = null;
+    }
+    if (this.subdivideModel !== null) {
+        this.subdivideModel.remove();
+        this.subdivideModel = null;
     }
     if (this.drawObject !== null) {
         REAL3D.RenderManager.scene.remove(this.drawObject);
@@ -214,8 +225,8 @@ REAL3D.CageModeling.CageData.pickVertex = function (worldMatrix, projectMatrix, 
         if (isPicked) {
             REAL3D.CageModeling.CageData.pickTool.clearPickedEdge();
             REAL3D.CageModeling.CageData.pickTool.clearPickedFace();
+            this.draw();
         }
-        this.draw();
         return isPicked;
     }
     return false;
@@ -228,8 +239,8 @@ REAL3D.CageModeling.CageData.pickEdge = function (worldMatrix, projectMatrix, mo
         if (isPicked) {
             REAL3D.CageModeling.CageData.pickTool.clearPickedVertex();
             REAL3D.CageModeling.CageData.pickTool.clearPickedFace();
+            this.draw();
         }
-        this.draw();
         return isPicked;
     }
     return false;
@@ -242,8 +253,8 @@ REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mo
         if (isPicked) {
             REAL3D.CageModeling.CageData.pickTool.clearPickedVertex();
             REAL3D.CageModeling.CageData.pickTool.clearPickedEdge();
+            this.draw();
         }
-        this.draw();
         return isPicked;
     }
     return false;

@@ -12,8 +12,7 @@ REAL3D.CageModeling.EditCageControl = {
     mouseMovePos: null,
     mouseState: null,
     editState: null,
-    transformRefFrame: null,
-    refSize: null
+    transformRefFrame: null
 };
 
 REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
@@ -32,7 +31,6 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
     this.mouseMovePos = new THREE.Vector2(0, 0);
     this.mouseState = REAL3D.CageModeling.MouseState.NONE;
     this.editState = REAL3D.CageModeling.EditState.NONE;
-    this.refSize = 100;
     REAL3D.RenderManager.switchCamera(this.camera);
 };
 
@@ -438,7 +436,7 @@ REAL3D.CageModeling.EditCageControl.editMouseMove = function (mousePosX, mousePo
 
 REAL3D.CageModeling.EditCageControl.constructRefFrameFromFace = function (face) {
     "use strict";
-    var startEdge, curEdge, centerPos, vertexCount, xDir;
+    var startEdge, curEdge, centerPos, vertexCount, xDir, cameraPos, cameraVec, worldMatrix, worldCenterPos, refSize;
     startEdge = face.getEdge();
     curEdge = startEdge;
     centerPos = new REAL3D.Vector3(0, 0, 0);
@@ -451,40 +449,58 @@ REAL3D.CageModeling.EditCageControl.constructRefFrameFromFace = function (face) 
     xDir = REAL3D.Vector3.sub(startEdge.getVertex().getPosition(), startEdge.getPair().getVertex().getPosition());
     xDir.unify();
     centerPos.multiply(1 / vertexCount);
+    worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
+    worldCenterPos = new THREE.Vector3(centerPos.x, centerPos.y, centerPos.z);
+    worldCenterPos.applyProjection(worldMatrix);
+    cameraPos = this.camera.getWorldPosition();
+    cameraVec = new REAL3D.Vector3(cameraPos.x - worldCenterPos.x, cameraPos.y - worldCenterPos.y, cameraPos.z - worldCenterPos.z);
+    refSize = cameraVec.length() * 0.15;
     if (this.transformRefFrame !== null) {
         this.transformRefFrame.releaseData();
     }
     this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
-    this.transformRefFrame.init(centerPos, face.getNormal(), xDir, this.refSize, REAL3D.RenderManager.scene);
+    this.transformRefFrame.init(centerPos, face.getNormal(), xDir, refSize, REAL3D.RenderManager.scene);
 };
 
 REAL3D.CageModeling.EditCageControl.constructRefFrameFromEdge = function (edge) {
     "use strict";
-    var yDir, xDir, centerPos;
+    var yDir, xDir, centerPos, cameraPos, cameraVec, worldMatrix, worldCenterPos, refSize;
     centerPos = REAL3D.Vector3.add(edge.getVertex().getPosition(), edge.getPair().getVertex().getPosition());
     centerPos.multiply(0.5);
     yDir = REAL3D.Vector3.sub(edge.getVertex().getPosition(), edge.getPair().getVertex().getPosition());
     yDir.unify();
     xDir = null;
+    worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
+    worldCenterPos = new THREE.Vector3(centerPos.x, centerPos.y, centerPos.z);
+    worldCenterPos.applyProjection(worldMatrix);
+    cameraPos = this.camera.getWorldPosition();
+    cameraVec = new REAL3D.Vector3(cameraPos.x - worldCenterPos.x, cameraPos.y - worldCenterPos.y, cameraPos.z - worldCenterPos.z);
+    refSize = cameraVec.length() * 0.15;
     if (this.transformRefFrame !== null) {
         this.transformRefFrame.releaseData();
     }
     this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
-    this.transformRefFrame.init(centerPos, yDir, xDir, this.refSize, REAL3D.RenderManager.scene);
+    this.transformRefFrame.init(centerPos, yDir, xDir, refSize, REAL3D.RenderManager.scene);
 };
 
 REAL3D.CageModeling.EditCageControl.constructRefFrameFromVertex = function (vertex) {
     "use strict";
-    var yDir, xDir, centerPos;
+    var yDir, xDir, centerPos, cameraPos, cameraVec, worldMatrix, worldCenterPos, refSize;
     centerPos = vertex.getPosition();
     yDir = REAL3D.Vector3.sub(vertex.getPosition(), vertex.getEdge().getVertex().getPosition());
     yDir.unify();
     xDir = null;
+    worldMatrix = REAL3D.RenderManager.scene.matrixWorld;
+    worldCenterPos = new THREE.Vector3(centerPos.x, centerPos.y, centerPos.z);
+    worldCenterPos.applyProjection(worldMatrix);
+    cameraPos = this.camera.getWorldPosition();
+    cameraVec = new REAL3D.Vector3(cameraPos.x - worldCenterPos.x, cameraPos.y - worldCenterPos.y, cameraPos.z - worldCenterPos.z);
+    refSize = cameraVec.length() * 0.15;
     if (this.transformRefFrame !== null) {
         this.transformRefFrame.releaseData();
     }
     this.transformRefFrame = new REAL3D.TransformTool.RefFrame();
-    this.transformRefFrame.init(centerPos, yDir, xDir, this.refSize, REAL3D.RenderManager.scene);
+    this.transformRefFrame.init(centerPos, yDir, xDir, refSize, REAL3D.RenderManager.scene);
 };
 
 REAL3D.CageModeling.EditCageControl.updateTransformRefFramePosition = function () {
