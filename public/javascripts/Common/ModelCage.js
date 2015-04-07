@@ -136,7 +136,7 @@ REAL3D.CageModel.SubdivideMesh.prototype.updateDraw = function () {
         }
         geometry.computeFaceNormals();
         geometry.computeVertexNormals();
-        material = new THREE.MeshPhongMaterial({color: 0x2babeb, specular: 0x101010, shininess: 10, transparent: true, opacity: 0.75});
+        material = new THREE.MeshPhongMaterial({color: 0x2babeb, specular: 0x2b2b2b, shininess: 10, transparent: true, opacity: 0.8, side: THREE.DoubleSide, shading: THREE.FlatShading});
         this.drawObject = new THREE.Mesh(geometry, material);
         this.drawParent.add(this.drawObject);
     }

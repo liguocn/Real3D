@@ -41,9 +41,16 @@ REAL3D.CageModeling.EditCageState.setupLight = function () {
     // var ambientLight = new THREE.AmbientLight(0x2b2b2b);
     // this.light.add(ambientLight);
 
-    var hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
+    var hemisphereLight, pointLight1, pointLight2;
+    hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
     hemisphereLight.position.set(0, 0, 10000);
     this.light.add(hemisphereLight);
+    pointLight1 = new THREE.PointLight(0xb2b2b2, 1, 2000);
+    pointLight1.position.set(1000, 1000, 1000);
+    this.light.add(pointLight1);
+    pointLight2 = new THREE.PointLight(0xb2b2b2, 1, 2000);
+    pointLight2.position.set(-1000, -1000, -1000);
+    this.light.add(pointLight2);
 };
 
 REAL3D.CageModeling.EditCageState.releaseLight = function () {
