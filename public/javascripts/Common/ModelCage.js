@@ -22,7 +22,7 @@ REAL3D.CageModel.Cage.prototype.updateDraw = function () {
         this.drawObject = new THREE.Object3D();
         this.drawParent.add(this.drawObject);
         var material, geometry, line, hEdgeCount, eid, hEdge, vPos0, vPos1;
-        material = new THREE.LineBasicMaterial({color: 0xdbdbdb});
+        material = new THREE.LineBasicMaterial({color: 0xababab});
         hEdgeCount = this.mesh.getEdgeCount();
         for (eid = 0; eid < hEdgeCount; eid++) {
             hEdge = this.mesh.getEdge(eid);
@@ -103,7 +103,104 @@ REAL3D.CageModel.SubdivideMesh = function (mesh, smoothValues, drawParent) {
 
 REAL3D.CageModel.SubdivideMesh.prototype.generateSubdivideMesh = function () {
     "use strict";
-    return this.mesh.getCopy();
+    var subdTimes, sid, originMesh, subdMesh, startEdge, curEdge, centerPos, vertDegree, fid, faceCount, edgeCount, eid, edgeVert, vertexCount, vid, curVert, vertVert, curFace, vertices;
+    subdTimes = 4;
+    originMesh = this.mesh.getCopy();
+    for (sid = 0; sid < subdTimes; sid++) {
+        originMesh.updateFaceIndex();
+        originMesh.validateTopology();
+        subdMesh = new REAL3D.MeshModel.HMesh();
+        faceCount = originMesh.getFaceCount();
+        for (fid = 0; fid < faceCount; fid++) {
+            startEdge = originMesh.getFace(fid).getEdge();
+            curEdge = startEdge;
+            centerPos = new REAL3D.Vector3(0, 0, 0);
+            vertDegree = 0;
+            do {
+                centerPos.addVector(curEdge.getVertex().getPosition());
+                vertDegree++;
+                curEdge = curEdge.getNext();
+            } while (startEdge !== curEdge);
+            centerPos.multiply(1 / vertDegree);
+            subdMesh.insertVertex(centerPos);
+        }
+        edgeCount = originMesh.getEdgeCount();
+        for (eid = 0; eid < edgeCount; eid++) {
+            originMesh.getEdge(eid).setAssistObject(null);
+        }
+        for (eid = 0; eid < edgeCount; eid++) {
+            if (originMesh.getEdge(eid).getAssistObject() !== null) {
+                continue;
+            }
+            curEdge = originMesh.getEdge(eid);
+            centerPos = new REAL3D.Vector3(0, 0, 0);
+            centerPos.addVector(curEdge.getVertex().getPosition());
+            centerPos.addVector(curEdge.getPair().getVertex().getPosition());
+            if (curEdge.getFace() !== null && curEdge.getPair().getFace() !== null) {
+                centerPos.addVector(subdMesh.getVertex(curEdge.getFace().getAssistObject()).getPosition());
+                centerPos.addVector(subdMesh.getVertex(curEdge.getPair().getFace().getAssistObject()).getPosition());
+                centerPos.multiply(0.25);
+            } else {
+                centerPos.multiply(0.5);
+            }
+            edgeVert = subdMesh.insertVertex(centerPos);
+            curEdge.setAssistObject(edgeVert);
+            curEdge.getPair().setAssistObject(edgeVert);
+        }
+        vertexCount = originMesh.getVertexCount();
+        for (vid = 0; vid < vertexCount; vid++) {
+            curVert = originMesh.getVertex(vid);
+            centerPos = new REAL3D.Vector3(0, 0, 0);
+            startEdge = curVert.getEdge();
+            if (startEdge.getFace() !== null) {
+                curEdge = startEdge;
+                vertDegree = 0;
+                do {
+                    centerPos.addVector(subdMesh.getVertex(curEdge.getFace().getAssistObject()).getPosition());
+                    centerPos.addVector(curEdge.getAssistObject().getPosition());
+                    vertDegree++;
+                    curEdge = curEdge.getPair().getNext();
+                } while (curEdge !== startEdge);
+                centerPos.multiply(1 / vertDegree / vertDegree);
+                centerPos.addVector(REAL3D.Vector3.scale(curVert.getPosition(), (vertDegree - 2) / vertDegree));
+            } else {
+                centerPos.addVector(startEdge.getAssistObject().getPosition());
+                curEdge = startEdge;
+                do {
+                    if (curEdge.getPair().getFace() === null) {
+                        centerPos.addVector(curEdge.getAssistObject().getPosition());
+                        break;
+                    }
+                    curEdge = curEdge.getPair().getNext();
+                } while (curEdge !== startEdge);
+                centerPos.multiply(0.25);
+                centerPos.addVector(REAL3D.Vector3.scale(curVert.getPosition(), 0.5));
+            }
+            vertVert = subdMesh.insertVertex(centerPos);
+
+            curEdge = startEdge;
+            do {
+                curFace = curEdge.getFace();
+                if (curFace !== null) {
+                    vertices = [];
+                    vertices.push(vertVert);
+                    vertices.push(curEdge.getAssistObject());
+                    vertices.push(subdMesh.getVertex(curFace.getAssistObject()));
+                    vertices.push(curEdge.getPre().getAssistObject());
+                    subdMesh.insertFace(vertices);
+                }
+                if (curEdge.getPair().getFace() === null) {
+                    break;
+                }
+                curEdge = curEdge.getPair().getNext();
+            } while (curEdge !== startEdge);
+        }
+        originMesh = subdMesh;
+    }
+    originMesh.validateTopology();
+    originMesh.updateNormal();
+
+    return originMesh;
 };
 
 REAL3D.CageModel.SubdivideMesh.prototype.updateDraw = function () {
@@ -136,7 +233,7 @@ REAL3D.CageModel.SubdivideMesh.prototype.updateDraw = function () {
         }
         geometry.computeFaceNormals();
         geometry.computeVertexNormals();
-        material = new THREE.MeshPhongMaterial({color: 0x2babeb, specular: 0x2b2b2b, shininess: 10, transparent: true, opacity: 0.8, side: THREE.DoubleSide, shading: THREE.FlatShading});
+        material = new THREE.MeshPhongMaterial({color: 0x2babeb, specular: 0x2b2b2b, shininess: 10, transparent: false, opacity: 0.8, side: THREE.DoubleSide, shading: THREE.FlatShading});
         this.drawObject = new THREE.Mesh(geometry, material);
         this.drawParent.add(this.drawObject);
     }
