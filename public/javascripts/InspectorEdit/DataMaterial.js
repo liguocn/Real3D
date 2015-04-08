@@ -15,6 +15,7 @@ REAL3D.Inspector.MaterialData = {
     name: '',
     type: "Undefined",
     materialParams: null,
+    materialParamsExt: null,
     //textureMap: null,
     //vertexShader: '',
     //fragmentShader: '',
@@ -23,13 +24,35 @@ REAL3D.Inspector.MaterialData = {
 
 REAL3D.Inspector.MaterialParams = {
     color: 0,
-    wireframe: false,
-    side: 0,
-    blending: 0,
-    shading: 0,
+    opacity: 0,
+    transparent: false,
     overdraw: 0.0,
+    visible: true,
+    side: 0,
+    needsUpdate: false,
+
+    wireframe: false,
+    blending: 0,
+    blendsrc: null,
+    blenddst: null,
+    blendingequation: null,
+
+    depthTest: false,
+    alphaTest: 0,
+    shading: 0,
     vertexShader: null,
     fragmentShader: null
+};
+
+REAL3D.Inspector.MaterialParamsExt = {
+    emissive: 0,
+    specular: 0,
+    shininess: 30,
+    fog: false,
+    fragmentShaderUrl: '',
+    vertexShaderUrl: '',
+    fragmentShader: null,
+    vertexShader: null
 };
 
 REAL3D.Inspector.VertexShader = {
@@ -63,6 +86,12 @@ REAL3D.Inspector.MaterialData = function (name, materialData) {
     } else if (materialData instanceof THREE.MeshNormalMaterial) {
         this.type = REAL3D.Inspector.MaterialDataType.MaterialNormal;
         this.materialThree = materialData;
+    } else if (materialData instanceof THREE.MeshPhongMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialPhong;
+        this.materialThree = materialData;
+    } else if (materialData instanceof THREE.ShaderMaterial) {
+        this.type = REAL3D.Inspector.MaterialDataType.MaterialShader;
+        this.materialThree = materialData;
     } else if (materialData instanceof REAL3D.Inspector.MaterialParams) {
         this.initFromMaterialParam(name, materialData);
     } else {
@@ -90,18 +119,18 @@ REAL3D.Inspector.MaterialData.prototype.updateShaders = function (vertexShader, 
 
 REAL3D.Inspector.MaterialDataManager.init = function () {
     "use strict";
-    var materials, materialNames, uniforms, vertexShader, fragmentShader, ii;
+    var materials, materialNames, uniforms, vertShader, fragShader, ii;
     uniforms = {
         time: { type: "f", value: 1.0},
         resolution: { type: "v2", value: new THREE.Vector2() }
     };
 
-    vertexShader = {
-        src: 'void main() { gl_Position = vec4(position, 1.0); }'
+    vertShader = {
+        src: 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}'
     };
 
-    fragmentShader = {
-        src: ''
+    fragShader = {
+        src: 'void main() {gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);}'
     };
 
     materials = [
@@ -109,6 +138,7 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
         new THREE.MeshBasicMaterial( { color: 0xff0000, blending: THREE.AdditiveBlending } ),
         new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading } ),
         new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ),
+        new THREE.MeshPhongMaterial( { color: 0xffffff } ),
         new THREE.MeshDepthMaterial( { overdraw: 0.5 } ),
         new THREE.MeshNormalMaterial( { overdraw: 0.5 } ),
         new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('../images/logo.jpg') } ),
@@ -120,6 +150,7 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
         'MeshBasicMaterial2',
         'MeshLambertMaterial1',
         'MeshLambertMaterial2',
+        'MeshPhongMaterial',
         'MeshDepthMaterial',
         'MeshNormalMaterial',
         'MeshMaterialWithTexture',
@@ -130,7 +161,11 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
         this.addMaterial(new REAL3D.Inspector.MaterialData(materialNames[ii], materials[ii]));
     }
 
-    this.currentName = materialNames[2];
+    var shaderMaterialThree = new THREE.ShaderMaterial({uniforms: {}, attributes: {}, vertexShader: vertShader.src, fragmentShader: fragShader.src, transparent: true});
+    this.addMaterial(new REAL3D.Inspector.MaterialData("MaterialShader", shaderMaterialThree));
+
+    //this.currentName = materialNames[4];
+    this.currentName = "MaterialShader";
 };
 
 REAL3D.Inspector.MaterialDataManager.addMaterial = function (materialData) {
@@ -145,6 +180,16 @@ REAL3D.Inspector.MaterialDataManager.removeMaterial = function (materialData) {
         this.materials.splice(iFind, 1);
     }
 };
+
+REAL3D.Inspector.MaterialDataManager.getCurrentMaterialName = function () {
+    "use strict";
+    return this.currentName;
+}
+
+REAL3D.Inspector.MaterialDataManager.setCurrentMaterialName = function (materialName) {
+    "use strict";
+    this.currentName = materialName;
+}
 
 REAL3D.Inspector.MaterialDataManager.getMaterial = function (materialName) {
     "use strict";
