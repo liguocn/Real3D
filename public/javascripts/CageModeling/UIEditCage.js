@@ -24,10 +24,10 @@ REAL3D.CageModeling.EditCageUI.enter = function () {
     $('<hr />').appendTo('#toolBar');
 
     $('<div id="editMode">编辑模式</div>').appendTo('#toolBar');
-    $('<div><input type="radio" id="editParm" name="editRadio">编辑</div>').appendTo('#editMode');
-    $('#editParm').get(0).addEventListener("click", function () { that.switchEditModeToEditParm(); });
     $('<div><input type="radio" id="extrude" name="editRadio">挤出</div>').appendTo('#editMode');
     $('#extrude').get(0).addEventListener("click", function () { that.switchEditModeToExtrude(); });
+    $('<div><input type="radio" id="editParm" name="editRadio">编辑</div>').appendTo('#editMode');
+    $('#editParm').get(0).addEventListener("click", function () { that.switchEditModeToEditParm(); });
     $('<div><input type="radio" id="split" name="editRadio">分割</div>').appendTo('#editMode');
     $('#split').get(0).addEventListener("click", function () { that.switchEditModeToSplit(); });
     $('<div><input type="radio" id="remove" name="editRadio">删除</div>').appendTo('#editMode');
@@ -37,10 +37,10 @@ REAL3D.CageModeling.EditCageUI.enter = function () {
     $('<div><input type="radio" id="connect" name="editRadio">连接</div>').appendTo('#editMode');
     $('#connect').get(0).addEventListener("click", function () { that.switchEditModeToConnect(); });
     $('<hr />').appendTo('#toolBar');
-    $('#editParm').get(0).checked = true;
+    $('#extrude').get(0).checked = true;
 
     $('<div id="editOption"></div>').appendTo('#toolBar');
-    this.switchEditModeToEditParm();
+    this.switchEditModeToExtrude();
 };
 
 REAL3D.CageModeling.EditCageUI.exit = function () {
@@ -83,7 +83,7 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
     $('<div id="editOption"></div>').appendTo('#toolBar');
     $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
     $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
-    $('#smoothValue').val(0.5);
+    $('#smoothValue').val(REAL3D.CageModeling.EditCageState.currentSmoothValue);
     $('<hr />').appendTo('#editOption');
 
     $('<div">平移值<input id="translateValue" class="parmNumCtl" type="number" min="-1000" max="1000" step="1"></div>').appendTo('#editOption');
@@ -117,7 +117,11 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
 
     $('<button id="applyExtrude" class="applyButton">确认</button>').appendTo('#editOption');
     $('#applyExtrude').click(function () { that.applyExtrude(); });
+    $('<hr />').appendTo('#editOption');
 
+    $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
+    $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
+    $('#smoothValue').val(REAL3D.CageModeling.EditCageState.currentSmoothValue);
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EXTRUDE);
@@ -181,6 +185,15 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToConnect = function () {
 
 REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
     "use strict";
+    var uiSmoothValue;
+    uiSmoothValue = parseFloat($('#smoothValue').val());
+    // validSmoothValue = uiSmoothValue * this.maxSmoothValue;
+    REAL3D.CageModeling.EditCageState.changeSmoothValue(uiSmoothValue);
+};
+
+REAL3D.CageModeling.EditCageUI.setSmoothValue = function (value) {
+    "use strict";
+    $('#smoothValue').val(value);
 };
 
 REAL3D.CageModeling.EditCageUI.changeTranslateValue = function () {

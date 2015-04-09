@@ -8,6 +8,8 @@ REAL3D.CageModeling.CageData = {
     previewModel: null,
     subdivideModel: null,
     vertexSmoothValues: null,
+    edgeSmoothValues: null,
+    faceSmoothValues: null,
     drawObject: null,
     pickTool: null,
     refObject: null,
@@ -258,4 +260,8 @@ REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mo
         return isPicked;
     }
     return false;
+};
+
+REAL3D.CageModeling.CageData.changeSmoothValue = function (smoothValue) {
+    "use strict";
 };
