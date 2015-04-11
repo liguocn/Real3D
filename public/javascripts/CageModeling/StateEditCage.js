@@ -3,8 +3,7 @@
 
 REAL3D.CageModeling.EditCageState = {
     light: null,
-    refFrame: null,
-    currentSmoothValue: 0.5
+    refFrame: null
 };
 
 REAL3D.CageModeling.EditCageState.enter = function () {
@@ -46,10 +45,10 @@ REAL3D.CageModeling.EditCageState.setupLight = function () {
     hemisphereLight = new THREE.HemisphereLight(0xb2b2b2, 0x888888, 1);
     hemisphereLight.position.set(0, 0, 10000);
     this.light.add(hemisphereLight);
-    pointLight1 = new THREE.PointLight(0xb2b2b2, 1, 2000);
+    pointLight1 = new THREE.PointLight(0xb2b2b2, 2, 2000);
     pointLight1.position.set(1000, 1000, 1000);
     this.light.add(pointLight1);
-    pointLight2 = new THREE.PointLight(0xb2b2b2, 1, 2000);
+    pointLight2 = new THREE.PointLight(0xb2b2b2, 2, 2000);
     pointLight2.position.set(-1000, -1000, -1000);
     this.light.add(pointLight2);
 };
@@ -129,9 +128,8 @@ REAL3D.CageModeling.EditCageState.switchEditMode = function (editMode) {
 
 REAL3D.CageModeling.EditCageState.changeSmoothValue = function (smoothValue) {
     "use strict";
-    if (REAL3D.CageModeling.EditCageControl.editMode === REAL3D.CageModeling.EditMode.EDIT) {
-        REAL3D.CageModeling.CageData.changeSmoothValue(smoothValue);
-    } else {
-        this.currentSmoothValue = smoothValue;
-    }
+    // if (REAL3D.CageModeling.EditCageControl.editMode === REAL3D.CageModeling.EditMode.EDIT) {
+    //     REAL3D.CageModeling.CageData.changeSmoothValue(smoothValue);
+    // }
+    REAL3D.CageModeling.CageData.changeSmoothValue(smoothValue);
 };

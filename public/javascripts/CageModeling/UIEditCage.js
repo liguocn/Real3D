@@ -81,9 +81,9 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToEditParm = function () {
 
     var that = this;
     $('<div id="editOption"></div>').appendTo('#toolBar');
-    $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
+    $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="1"></div>').appendTo('#editOption');
     $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
-    $('#smoothValue').val(REAL3D.CageModeling.EditCageState.currentSmoothValue);
+    $('#smoothValue').val(1);
     $('<hr />').appendTo('#editOption');
 
     $('<div">平移值<input id="translateValue" class="parmNumCtl" type="number" min="-1000" max="1000" step="1"></div>').appendTo('#editOption');
@@ -117,11 +117,6 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToExtrude = function () {
 
     $('<button id="applyExtrude" class="applyButton">确认</button>').appendTo('#editOption');
     $('#applyExtrude').click(function () { that.applyExtrude(); });
-    $('<hr />').appendTo('#editOption');
-
-    $('<div">光滑值<input id="smoothValue" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
-    $('#smoothValue').get(0).addEventListener("input", function () { that.changeSmoothValue(); }, false);
-    $('#smoothValue').val(REAL3D.CageModeling.EditCageState.currentSmoothValue);
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.EXTRUDE);
@@ -187,7 +182,6 @@ REAL3D.CageModeling.EditCageUI.changeSmoothValue = function () {
     "use strict";
     var uiSmoothValue;
     uiSmoothValue = parseFloat($('#smoothValue').val());
-    // validSmoothValue = uiSmoothValue * this.maxSmoothValue;
     REAL3D.CageModeling.EditCageState.changeSmoothValue(uiSmoothValue);
 };
 

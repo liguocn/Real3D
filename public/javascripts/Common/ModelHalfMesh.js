@@ -14,6 +14,7 @@ REAL3D.MeshModel.HVertex = function () {
     this.texCoord = null;
     this.hEdge = null;
     this.assistObject = null;
+    this.smoothValue = null;
 };
 
 REAL3D.MeshModel.HVertex.prototype.getId = function () {
@@ -90,6 +91,16 @@ REAL3D.MeshModel.HVertex.prototype.setAssistObject = function (assistObject) {
     this.assistObject = assistObject;
 };
 
+REAL3D.MeshModel.HVertex.prototype.getSmoothValue = function () {
+    "use strict";
+    return this.smoothValue;
+};
+
+REAL3D.MeshModel.HVertex.prototype.setSmoothValue = function (smoothValue) {
+    "use strict";
+    this.smoothValue = smoothValue;
+};
+
 /////////////////////////////////////////////////// HEdge ///////////////////////////////////////////////////
 REAL3D.MeshModel.HEdge = function () {
     "use strict";
@@ -100,6 +111,7 @@ REAL3D.MeshModel.HEdge = function () {
     this.preEdge = null;
     this.hFace = null;
     this.assistObject = null;
+    this.smoothValue = null;
 };
 
 REAL3D.MeshModel.HEdge.prototype.getId = function () {
@@ -170,6 +182,16 @@ REAL3D.MeshModel.HEdge.prototype.getAssistObject = function () {
 REAL3D.MeshModel.HEdge.prototype.setAssistObject = function (assistObject) {
     "use strict";
     this.assistObject = assistObject;
+};
+
+REAL3D.MeshModel.HEdge.prototype.getSmoothValue = function () {
+    "use strict";
+    return this.smoothValue;
+};
+
+REAL3D.MeshModel.HEdge.prototype.setSmoothValue = function (smoothValue) {
+    "use strict";
+    this.smoothValue = smoothValue;
 };
 
 /////////////////////////////////////////////////// HFace ///////////////////////////////////////////////////
@@ -522,6 +544,7 @@ REAL3D.MeshModel.HMesh.prototype.updateFaceIndex = function () {
     }
 };
 
+//only geometry copy, not containing vertex, edge and face attribute
 REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
     "use strict";
     var copyMesh, vertCount, vid, faceCount, fid, faceVertices, curVertIndex, startEdge, curEdge;

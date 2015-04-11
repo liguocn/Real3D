@@ -35,16 +35,25 @@ REAL3D.PickTool.PickHMesh.prototype.clearPickedElement = function (keepMesh) {
 REAL3D.PickTool.PickHMesh.prototype.clearPickedVertex = function () {
     "use strict";
     this.pickedVertex = [];
+    if (this.currentElementType === REAL3D.MeshModel.ElementType.VERTEX) {
+        this.currentElementType = null;
+    }
 };
 
 REAL3D.PickTool.PickHMesh.prototype.clearPickedEdge = function () {
     "use strict";
     this.pickedEdge = [];
+    if (this.currentElementType === REAL3D.MeshModel.ElementType.EDGE) {
+        this.currentElementType = null;
+    }
 };
 
 REAL3D.PickTool.PickHMesh.prototype.clearPickedFace = function () {
     "use strict";
     this.pickedFace = [];
+    if (this.currentElementType === REAL3D.MeshModel.ElementType.FACE) {
+        this.currentElementType = null;
+    }
 };
 
 REAL3D.PickTool.PickHMesh.prototype.setMesh = function (mesh, keepPickIndex) {

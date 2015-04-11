@@ -20,7 +20,7 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
     console.log("HomeControl init");
     if (this.camera === null) {
         this.camera = new THREE.PerspectiveCamera(45, winW / winH, 1, 10000);
-        this.camera.position.set(0, 0, 1000);
+        this.camera.position.set(0, 0, 300);
 
         //first time init
         this.canvasOffset = canvasOffset;
@@ -339,6 +339,8 @@ REAL3D.CageModeling.EditCageControl.editMouseDown = function () {
     var pickTool, curOp, isGenerateNew;
     pickTool = REAL3D.CageModeling.CageData.pickTool;
     if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+        //update smoooth value in UI
+        //REAL3D.CageModeling.EditCageUI.setSmoothValue(pickTool.getMesh().get);
         if (this.editState === REAL3D.CageModeling.EditState.NONE) {
             this.constructRefFrameFromFace(pickTool.getMesh().getFace(pickTool.getPickedFace()[0]));
             REAL3D.CageModeling.EditCageUI.configTransformUI(true, true);
@@ -361,6 +363,9 @@ REAL3D.CageModeling.EditCageControl.editMouseDown = function () {
             }
         }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+        //update smoooth value in UI
+        REAL3D.CageModeling.EditCageUI.setSmoothValue(pickTool.getMesh().getEdge(pickTool.getPickedEdge()[0]).getSmoothValue());
+
         if (this.editState === REAL3D.CageModeling.EditState.NONE) {
             this.constructRefFrameFromEdge(pickTool.getMesh().getEdge(pickTool.getPickedEdge()[0]));
             REAL3D.CageModeling.EditCageUI.configTransformUI(true, true);
@@ -383,6 +388,9 @@ REAL3D.CageModeling.EditCageControl.editMouseDown = function () {
             }
         }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITVERTEX) {
+        //update smoooth value in UI
+        REAL3D.CageModeling.EditCageUI.setSmoothValue(pickTool.getMesh().getVertex(pickTool.getPickedVertex()[0]).getSmoothValue());
+
         if (this.editState === REAL3D.CageModeling.EditState.NONE) {
             this.constructRefFrameFromVertex(pickTool.getMesh().getVertex(pickTool.getPickedVertex()[0]));
             REAL3D.CageModeling.EditCageUI.configTransformUI(true, true);

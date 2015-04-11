@@ -7,9 +7,6 @@ REAL3D.CageModeling.CageData = {
     cageModel: null,
     previewModel: null,
     subdivideModel: null,
-    vertexSmoothValues: null,
-    edgeSmoothValues: null,
-    faceSmoothValues: null,
     drawObject: null,
     pickTool: null,
     refObject: null,
@@ -39,11 +36,11 @@ REAL3D.CageModeling.CageData.draw = function () {
     if (this.previewMesh !== null) {
         //console.log("  draw preview mesh");
         this.previewModel = new REAL3D.CageModel.Cage(this.previewMesh, this.drawObject);
-        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.previewMesh, this.vertexSmoothValues, this.drawObject);
+        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.previewMesh, this.drawObject);
     } else if (this.cageMesh !== null) {
         //console.log("  draw cage mesh");
         this.cageModel = new REAL3D.CageModel.Cage(this.cageMesh, this.drawObject);
-        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.cageMesh, this.vertexSmoothValues, this.drawObject);
+        this.subdivideModel = new REAL3D.CageModel.SubdivideMesh(this.cageMesh, this.drawObject);
     }
     this.drawRefObject();
 };
@@ -264,4 +261,42 @@ REAL3D.CageModeling.CageData.pickFace = function (worldMatrix, projectMatrix, mo
 
 REAL3D.CageModeling.CageData.changeSmoothValue = function (smoothValue) {
     "use strict";
+    if (this.pickTool !== null) {
+        var currentElementType, pickedMesh, pickedIndex, startEdge, curEdge;
+        currentElementType = this.pickTool.currentElementType;
+        if (currentElementType === REAL3D.MeshModel.ElementType.VERTEX) {
+            pickedIndex = this.pickTool.getPickedVertex()[0];
+            pickedMesh = this.pickTool.getMesh();
+            pickedMesh.getVertex(pickedIndex).setSmoothValue(smoothValue);
+            // startEdge = pickedMesh.getVertex(pickedIndex).getEdge();
+            // curEdge = startEdge;
+            // do {
+            //     curEdge.setSmoothValue(smoothValue);
+            //     curEdge.getPair().setSmoothValue(smoothValue);
+            //     if (curEdge.getPair().getFace() === null) {
+            //         break;
+            //     }
+            //     curEdge = curEdge.getPair().getNext();
+            // } while (curEdge !== startEdge);
+        } else if (currentElementType === REAL3D.MeshModel.ElementType.EDGE) {
+            pickedIndex = this.pickTool.getPickedEdge()[0];
+            pickedMesh = this.pickTool.getMesh();
+            curEdge = pickedMesh.getEdge(pickedIndex);
+            curEdge.setSmoothValue(smoothValue);
+            curEdge.getPair().setSmoothValue(smoothValue);
+            //curEdge.getVertex().setSmoothValue(smoothValue);
+        } else if (currentElementType === REAL3D.MeshModel.ElementType.FACE) {
+            pickedIndex = this.pickTool.getPickedFace()[0];
+            pickedMesh = this.pickTool.getMesh();
+            startEdge = pickedMesh.getFace(pickedIndex).getEdge();
+            curEdge = startEdge;
+            do {
+                curEdge.setSmoothValue(smoothValue);
+                curEdge.getPair().setSmoothValue(smoothValue);
+                curEdge.getVertex().setSmoothValue(smoothValue);
+                curEdge = curEdge.getNext();
+            } while (curEdge !== startEdge);
+        }
+        this.draw();
+    }
 };
