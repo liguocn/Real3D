@@ -17,6 +17,20 @@ REAL3D.MeshModel.HVertex = function () {
     this.smoothValue = null;
 };
 
+//This function is used in HMesh.getCopy method, only copy attribute member, not containing mesh element copy
+//Please don't use it public
+REAL3D.MeshModel.HVertex.prototype.getCopy = function () {
+    "use strict";
+    var vertex = new REAL3D.MeshModel.HVertex();
+    vertex.setId(this.vId);
+    vertex.setPosition(this.position);
+    vertex.setNormal(this.normal);
+    vertex.setColor(this.color);
+    vertex.setTexCoord(this.texCoord);
+    vertex.setSmoothValue(this.smoothValue);
+    return vertex;
+};
+
 REAL3D.MeshModel.HVertex.prototype.getId = function () {
     "use strict";
     return this.vId;
@@ -114,6 +128,15 @@ REAL3D.MeshModel.HEdge = function () {
     this.smoothValue = null;
 };
 
+//This function is used in HMesh.getCopy method, only copy attribute member, not containing mesh element copy
+//Please don't use it public
+REAL3D.MeshModel.HEdge.prototype.getCopy = function () {
+    "use strict";
+    var edge = new REAL3D.MeshModel.HEdge();
+    edge.setId(this.eId);
+    edge.setSmoothValue(this.smoothValue);
+};
+
 REAL3D.MeshModel.HEdge.prototype.getId = function () {
     "use strict";
     return this.eId;
@@ -201,6 +224,15 @@ REAL3D.MeshModel.HFace = function () {
     this.hEdge = null;
     this.normal = null;
     this.assistObject = null;
+};
+
+//This function is used in HMesh.getCopy method, only copy attribute member, not containing mesh element copy
+//Please don't use it public
+REAL3D.MeshModel.HFace.prototype.getCopy = function () {
+    "use strict";
+    var face = new REAL3D.MeshModel.HFace();
+    face.setId(this.fId);
+    face.setNormal(this.normal);
 };
 
 REAL3D.MeshModel.HFace.prototype.getId = function () {
@@ -454,7 +486,7 @@ REAL3D.MeshModel.HMesh.prototype.deleteFace = function (faceIndex) {
 //2. make mesh a manifold
 REAL3D.MeshModel.HMesh.prototype.validateTopology = function () {
     "use strict";
-    var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert;
+    var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert, startVertId, endVertId, mapList, mid;
     edgeCount = this.edges.length;
     removeFlag = [];
     boundaryEdges = [];
@@ -471,6 +503,30 @@ REAL3D.MeshModel.HMesh.prototype.validateTopology = function () {
     for (eid = edgeCount - 1; eid >= 0; eid--) {
         if (removeFlag[eid] === 1) {
             curEdge = this.edges[eid];
+            //remove it from edgeMap: both sides
+            if (curEdge.getPair() !== null) {
+                startVertId = curEdge.getPair().getVertex().getId();
+                endVertId = curEdge.getVertex().getId();
+                mapList = this.edgeMap.edges[startVertId];
+                if (mapList !== undefined && mapList !== null) {
+                    for (mid = 0; mid < mapList.length; mid++) {
+                        if (mapList[mid].vertId === endVertId) {
+                            mapList.splice(mid, 1);
+                            break;
+                        }
+                    }
+                }
+                mapList = this.edgeMap.edges[endVertId];
+                if (mapList !== undefined && mapList !== null) {
+                    for (mid = 0; mid < mapList.length; mid++) {
+                        if (mapList[mid].vertId === startVertId) {
+                            mapList.splice(mid, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+            //
             preEdge = curEdge.getPre();
             if (preEdge !== null) {
                 preEdge.setNext(null);
@@ -544,30 +600,57 @@ REAL3D.MeshModel.HMesh.prototype.updateFaceIndex = function () {
     }
 };
 
-//only geometry copy, not containing vertex, edge and face attribute
+//A completely copy
 REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
     "use strict";
-    var copyMesh, vertCount, vid, faceCount, fid, faceVertices, curVertIndex, startEdge, curEdge;
+    var copyMesh, vertexCount, edgeCount, faceCount, vid, eid, fid, curEdge, originEdge, edgeMapLen, mid, copyMapList, mapList;
     copyMesh = new REAL3D.MeshModel.HMesh();
+    copyMesh.vertexNewId = this.vertexNewId;
+    copyMesh.edgeNewId = this.edgeNewId;
+    copyMesh.faceNewId = this.faceNewId;
     this.updateVertexIndex();
-    vertCount = this.vertices.length;
-    for (vid = 0; vid < vertCount; vid++) {
-        copyMesh.insertVertex(this.vertices[vid].getPosition());
+    vertexCount = this.vertices.length;
+    for (vid = 0; vid < vertexCount; vid++) {
+        copyMesh.vertices.push(this.vertices[vid].getCopy());
     }
+    this.updateEdgeIndex();
+    edgeCount = this.edges.length;
+    for (eid = 0; eid < edgeCount; eid++) {
+        copyMesh.edges.push(this.edges[vid].getCopy());
+    }
+    this.updateFaceIndex();
     faceCount = this.faces.length;
     for (fid = 0; fid < faceCount; fid++) {
-        faceVertices = [];
-        startEdge = this.faces[fid].getEdge();
-        curEdge = startEdge;
-        do {
-            curVertIndex = curEdge.getVertex().getAssistObject();
-            faceVertices.push(copyMesh.getVertex(curVertIndex));
-            curEdge = curEdge.getNext();
-        } while (curEdge !== startEdge);
-        copyMesh.insertFace(faceVertices);
+        copyMesh.faces.push(this.faces[fid].getCopy());
     }
-    copyMesh.validateTopology();
-    copyMesh.updateNormal();
+    //update mesh topology
+    for (vid = 0; vid < vertexCount; vid++) {
+        copyMesh.getVertex(vid).setEdge(copyMesh.getEdge(this.vertices[vid].getEdge().getAssistObject()));
+    }
+    for (eid = 0; eid < edgeCount; eid++) {
+        curEdge = copyMesh.getEdge(eid);
+        originEdge = this.edges[eid];
+        curEdge.setVertex(copyMesh.getVertex(originEdge.getVertex().getAssistObject()));
+        curEdge.setPair(copyMesh.getEdge(originEdge.getPair().getAssistObject()));
+        curEdge.setNext(copyMesh.getEdge(originEdge.getNext().getAssistObject()));
+        curEdge.setPre(copyMesh.getEdge(originEdge.getPre().getAssistObject()));
+        curEdge.setFace(copyMesh.getFace(originEdge.getFace().getAssistObject()));
+    }
+    for (fid = 0; fid < faceCount; fid++) {
+        copyMesh.getFace(fid).setEdge(copyMesh.getEdge(this.faces[fid].getEdge().getAssistObject()));
+    }
+    //update edge map
+    edgeMapLen = this.edgeMap.edges.length;
+    for (eid = 0; eid < edgeMapLen; eid++) {
+        mapList = this.edgeMap.edges[eid];
+        copyMapList = [];
+        if (mapList !== undefined && mapList !== null) {
+            for (mid = 0; mid < mapList.length; mid++) {
+                copyMapList.push({vertId: mapList[mid].vertId, edge: copyMesh.getEdge(mapList[mid].edge.getAssistObject())});
+            }
+        }
+        copyMesh.edgeMap.push(copyMapList);
+    }
     return copyMesh;
 };
 
