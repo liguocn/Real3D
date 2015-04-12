@@ -71,7 +71,7 @@ REAL3D.MeshModel.Extrude.prototype.setDistance = function (dist) {
 
 REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
     "use strict";
-    var startEdge, curEdge, curVertex, extrudeVertexLen, faceVertices, extrudeVertex, vid, nextId, extrudeFace, selectEdgeVert;
+    var startEdge, curEdge, curVertex, extrudeVertexLen, faceVertices, extrudeVertex, vid, nextId, extrudeFace, selectEdgeVert, sideFace;
     //construct extrude topology
     this.previewMesh = this.mesh.getCopy();
     if (this.elemType === REAL3D.MeshModel.ElementType.FACE) {
@@ -83,6 +83,7 @@ REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
             curVertex = curEdge.getVertex();
             this.originVertices.push(curVertex);
             extrudeVertex = this.previewMesh.insertVertex(curVertex.getPosition());
+            extrudeVertex.setSmoothValue(curVertex.getSmoothValue());
             this.extrudeVertices.push(extrudeVertex);
             curEdge = curEdge.getNext();
         } while (curEdge !== startEdge);
@@ -91,7 +92,19 @@ REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
         for (vid = 0; vid < extrudeVertexLen; vid++) {
             nextId = (vid + 1) % extrudeVertexLen;
             faceVertices = [this.originVertices[vid], this.originVertices[nextId], this.extrudeVertices[nextId], this.extrudeVertices[vid]];
-            this.previewMesh.insertFace(faceVertices);
+            sideFace = this.previewMesh.insertFace(faceVertices);
+            startEdge = sideFace.getEdge();
+            curEdge = startEdge;
+            do {
+                if (curEdge.getVertex() === this.extrudeVertices[nextId] || curEdge.getVertex() === this.originVertices[vid]) {
+                    curEdge.setSmoothValue(0);
+                    curEdge.getPair().setSmoothValue(0);
+                } else if (curEdge.getVertex() === this.extrudeVertices[vid]) {
+                    curEdge.setSmoothValue(curEdge.getNext().getNext().getSmoothValue());
+                    curEdge.getPair().setSmoothValue(curEdge.getNext().getNext().getSmoothValue());
+                }
+                curEdge = curEdge.getNext();
+            } while (curEdge !== startEdge);
         }
         extrudeFace = this.previewMesh.insertFace(this.extrudeVertices);
         this.previewMesh.validateTopology();
@@ -111,11 +124,13 @@ REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
         curVertex = curEdge.getVertex();
         this.originVertices.push(curVertex);
         extrudeVertex = this.previewMesh.insertVertex(curVertex.getPosition());
+        extrudeVertex.setSmoothValue(curVertex.getSmoothValue());
         this.extrudeVertices.push(extrudeVertex);
 
         curVertex = curEdge.getPair().getVertex();
         this.originVertices.push(curVertex);
         extrudeVertex = this.previewMesh.insertVertex(curVertex.getPosition());
+        extrudeVertex.setSmoothValue(curVertex.getSmoothValue());
         this.extrudeVertices.push(extrudeVertex);
 
         faceVertices = [this.originVertices[0], this.extrudeVertices[0], this.extrudeVertices[1], this.originVertices[1]];
@@ -129,11 +144,16 @@ REAL3D.MeshModel.Extrude.prototype.constructPreviewTopology = function () {
         do {
             if (curEdge.getVertex() === this.extrudeVertices[1]) {
                 this.previewElemIndex = curEdge.getAssistObject();
-                break;
+            }
+            if (curEdge.getVertex() === this.extrudeVertices[0] || curEdge.getVertex() === this.originVertices[1]) {
+                curEdge.setSmoothValue(0);
+                curEdge.getPair().setSmoothValue(0);
+            } else if (curEdge.getVertex() === this.extrudeVertices[1]) {
+                curEdge.setSmoothValue(curEdge.getNext().getNext().getSmoothValue());
+                curEdge.getPair().setSmoothValue(curEdge.getNext().getNext().getSmoothValue());
             }
             curEdge = curEdge.getNext();
         } while (curEdge !== startEdge);
-
     } else {
         console.log("error: wrong element type in extrude preview: ", this.elemType);
     }

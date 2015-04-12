@@ -54,35 +54,56 @@ REAL3D.MeshModel.HVertex.prototype.setPosition = function (vPos) {
 
 REAL3D.MeshModel.HVertex.prototype.getNormal = function () {
     "use strict";
-    var normal = this.normal.copyTo();
+    var normal = null;
+    if (this.normal !== null) {
+        normal = this.normal.copyTo();
+    }
     return normal;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setNormal = function (vNormal) {
     "use strict";
-    this.normal = vNormal.copyTo();
+    if (vNormal !== null) {
+        this.normal = vNormal.copyTo();
+    } else {
+        this.normal = null;
+    }
 };
 
 REAL3D.MeshModel.HVertex.prototype.getColor = function () {
     "use strict";
-    var color = this.color.copyTo();
+    var color = null;
+    if (this.color !== null) {
+        color = this.color.copyTo();
+    }
     return color;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setColor = function (vColor) {
     "use strict";
-    this.color = vColor.copyTo();
+    if (vColor !== null) {
+        this.color = vColor.copyTo();
+    } else {
+        this.color = null;
+    }
 };
 
 REAL3D.MeshModel.HVertex.prototype.getTexCoord = function () {
     "use strict";
-    var texCoord = this.texCoord.copyTo();
+    var texCoord = null;
+    if (this.texCoord !== null) {
+        texCoord = this.texCoord.copyTo();
+    }
     return texCoord;
 };
 
 REAL3D.MeshModel.HVertex.prototype.setTexCoord = function (vTexCoord) {
     "use strict";
-    this.texCoord = vTexCoord.copyTo();
+    if (vTexCoord !== null) {
+        this.texCoord = vTexCoord.copyTo();
+    } else {
+        this.texCoord = null;
+    }
 };
 
 REAL3D.MeshModel.HVertex.prototype.getEdge = function () {
@@ -135,6 +156,7 @@ REAL3D.MeshModel.HEdge.prototype.getCopy = function () {
     var edge = new REAL3D.MeshModel.HEdge();
     edge.setId(this.eId);
     edge.setSmoothValue(this.smoothValue);
+    return edge;
 };
 
 REAL3D.MeshModel.HEdge.prototype.getId = function () {
@@ -233,6 +255,7 @@ REAL3D.MeshModel.HFace.prototype.getCopy = function () {
     var face = new REAL3D.MeshModel.HFace();
     face.setId(this.fId);
     face.setNormal(this.normal);
+    return face;
 };
 
 REAL3D.MeshModel.HFace.prototype.getId = function () {
@@ -257,13 +280,20 @@ REAL3D.MeshModel.HFace.prototype.setEdge = function (hEdge) {
 
 REAL3D.MeshModel.HFace.prototype.getNormal = function () {
     "use strict";
-    var normal = this.normal.copyTo();
+    var normal = null;
+    if (this.normal !== null) {
+        normal = this.normal.copyTo();
+    }
     return normal;
 };
 
 REAL3D.MeshModel.HFace.prototype.setNormal = function (fNormal) {
     "use strict";
-    this.normal = fNormal.copyTo();
+    if (fNormal !== null) {
+        this.normal = fNormal.copyTo();
+    } else {
+        this.normal = null;
+    }
 };
 
 REAL3D.MeshModel.HFace.prototype.getAssistObject = function () {
@@ -616,7 +646,7 @@ REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
     this.updateEdgeIndex();
     edgeCount = this.edges.length;
     for (eid = 0; eid < edgeCount; eid++) {
-        copyMesh.edges.push(this.edges[vid].getCopy());
+        copyMesh.edges.push(this.edges[eid].getCopy());
     }
     this.updateFaceIndex();
     faceCount = this.faces.length;
@@ -632,9 +662,15 @@ REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
         originEdge = this.edges[eid];
         curEdge.setVertex(copyMesh.getVertex(originEdge.getVertex().getAssistObject()));
         curEdge.setPair(copyMesh.getEdge(originEdge.getPair().getAssistObject()));
-        curEdge.setNext(copyMesh.getEdge(originEdge.getNext().getAssistObject()));
-        curEdge.setPre(copyMesh.getEdge(originEdge.getPre().getAssistObject()));
-        curEdge.setFace(copyMesh.getFace(originEdge.getFace().getAssistObject()));
+        if (originEdge.getNext() !== null) {
+            curEdge.setNext(copyMesh.getEdge(originEdge.getNext().getAssistObject()));
+        }
+        if (originEdge.getPre() !== null) {
+            curEdge.setPre(copyMesh.getEdge(originEdge.getPre().getAssistObject()));
+        }
+        if (originEdge.getFace() !== null) {
+            curEdge.setFace(copyMesh.getFace(originEdge.getFace().getAssistObject()));
+        }
     }
     for (fid = 0; fid < faceCount; fid++) {
         copyMesh.getFace(fid).setEdge(copyMesh.getEdge(this.faces[fid].getEdge().getAssistObject()));
@@ -649,7 +685,7 @@ REAL3D.MeshModel.HMesh.prototype.getCopy = function () {
                 copyMapList.push({vertId: mapList[mid].vertId, edge: copyMesh.getEdge(mapList[mid].edge.getAssistObject())});
             }
         }
-        copyMesh.edgeMap.push(copyMapList);
+        copyMesh.edgeMap.edges.push(copyMapList);
     }
     return copyMesh;
 };

@@ -20,7 +20,7 @@ REAL3D.CageModeling.EditCageControl.init = function (canvasOffset, winW, winH) {
     console.log("HomeControl init");
     if (this.camera === null) {
         this.camera = new THREE.PerspectiveCamera(45, winW / winH, 1, 10000);
-        this.camera.position.set(0, 0, 300);
+        this.camera.position.set(0, 0, 750);
 
         //first time init
         this.canvasOffset = canvasOffset;
