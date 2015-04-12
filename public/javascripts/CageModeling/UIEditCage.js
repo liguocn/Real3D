@@ -131,14 +131,12 @@ REAL3D.CageModeling.EditCageUI.switchEditModeToSplit = function () {
     var that = this;
     $('<div id="editOption"></div>').appendTo('#toolBar');
 
-    $('<div">权重<input id="splitFaceWeight" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
-    $('#splitFaceWeight').get(0).addEventListener("input", function () { that.changeSplitFaceWeight(); }, false);
-    $('#splitFaceWeight').val(0.5);
-    $('<hr />').appendTo('#editOption');
+    $('<div">权重<input id="splitWeight" class="parmNumCtl" type="number" min="0" max="1" step="0.1"></div>').appendTo('#editOption');
+    $('#splitWeight').get(0).addEventListener("input", function () { that.changeSplitWeight(); }, false);
+    $('#splitWeight').val(REAL3D.CageModeling.EditCageState.splitWeight);
 
-    $('<div">边数<input id="splitEdgeCount" class="parmNumCtl" type="number" min="1" max="10" step="1"></div>').appendTo('#editOption');
-    $('#splitEdgeCount').get(0).addEventListener("input", function () { that.changeSplitEdgeCount(); }, false);
-    $('#splitEdgeCount').val(2);
+    $('<button id="applySplit" class="applyButton">确认</button>').appendTo('#editOption');
+    $('#applySplit').click(function () { that.applySplit(); });
     $('<hr />').appendTo('#editOption');
 
     REAL3D.CageModeling.EditCageState.switchEditMode(REAL3D.CageModeling.EditMode.SPLIT);
@@ -247,12 +245,21 @@ REAL3D.CageModeling.EditCageUI.applyExtrude = function () {
     this.setExtrudeDistance(0);
 };
 
-REAL3D.CageModeling.EditCageUI.changeSplitFaceWeight = function () {
+REAL3D.CageModeling.EditCageUI.changeSplitWeight = function () {
     "use strict";
+    var curOp = REAL3D.CageModeling.CageData.getCurOperation();
+    if (curOp !== null) {
+        curOp.setWeight(parseFloat($('#splitWeight').val()));
+        REAL3D.CageModeling.CageData.previewOperation();
+    }
+    REAL3D.CageModeling.EditCageState.splitWeight = parseFloat($('#splitWeight').val());
 };
 
-REAL3D.CageModeling.EditCageUI.changeSplitEdgeCount = function () {
+REAL3D.CageModeling.EditCageUI.applySplit = function () {
     "use strict";
+    REAL3D.CageModeling.CageData.generateOperation(false);
+    REAL3D.CageModeling.EditCageControl.switchEditState(REAL3D.CageModeling.EditState.NONE);
+    $('#splitWeight').val(REAL3D.CageModeling.EditCageState.splitWeight);
 };
 
 REAL3D.CageModeling.EditCageUI.checkFillHole = function () {

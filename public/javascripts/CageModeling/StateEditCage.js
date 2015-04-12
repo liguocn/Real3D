@@ -3,7 +3,8 @@
 
 REAL3D.CageModeling.EditCageState = {
     light: null,
-    refFrame: null
+    refFrame: null,
+    splitWeight: 0.5
 };
 
 REAL3D.CageModeling.EditCageState.enter = function () {

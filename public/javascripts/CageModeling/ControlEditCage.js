@@ -55,6 +55,8 @@ REAL3D.CageModeling.EditCageControl.mouseDown = function (e) {
             this.deleteMouseDown();
         } else if (this.editMode === REAL3D.CageModeling.EditMode.EDIT) {
             this.editMouseDown();
+        } else if (this.editMode === REAL3D.CageModeling.EditMode.SPLIT) {
+            this.splitMouseDown();
         }
     }
 };
@@ -538,5 +540,35 @@ REAL3D.CageModeling.EditCageControl.updateTransformRefFramePosition = function (
             this.transformRefFrame.updateDrawObjectPosition(centerPos);
         }
         this.transformRefFrame.draw();
+    }
+};
+
+REAL3D.CageModeling.EditCageControl.splitMouseDown = function () {
+    "use strict";
+    var pickTool, curOp;
+    pickTool = REAL3D.CageModeling.CageData.pickTool;
+    if (this.mouseState === REAL3D.CageModeling.MouseState.HITFACE) {
+        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+            this.editState = REAL3D.CageModeling.EditState.EDITTING;
+            REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.SubdivideFace(pickTool.getPickedFace()[0],
+                pickTool.getMesh(), REAL3D.CageModeling.EditCageState.splitWeight));
+            REAL3D.CageModeling.CageData.previewOperation();
+        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
+            curOp = REAL3D.CageModeling.CageData.getCurOperation();
+            if (curOp.elemType !== REAL3D.MeshModel.ElementType.FACE || curOp.previewElemIndex !== pickTool.getPickedFace()[0]) {
+                //generate new operation
+                if (REAL3D.CageModeling.CageData.generateOperation(true)) {
+                    REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.SubdivideFace(pickTool.getPickedFace()[0],
+                        pickTool.getMesh(), REAL3D.CageModeling.EditCageState.splitWeight));
+                    REAL3D.CageModeling.CageData.previewOperation();
+                } else {
+                    this.editState = REAL3D.CageModeling.EditState.NONE;
+                }
+            }
+        }
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
+
+    } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITVERTEX) {
+
     }
 };
