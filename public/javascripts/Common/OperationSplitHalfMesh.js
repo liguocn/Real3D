@@ -257,18 +257,118 @@ REAL3D.MeshModel.SplitFaceBySharpVertex = function (elemIndex, mesh, weight) {
     this.mesh = mesh;
     this.weight = weight;
     this.previewMesh = null;
-    this.previewElemIndex = null;
+    this.startVertex = null;
+    this.endVertices = null;
+    this.centerVertices = null;
 };
 
 REAL3D.MeshModel.SplitFaceBySharpVertex.prototype.preview = function (pickTool) {
     "use strict";
+    if (this.previewMesh === null) {
+        this.constructPreviewTopology();
+        pickTool.setMesh(this.previewMesh, false);
+    } else {
+        this.updateGeometry();
+    }
+    return this.previewMesh;
 };
 
 REAL3D.MeshModel.SplitFaceBySharpVertex.prototype.generate = function () {
     "use strict";
+    if (this.previewMesh === null) {
+        this.constructPreviewTopology();
+    } else {
+        this.updateGeometry();
+    }
+    var resMesh = this.previewMesh;
+
+    //free data
+    this.previewMesh = null;
+    this.mesh = null;
+    this.startVertex = null;
+    this.endVertices = null;
+    this.centerVertices = null;
+
+    return resMesh;
 };
 
 REAL3D.MeshModel.SplitFaceBySharpVertex.prototype.setWeight = function (weight) {
     "use strict";
     this.weight = weight;
+};
+
+REAL3D.MeshModel.SplitFaceBySharpVertex.prototype.constructPreviewTopology = function () {
+    "use strict";
+    var startEdge, curEdge, neighborEdges, eid, centerPos, centerVertex, faceVertices0, faceVertices1;
+    this.previewMesh = this.mesh.getCopy();
+    this.startVertex = this.previewMesh.getVertex(this.elemIndex);
+    this.centerVertices = [];
+    this.endVertices = [];
+    neighborEdges = [];
+    startEdge = this.startVertex.getEdge();
+    curEdge = startEdge;
+    do {
+        this.endVertices.push(curEdge.getVertex());
+        neighborEdges.push(curEdge);
+        if (curEdge.getPair().getFace() === null) {
+            break;
+        }
+        curEdge = curEdge.getPair().getNext();
+    } while (curEdge !== startEdge);
+    for (eid = 0; eid < neighborEdges.length; eid++) {
+        centerPos = REAL3D.Vector3.add(REAL3D.Vector3.scale(this.startVertex.getPosition(), 1 - this.weight), REAL3D.Vector3.scale(this.endVertices[eid].getPosition(), this.weight));
+        centerVertex = this.previewMesh.insertVertexOnEdge(centerPos, neighborEdges[eid]);
+        centerVertex.setSmoothValue(this.startVertex.getSmoothValue());
+        this.centerVertices.push(centerVertex);
+    }
+    this.previewMesh.validateTopology();
+    neighborEdges = [];
+    startEdge = this.startVertex.getEdge();
+    curEdge = startEdge;
+    do {
+        if (curEdge.getFace() !== null) {
+            neighborEdges.push(curEdge);
+        }
+        if (curEdge.getPair().getFace() === null) {
+            break;
+        }
+        curEdge = curEdge.getPair().getNext();
+    } while (curEdge !== startEdge);
+    for (eid = 0; eid < neighborEdges.length; eid++) {
+        this.previewMesh.updateFaceIndex();
+        faceVertices0 = [];
+        curEdge = neighborEdges[eid];
+        do {
+            faceVertices0.push(curEdge.getVertex());
+            curEdge = curEdge.getNext();
+        } while (curEdge.getVertex() !== this.startVertex);
+        faceVertices1 = [this.startVertex, neighborEdges[eid].getVertex(), neighborEdges[eid].getPre().getPair().getVertex()];
+        this.previewMesh.deleteFace(neighborEdges[eid].getFace().getAssistObject());
+        this.previewMesh.insertFace(faceVertices0);
+        this.previewMesh.insertFace(faceVertices1);
+    }
+    this.previewMesh.validateTopology();
+    startEdge = this.startVertex.getEdge();
+    curEdge = startEdge;
+    do {
+        if (curEdge.getFace() !== null) {
+            curEdge.getNext().setSmoothValue(this.startVertex.getSmoothValue());
+            curEdge.getNext().getPair().setSmoothValue(this.startVertex.getSmoothValue());
+        }
+        if (curEdge.getPair().getFace() === null) {
+            break;
+        }
+        curEdge = curEdge.getPair().getNext();
+    } while (curEdge !== startEdge);
+    this.previewMesh.updateNormal();
+};
+
+REAL3D.MeshModel.SplitFaceBySharpVertex.prototype.updateGeometry = function () {
+    "use strict";
+    var vid, centerPos;
+    for (vid = 0; vid < this.centerVertices.length; vid++) {
+        centerPos = REAL3D.Vector3.add(REAL3D.Vector3.scale(this.startVertex.getPosition(), 1 - this.weight), REAL3D.Vector3.scale(this.endVertices[vid].getPosition(), this.weight));
+        this.centerVertices[vid].setPosition(centerPos);
+    }
+    this.previewMesh.updateNormal();
 };
