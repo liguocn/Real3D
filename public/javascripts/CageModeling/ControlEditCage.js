@@ -563,7 +563,20 @@ REAL3D.CageModeling.EditCageControl.splitMouseDown = function () {
             }
         }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITEDGE) {
-
+        if (this.editState === REAL3D.CageModeling.EditState.NONE) {
+            this.editState = REAL3D.CageModeling.EditState.EDITTING;
+            REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.SplitFaceBySharpEdge(pickTool.getPickedEdge()[0],
+                pickTool.getMesh(), REAL3D.CageModeling.EditCageState.splitWeight));
+            REAL3D.CageModeling.CageData.previewOperation();
+        } else if (this.editState === REAL3D.CageModeling.EditState.EDITTING) {
+            if (REAL3D.CageModeling.CageData.generateOperation(true)) {
+                REAL3D.CageModeling.CageData.setCurOperation(new REAL3D.MeshModel.SplitFaceBySharpEdge(pickTool.getPickedEdge()[0],
+                    pickTool.getMesh(), REAL3D.CageModeling.EditCageState.splitWeight));
+                REAL3D.CageModeling.CageData.previewOperation();
+            } else {
+                this.editState = REAL3D.CageModeling.EditState.NONE;
+            }
+        }
     } else if (this.mouseState === REAL3D.CageModeling.MouseState.HITVERTEX) {
 
     }

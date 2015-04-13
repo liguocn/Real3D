@@ -395,7 +395,7 @@ REAL3D.MeshModel.HMesh.prototype.updateNormal = function () {
     faceCount = this.faces.length;
     for (fid = 0; fid < faceCount; fid++) {
         startEdge = this.faces[fid].getEdge();
-        startVertPos = startEdge.getPair().getVertex().getPosition();
+        startVertPos = startEdge.getVertex().getPosition();
         curEdge = startEdge.getNext().getNext();
         faceNormal = new REAL3D.Vector3(0, 0, 0);
         while (curEdge !== startEdge) {
@@ -439,6 +439,92 @@ REAL3D.MeshModel.HMesh.prototype.insertVertex = function (vertPos) {
     this.vertexNewId++;
     this.vertices.push(newVertex);
     return newVertex;
+};
+
+REAL3D.MeshModel.HMesh.prototype.insertVertexOnEdge = function (vertPos, edge) {
+    "use strict";
+    var centerVertex, startVertex, endVertex, edge0, edge1, edgePair0, edgePair1, eid, preEdge, nextEdge, pairEdge, smoothValue, face;
+    centerVertex = this.insertVertex(vertPos);
+    startVertex = edge.getPair().getVertex();
+    endVertex = edge.getVertex();
+    edge0 = this.insertEdge(startVertex, centerVertex);
+    edge1 = this.insertEdge(centerVertex, endVertex);
+    edgePair0 = this.insertEdge(centerVertex, startVertex);
+    edgePair1 = this.insertEdge(endVertex, centerVertex);
+    edge0.setPair(edgePair0);
+    edgePair0.setPair(edge0);
+    edge1.setPair(edgePair1);
+    edgePair1.setPair(edge1);
+    edge0.setPre(edge.getPre());
+    edge1.setPre(edge0);
+    edgePair0.setPre(edgePair1);
+    edgePair1.setPre(edge.getPair().getPre());
+    edge0.setNext(edge1);
+    edge1.setNext(edge.getNext());
+    edgePair0.setNext(edge.getPair().getNext());
+    edgePair1.setNext(edgePair0);
+    smoothValue = edge.getSmoothValue();
+    centerVertex.setSmoothValue(smoothValue);
+    edge0.setSmoothValue(smoothValue);
+    edge1.setSmoothValue(smoothValue);
+    edgePair0.setSmoothValue(smoothValue);
+    edgePair1.setSmoothValue(smoothValue);
+    face = edge.getFace();
+    if (face !== null) {
+        if (face.getEdge() === edge) {
+            face.setEdge(edge.getNext());
+        }
+        edge0.setFace(face);
+        edge1.setFace(face);
+    }
+    face = edge.getPair().getFace();
+    if (face !== null) {
+        if (face.getEdge() === edge.getPair()) {
+            face.setEdge(edge.getPair().getNext());
+        }
+        edgePair0.setFace(face);
+        edgePair1.setFace(face);
+    }
+    this.removeEdgeFromEdgeMap(edge);
+    if (startVertex.getEdge() === edge) {
+        startVertex.setEdge(edge0);
+    }
+    if (endVertex.getEdge() === edge.getPair()) {
+        endVertex.setEdge(edgePair1);
+    }
+    centerVertex.setEdge(edge1);
+    preEdge = edge.getPre();
+    if (preEdge !== null) {
+        preEdge.setNext(edge0);
+    }
+    edge.setPre(null);
+    nextEdge = edge.getNext();
+    if (nextEdge !== null) {
+        nextEdge.setPre(edge1);
+    }
+    edge.setNext(null);
+    pairEdge = edge.getPair();
+    edge.setPair(null);
+    edge.setVertex(null);
+    preEdge = pairEdge.getPre();
+    if (preEdge !== null) {
+        preEdge.setNext(edgePair1);
+    }
+    pairEdge.setPre(null);
+    nextEdge = pairEdge.getNext();
+    if (nextEdge !== null) {
+        nextEdge.setPre(edgePair0);
+    }
+    pairEdge.setNext(null);
+    pairEdge.setPair(null);
+    pairEdge.setVertex(null);
+
+    for (eid = this.edges.length - 1; eid >= 0; eid--) {
+        if (this.edges[eid] === edge || this.edges[eid] === pairEdge) {
+            this.edges.splice(eid, 1);
+        }
+    }
+    return centerVertex;
 };
 
 // REAL3D.MeshModel.HMesh.prototype.deleteVertex = function (vertexIndex) {
@@ -512,11 +598,36 @@ REAL3D.MeshModel.HMesh.prototype.deleteFace = function (faceIndex) {
     }
 };
 
+REAL3D.MeshModel.HMesh.prototype.removeEdgeFromEdgeMap = function (edge) {
+    "use strict";
+    var startVertId, endVertId, mapList, mid;
+    startVertId = edge.getPair().getVertex().getId();
+    endVertId = edge.getVertex().getId();
+    mapList = this.edgeMap.edges[startVertId];
+    if (mapList !== undefined && mapList !== null) {
+        for (mid = 0; mid < mapList.length; mid++) {
+            if (mapList[mid].vertId === endVertId) {
+                mapList.splice(mid, 1);
+                break;
+            }
+        }
+    }
+    mapList = this.edgeMap.edges[endVertId];
+    if (mapList !== undefined && mapList !== null) {
+        for (mid = 0; mid < mapList.length; mid++) {
+            if (mapList[mid].vertId === startVertId) {
+                mapList.splice(mid, 1);
+                break;
+            }
+        }
+    }
+};
+
 //1. remove dummy element
 //2. make mesh a manifold
 REAL3D.MeshModel.HMesh.prototype.validateTopology = function () {
     "use strict";
-    var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert, startVertId, endVertId, mapList, mid;
+    var edgeCount, eid, removeFlag, boundaryEdges, preEdge, nextEdge, pairEdge, startVert, curEdge, vertCount, vid, curVert;
     edgeCount = this.edges.length;
     removeFlag = [];
     boundaryEdges = [];
@@ -535,26 +646,7 @@ REAL3D.MeshModel.HMesh.prototype.validateTopology = function () {
             curEdge = this.edges[eid];
             //remove it from edgeMap: both sides
             if (curEdge.getPair() !== null) {
-                startVertId = curEdge.getPair().getVertex().getId();
-                endVertId = curEdge.getVertex().getId();
-                mapList = this.edgeMap.edges[startVertId];
-                if (mapList !== undefined && mapList !== null) {
-                    for (mid = 0; mid < mapList.length; mid++) {
-                        if (mapList[mid].vertId === endVertId) {
-                            mapList.splice(mid, 1);
-                            break;
-                        }
-                    }
-                }
-                mapList = this.edgeMap.edges[endVertId];
-                if (mapList !== undefined && mapList !== null) {
-                    for (mid = 0; mid < mapList.length; mid++) {
-                        if (mapList[mid].vertId === startVertId) {
-                            mapList.splice(mid, 1);
-                            break;
-                        }
-                    }
-                }
+                this.removeEdgeFromEdgeMap(curEdge);
             }
             //
             preEdge = curEdge.getPre();
