@@ -153,20 +153,22 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
     myuniforms = {
         lightPos: { type: "v3", value: currentLight.lightThree.position},
         ambientColor: { type: "v3", value: new THREE.Vector3(0.1, 0.0, 0.0)},
-        diffuseColor: { type: "v3", value: new THREE.Vector3(0.5, 0.0, 0.0)},
+        diffuseColor: { type: "v3", value: new THREE.Vector3(21.0/255.0, 174.0/255.0, 103.0/255.0)},
         specColor: { type: "v3", value: new THREE.Vector3(1.0, 1.0, 1.0)},
         specular: { type: "f", value: 16.0},
-        mode: { type: "i", value: 1}
+        mode: { type: "i", value: 1},
+        roughness: { type: "f", value: 0.04},
+        lambda: { type: "f", value: 3.0}
     };
 
     myattributes = {     
     };
 
     vertShader = {
-        src: REAL3D.Inspector.ShaderChunk['blinnPhong_v']
+        src: REAL3D.Inspector.ShaderChunk['cookTorrance_v']
     };
     fragShader = {
-        src: REAL3D.Inspector.ShaderChunk['blinnPhong_f']
+        src: REAL3D.Inspector.ShaderChunk['cookTorrance_f']
     };
     var shaderMaterialThree = new THREE.ShaderMaterial({uniforms: myuniforms, attributes: myattributes, defines: {GREEN: 1.0}, vertexShader: vertShader.src, fragmentShader: fragShader.src, transparent: true});
     this.addMaterial(new REAL3D.Inspector.MaterialData("MaterialShader", shaderMaterialThree));

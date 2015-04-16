@@ -91,3 +91,47 @@ REAL3D.Inspector.ShaderChunk['blinnPhong_f'] = [
     "    gl_FragColor = vec4(ambientColor + lambertian * diffuseColor + specularF * specColor, 1.0);",
     "}"
 ].join('\n');
+
+REAL3D.Inspector.ShaderChunk['cookTorrance_v'] = REAL3D.Inspector.ShaderChunk['blinnPhong_v'];
+
+REAL3D.Inspector.ShaderChunk['cookTorrance_f'] = [
+    "varying vec3 vertPos;",
+    "varying vec3 normalInterp;",
+    "",
+    "uniform float roughness;",
+    "uniform vec3 lightPos;",
+    "",
+    "uniform vec3 ambientColor;",
+    "uniform vec3 diffuseColor;",
+    "uniform vec3 specColor;",
+    "uniform float lambda;",
+
+    "const float thepi = 3.14159265;",
+    "",
+    "void main()",
+    "{",
+    "    vec3 viewDir = normalize(-vertPos);",
+    "    vec3 lightDir = normalize(lightPos - vertPos);",
+    "    vec3 normal = normalize(normalInterp);",
+    "    vec3 halfDir = normalize(viewDir + lightDir);",
+    "    float cosNH = dot(normal, halfDir);",
+    "    float cosNH2 = cosNH * cosNH;",
+    "    float m2 =  roughness * roughness;",
+    "",
+    "    float D = exp((cosNH2-1.0)/cosNH2/m2)/thepi/m2/cosNH2/cosNH2;",
+    "",
+    "    float VH = dot(viewDir, halfDir);",
+    "    float F = pow((1.0 + VH), lambda);",
+    "",
+    "    float HN = dot(halfDir, normal);",
+    "    float VN = dot(viewDir, normal);",
+    "    float LN = dot(lightDir, normal);",
+    "    float G = min(HN*VN/VH, HN*LN/VH);",
+    "    G = min(1.0, G*2.0);",
+    "",
+    "    float specularF = D * F * G / 4.0 / VN / LN;",
+    "    float lambertian = max(LN, 0.0);",
+    "",
+    "    gl_FragColor = vec4(ambientColor + lambertian * diffuseColor + specularF * specColor, 1.0);",
+    "}",
+].join('\n');
