@@ -37,7 +37,8 @@ REAL3D.Inspector.LightData = {
 };
 
 REAL3D.Inspector.LightDataManager = {
-    lights: []
+    lights: [],
+    currentLight: ''
 };
 
 REAL3D.Inspector.LightParams = function(lightParam) {
@@ -149,6 +150,7 @@ REAL3D.Inspector.LightDataManager.init = function () {
         lightData = new REAL3D.Inspector.LightData(lightNames[ii], lightParams[ii]);
         this.add(lightData);      
     }
+    this.currentLight = lightNames[0];
 };
 
 REAL3D.Inspector.LightDataManager.add = function (light, scene) {
@@ -163,6 +165,16 @@ REAL3D.Inspector.LightDataManager.add = function (light, scene) {
         }    
     }
 };
+
+REAL3D.Inspector.LightDataManager.getCurrent = function () {
+    "use strict";
+    var ii;
+    for (ii in this.lights) {
+        if (this.lights[ii].name === this.currentLight)
+            return this.lights[ii];
+    }
+    return null;
+}
 
 REAL3D.Inspector.LightDataManager.addAllToScene = function (scene) {
     "use strict";

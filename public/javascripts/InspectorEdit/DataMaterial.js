@@ -119,19 +119,7 @@ REAL3D.Inspector.MaterialData.prototype.updateShaders = function (vertexShader, 
 
 REAL3D.Inspector.MaterialDataManager.init = function () {
     "use strict";
-    var materials, materialNames, uniforms, vertShader, fragShader, ii;
-    uniforms = {
-        time: { type: "f", value: 1.0},
-        resolution: { type: "v2", value: new THREE.Vector2() }
-    };
-
-    vertShader = {
-        src: 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}'
-    };
-
-    fragShader = {
-        src: 'void main() {gl_FragColor = vec4(1.0, 0.0, 0.0, 0.5);}'
-    };
+    var materials, materialNames, myuniforms, myattributes, vertShader, fragShader, ii;
 
     materials = [
         new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, side: THREE.DoubleSide} ),
@@ -161,7 +149,26 @@ REAL3D.Inspector.MaterialDataManager.init = function () {
         this.addMaterial(new REAL3D.Inspector.MaterialData(materialNames[ii], materials[ii]));
     }
 
-    var shaderMaterialThree = new THREE.ShaderMaterial({uniforms: {}, attributes: {}, vertexShader: vertShader.src, fragmentShader: fragShader.src, transparent: true});
+    var currentLight = REAL3D.Inspector.LightDataManager.getCurrent();
+    myuniforms = {
+        lightPos: { type: "v3", value: currentLight.lightThree.position},
+        ambientColor: { type: "v3", value: new THREE.Vector3(0.1, 0.0, 0.0)},
+        diffuseColor: { type: "v3", value: new THREE.Vector3(0.5, 0.0, 0.0)},
+        specColor: { type: "v3", value: new THREE.Vector3(1.0, 1.0, 1.0)},
+        specular: { type: "f", value: 16.0},
+        mode: { type: "i", value: 1}
+    };
+
+    myattributes = {     
+    };
+
+    vertShader = {
+        src: REAL3D.Inspector.ShaderChunk['blinnPhong_v']
+    };
+    fragShader = {
+        src: REAL3D.Inspector.ShaderChunk['blinnPhong_f']
+    };
+    var shaderMaterialThree = new THREE.ShaderMaterial({uniforms: myuniforms, attributes: myattributes, defines: {GREEN: 1.0}, vertexShader: vertShader.src, fragmentShader: fragShader.src, transparent: true});
     this.addMaterial(new REAL3D.Inspector.MaterialData("MaterialShader", shaderMaterialThree));
 
     //this.currentName = materialNames[4];
